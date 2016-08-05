@@ -14,6 +14,9 @@ import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketExtension;
 import com.neovisionaries.ws.client.WebSocketFactory;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 public class SocketService extends Service {
@@ -54,13 +57,20 @@ public class SocketService extends Service {
                 .addListener(new WebSocketAdapter() {
 
                     @Override
-                    public void onTextMessage(WebSocket webSocket, String message) {
+                    public void onTextMessage(WebSocket webSocket, String message) throws JSONException {
                         Log.e(LOG_TAG, message);
 
-                        Intent broadcastIntent = new Intent();
-                        broadcastIntent.setAction(AirFragment.mBroadcastStringAction);
-                        broadcastIntent.putExtra("Data", "Broadcast Data");
-                        sendBroadcast(broadcastIntent);
+                        JSONObject object = new JSONObject(message);
+                        int type = getType(object);
+
+                        switch(type) {
+                            case
+                        }
+
+//                        Intent broadcastIntent = new Intent();
+//                        broadcastIntent.setAction(AirFragment.mBroadcastStringAction);
+//                        broadcastIntent.putExtra("Data", "Broadcast Data");
+//                        sendBroadcast(broadcastIntent);
                     }
                 })
                 .addExtension(WebSocketExtension.PERMESSAGE_DEFLATE)
@@ -86,6 +96,11 @@ public class SocketService extends Service {
 
     public String getMessage(String message) {
         return message;
+    }
+
+    private int getType(JSONObject object) throws JSONException {
+        final String MESSAGE = "M";
+        return object.getInt(MESSAGE);
     }
 
     public interface Callbacks {

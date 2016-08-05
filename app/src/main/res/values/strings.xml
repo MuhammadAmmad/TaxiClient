@@ -30,13 +30,13 @@
 
     <string name="pref_server_label">Server address</string>
     <string name="pref_server_key">address</string>
-    <string name="pref_server_default">87.244.175.86</string>
+    <string name="pref_server_default">85.90.213.200</string>
 
     <string-array name="pref_server_titles">
-        <item>87.244.175.86</item>
+        <item>85.90.213.200</item>
     </string-array>
     <string-array name="pref_server_values">
-        <item>87.244.175.86</item>
+        <item>85.90.213.200</item>
     </string-array>
 
     <string name="pref_port_label">Port</string>

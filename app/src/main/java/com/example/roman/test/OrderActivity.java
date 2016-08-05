@@ -62,8 +62,8 @@ public class OrderActivity extends AppCompatActivity {
 
             if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
                 String forecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);
-                ((TextView) rootView.findViewById(R.id.order_text))
-                        .setText(forecastStr);
+//                ((TextView) rootView.findViewById(R.id.order_text))
+//                        .setText(forecastStr);
             }
             return rootView;
         }

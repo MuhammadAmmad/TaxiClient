@@ -182,17 +182,23 @@ public class MainActivity extends FragmentActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_main) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_my_orders) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_messages) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_gps_map) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_meter) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_add_functions) {
+
+        } else if (id == R.id.nav_alarm) {
+
+        } else if (id == R.id.nav_exit) {
+
+        } else if (id == R.id.nav_settings) {
 
         }
 
