@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -26,7 +27,9 @@ import java.util.List;
 
 public class MainActivity extends FragmentActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final int MAIN = 0;
     private static final int AIR = 1;
+    private static final int ORDER = 2;
     private SocketService mBoundService;
     private boolean mIsBound = true;
 
@@ -90,9 +93,9 @@ public class MainActivity extends FragmentActivity
     private List<Fragment> getFragments() {
         List<Fragment> fList = new ArrayList<>();
 
-        fList.add(MyFragment.newInstance("Fragment1"));
+        fList.add(MainFragment.newInstance());
         fList.add(AirFragment.newInstance());
-        fList.add(MyFragment.newInstance("Fragment3"));
+        fList.add(OrderFragment.newInstance());
 
         return fList;
     }
@@ -183,7 +186,7 @@ public class MainActivity extends FragmentActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_main) {
-            // Handle the camera action
+
         } else if (id == R.id.nav_my_orders) {
 
         } else if (id == R.id.nav_messages) {
@@ -195,7 +198,7 @@ public class MainActivity extends FragmentActivity
         } else if (id == R.id.nav_add_functions) {
 
         } else if (id == R.id.nav_alarm) {
-
+            showAlertDialog();
         } else if (id == R.id.nav_exit) {
 
         } else if (id == R.id.nav_settings) {
@@ -205,5 +208,10 @@ public class MainActivity extends FragmentActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void showAlertDialog() {
+        DialogFragment fragment = new AlertDialogFragment();
+        fragment.show(getSupportFragmentManager(), "AlertDialogFragment");
     }
 }

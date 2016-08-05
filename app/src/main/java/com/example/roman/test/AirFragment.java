@@ -12,18 +12,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.roman.test.socket.SocketService;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
-public class AirFragment extends Fragment implements SocketService.Callbacks {
-    public static final String mBroadcastStringAction = "com.truiton.broadcast.string";
-    public static final String mBroadcastIntegerAction = "com.truiton.broadcast.integer";
-    public static final String mBroadcastArrayListAction = "com.truiton.broadcast.arraylist";
-
+public class AirFragment extends Fragment {
     private ArrayAdapter<String> mAirAdapter;
     String [] ordersArray;
 
@@ -57,6 +51,7 @@ public class AirFragment extends Fragment implements SocketService.Callbacks {
                 R.layout.list_item_air,
                 R.id.list_item_air_textview,
                 orderForecast);
+
         ListView listView = (ListView) rootView.findViewById(R.id.listview_air);
         listView.setAdapter(mAirAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -74,27 +69,7 @@ public class AirFragment extends Fragment implements SocketService.Callbacks {
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-//            mTextView.setText(mTextView.getText()
-//                    + "Broadcast From Service: \n");
-//            if (intent.getAction().equals(mBroadcastStringAction)) {
-//                mTextView.setText(mTextView.getText()
-//                        + intent.getStringExtra("Data") + "\n\n");
-//            } else if (intent.getAction().equals(mBroadcastIntegerAction)) {
-//                mTextView.setText(mTextView.getText().toString()
-//                        + intent.getIntExtra("Data", 0) + "\n\n");
-//            } else if (intent.getAction().equals(mBroadcastArrayListAction)) {
-//                mTextView.setText(mTextView.getText()
-//                        + intent.getStringArrayListExtra("Data").toString()
-//                        + "\n\n");
-//                Intent stopIntent = new Intent(MainActivity.this,
-//                        BroadcastService.class);
-//                stopService(stopIntent);
-//            }
+//
         }
     };
-
-    @Override
-    public void updateAir(String message) {
-        return;
-    }
 }

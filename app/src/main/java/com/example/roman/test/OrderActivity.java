@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 public class OrderActivity extends AppCompatActivity {
 
@@ -58,7 +57,7 @@ public class OrderActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
 
             Intent intent = getActivity().getIntent();
-            View rootView = inflater.inflate(R.layout.fragment_order, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_detail_order, container, false);
 
             if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
                 String forecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);

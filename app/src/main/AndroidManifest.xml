@@ -3,7 +3,7 @@
     package="com.example.roman.test">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -14,7 +14,6 @@
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -31,8 +30,9 @@
                 android:value=".MainActivity" />
         </activity>
 
-        <service android:name=".socket.SocketService"
-            android:exported="false"/>
+        <service
+            android:name=".socket.SocketService"
+            android:exported="false" />
     </application>
 
 </manifest>

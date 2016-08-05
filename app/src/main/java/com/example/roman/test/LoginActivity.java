@@ -1,36 +1,56 @@
 package com.example.roman.test;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.roman.test.socket.SocketService;
 
+import org.json.JSONException;
+
 public class LoginActivity extends AppCompatActivity {
-    private static final int TIMEOUT = 5000;
+    private SocketServiceReceiver receiver;
+    private SocketService mService;
+    private boolean mBound;
 
     static {
-        AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_YES);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        if (Build.VERSION.SDK_INT >= 11) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            setTheme(R.style.AppTheme_Night);
+        }
 
         Button mLoginButton = (Button) findViewById(R.id.action_sign_in);
         assert mLoginButton != null;
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attemptLogin();
+                try {
+                    attemptLogin();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -56,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                                 AppCompatDelegate.MODE_NIGHT_YES);
                         break;
                 }
+
                 recreate();
             }
         });
@@ -70,7 +91,42 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void attemptLogin() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, SocketService.class);
+        startService(new Intent(this, SocketService.class));
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (receiver == null) {
+            receiver = new SocketServiceReceiver();
+            IntentFilter intentFilter = new IntentFilter(Utility.LOGIN_INTENT);
+            registerReceiver(receiver, intentFilter);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    private void attemptLogin() throws JSONException {
 //        if (mAuthTask != null) {
 //            return;
 //        }
@@ -113,15 +169,11 @@ public class LoginActivity extends AppCompatActivity {
 //            // perform the user login attempt.
 //        }
 
-        String serverAddress = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.pref_server_key),
-                        getString(R.string.pref_server_default));
-        int port = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.pref_port_key),
-                        getString(R.string.pref_port_default)));
 
-        startService(new Intent(this, SocketService.class));
-        startActivity(new Intent(this, MainActivity.class));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String login = prefs.getString(getString(R.string.pref_login_key), getString(R.string.pref_login_default));
+        String password = prefs.getString(getString(R.string.pref_password_key), getString(R.string.pref_password_default));
+        mService.login(login, password);
     }
 
 
@@ -136,4 +188,40 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
+    private class SocketServiceReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int error = intent.getIntExtra(Utility.ERROR, Utility.DEFAULT);
+            if (error != Utility.DEFAULT) {
+                Toast.makeText(context,
+                        context.getString(R.string.login_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                int method = intent.getIntExtra(Utility.METHOD, Utility.DEFAULT);
+
+                if (method == Utility.METHOD_LOGIN) {
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                }
+            }
+        }
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            SocketService.LocalBinder binder = (SocketService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 }

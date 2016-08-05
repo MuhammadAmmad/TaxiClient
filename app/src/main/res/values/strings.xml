@@ -22,11 +22,11 @@
 
     <string name="pref_login_label">Call sign</string>
     <string name="pref_login_key">login</string>
-    <string name="pref_login_default">monast_user</string>
+    <string name="pref_login_default">3</string>
 
     <string name="pref_password_label">Password</string>
     <string name="pref_password_key">password</string>
-    <string name="pref_password_default">monast_secret</string>
+    <string name="pref_password_default">password</string>
 
     <string name="pref_server_label">Server address</string>
     <string name="pref_server_key">address</string>
@@ -98,4 +98,11 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="login_failed">Invalid credentials, please try again</string>
+
+    <string name="title_fragment_alert">Alert!</string>
+    <string name="alert_message">If you are being attacked press ALERT!!    !</string>
+    <string name="alert_fire">ALERT!!!</string>
+    <string name="alert_cancel">No</string>
 </resources>

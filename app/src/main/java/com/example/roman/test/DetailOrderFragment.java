@@ -9,14 +9,20 @@ import android.view.ViewGroup;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class OrderActivityFragment extends Fragment {
+public class DetailOrderFragment extends Fragment {
 
-    public OrderActivityFragment() {
+    static AirFragment newInstance() {
+        AirFragment f = new AirFragment();
+        Bundle bd1 = new Bundle(1);
+        f.setArguments(bd1);
+        return f;
     }
+
+    public DetailOrderFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_order, container, false);
+        return inflater.inflate(R.layout.fragment_detail_order, container, false);
     }
 }
