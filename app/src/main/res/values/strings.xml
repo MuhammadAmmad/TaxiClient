@@ -58,6 +58,16 @@
         <item>-1</item>
     </string-array>
 
+    <string name="pref_theme">Add friends to messages</string>
+    <string-array name="pref_theme_titles">
+        <item>Day</item>
+        <item>Night</item>
+    </string-array>
+    <string-array name="pref_theme_values">
+        <item>1</item>
+        <item>-1</item>
+    </string-array>
+
     <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
 
@@ -77,8 +87,6 @@
         <item>12</item>
     </string-array>
 
-    <string name="pref_languages_sync">Data &amp; sync</string>
-
     <string name="pref_title_languages">Languages</string>
     <string-array name="pref_languages_titles" translatable="false">
         <item>Русский</item>
@@ -91,6 +99,16 @@
         <item>7</item>
         <item>10</item>
         <item>12</item>
+    </string-array>
+
+    <string name="pref_title_order_of_orders">Languages</string>
+    <string-array name="pref_order_of_orders_titles" translatable="false">
+        <item>Chronologically</item>
+        <item>Your at the top</item>
+    </string-array>
+    <string-array name="pref_order_of_orders_values">
+        <item>-1</item>
+        <item>1</item>
     </string-array>
 
     <string name="pref_title_system_sync_settings">System sync settings</string>

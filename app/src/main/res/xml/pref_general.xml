@@ -1,40 +1,99 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceScreen
         android:title="Air">
 
-        <ListPreference
-            android:defaultValue="-1"
-            android:entries="@array/pref_waiting_time_titles"
-            android:entryValues="@array/pref_waiting_time_values"
-            android:key="waiting_time_list"
-            android:title="@string/pref_title_waiting_time" />
+        <PreferenceCategory
+            android:title="Order of orders">
+            <ListPreference
+                android:defaultValue="-1"
+                android:entries="@array/pref_order_of_orders_titles"
+                android:entryValues="@array/pref_order_of_orders_values"
+                android:key="waiting_time_list"
+                android:title="@string/pref_title_order_of_orders" />
 
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="preorfer_switch"
-            android:title="Show order and preorder together" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="preorder_switch"
+                android:title="Show order and preorder together" />
 
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="hide_deleted_switch"
-            android:title="Hide deleted orders from air" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="hide_deleted_switch"
+                android:title="Hide deleted orders from air" />
+        </PreferenceCategory>
     </PreferenceScreen>
 
     <PreferenceScreen
         android:title="Sound"
         android:enabled="false">
-
-
     </PreferenceScreen>
 
-    <SwitchPreference
+    <CheckBoxPreference
         android:defaultValue="true"
         android:key="example_switch"
         android:title="Vibration" />
 
     <PreferenceScreen
         android:title="Style settings">
+
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pref_theme_titles"
+            android:entryValues="@array/pref_theme_values"
+            android:key="theme"
+            android:title="Theme" />
+
+        <PreferenceCategory
+            android:title="Fonts">
+
+            <EditTextPreference
+                android:capitalize="words"
+                android:defaultValue="22"
+                android:inputType="numberDecimal"
+                android:key="text_size"
+                android:maxLines="1"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="Text size" />
+
+            <EditTextPreference
+                android:capitalize="words"
+                android:defaultValue="22"
+                android:inputType="numberDecimal"
+                android:key="text_tabs_size"
+                android:maxLines="1"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="Button text size" />
+
+            <EditTextPreference
+                android:capitalize="words"
+                android:defaultValue="22"
+                android:inputType="numberDecimal"
+                android:key="button_text_size"
+                android:maxLines="1"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="Tabs text size" />
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="quantity"
+                android:title="Some stuff about quantity" />
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="bold_text"
+                android:title="Bold text" />
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="screen_rotate"
+                android:title="Allow screen rotating" />
+
+        </PreferenceCategory>
     </PreferenceScreen>
 
     <ListPreference
@@ -78,20 +137,30 @@
     <PreferenceScreen
         android:title="Clear Cache">
 
-
+        <Preference
+            android:title="Orders + messages"/>
+        <Preference
+            android:title="Orders"/>
+        <Preference
+            android:title="Messages"/>
 
     </PreferenceScreen>
 
     <PreferenceScreen
         android:title="Updates">
 
-        <SwitchPreference
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="example_switch"
             android:title="Do not remind about updates" />
+
+        <Preference
+            android:title="Update"/>
+        <Preference
+            android:title="Rollback"/>
     </PreferenceScreen>
 
-    <SwitchPreference
+    <CheckBoxPreference
         android:defaultValue="true"
         android:key="example_switch"
         android:title="GPS Tracking" />

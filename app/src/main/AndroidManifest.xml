@@ -11,16 +11,20 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+
+        <activity
+            android:name=".MainActivity" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
+
         <activity
             android:name=".OrderActivity"
             android:label="@string/title_activity_order"
@@ -33,6 +37,10 @@
         <service
             android:name=".socket.SocketService"
             android:exported="false" />
+
+        <provider
+            android:authorities="just.some.sector_provider.authority"
+            android:name=".data.SectorProvider"/>
     </application>
 
 </manifest>

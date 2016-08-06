@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <Preference
+        android:key="set_sector"
+        android:title="Set Sector" />
+
+    <Preference
+        android:key="filter"
+        android:title="Filter" />
+
+    <Preference
+        android:key="extended_filter"
+        android:title="Extended Filter" />
+
+    <Preference
+        android:key="balance"
+        android:title="Balance: 60.0 грн." />
+
+    <Preference
+        android:key="rating"
+        android:title="Rating: - " />
+
+    <CheckBoxPreference
+        android:title="Status"/>
+</PreferenceScreen>

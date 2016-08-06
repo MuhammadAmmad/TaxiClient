@@ -35,11 +35,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        if (Build.VERSION.SDK_INT >= 11) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            setTheme(R.style.AppTheme_Night);
-        }
 
         Button mLoginButton = (Button) findViewById(R.id.action_sign_in);
         assert mLoginButton != null;

@@ -2,6 +2,7 @@ package com.example.roman.test.socket;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -31,14 +32,11 @@ public class SocketService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO Auto-generated method stub
-        Log.e(LOG_TAG,  "I am in Ibinder onBind method");
         return myBinder;
     }
 
     public class LocalBinder extends Binder {
         public SocketService getService() {
-            Log.e(LOG_TAG, "I am in Localbinder ");
             return SocketService.this;
         }
     }
@@ -46,7 +44,7 @@ public class SocketService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        connectToServer();
+        (new ConnectToServer()).execute();
         return START_STICKY;
     }
 
@@ -59,38 +57,11 @@ public class SocketService extends Service {
                 .connect();
     }
 
-    public void connectToServer() {
-        class connectSocket implements Runnable {
-            @Override
-            public void run() {
-                try {
-                    webSocket = connect();
-                } catch (Exception e) {
-                    Log.e("TCP", "C: Error", e);
-                }
-            }
-        }
-
-        new Thread(new connectSocket()).start();
-    }
-
     public void sendMessage(final JSONObject object, final int method) throws JSONException {
         final JSONObject json = Utility.getRQObject();
         json.put(Utility.REQUEST, object);
         json.put(Utility.METHOD, method);
-
-        class sendText implements Runnable {
-            @Override
-            public void run() {
-                try {
-                    webSocket.sendText(new JSONObject(json.toString()).toString());
-                } catch (Exception e) {
-                    Log.e("TCP", "S: Error", e);
-                }
-            }
-        }
-
-        new Thread(new sendText()).start();
+        (new SendText()).execute(json.toString());
     }
 
     public void login(String username, String password) throws JSONException {
@@ -102,7 +73,6 @@ public class SocketService extends Service {
         json.put(PASSWORD, password);
 
         sendMessage(json, Utility.METHOD_LOGIN);
-//        webSocket.sendText("{\"RQ\":{\"L\":\"3\",\"P\":\"3\"},\"M\":102}");
     }
 
     public void logout() throws JSONException {
@@ -149,11 +119,28 @@ public class SocketService extends Service {
             }
 
             sendBroadcast(broadcastIntent);
+        }
+    }
 
-//          Intent broadcastIntent = new Intent();
-//          broadcastIntent.setAction(AirFragment.mBroadcastStringAction);
-//          broadcastIntent.putExtra("Data", "Broadcast Data");
-//          sendBroadcast(broadcastIntent);
+    private class SendText extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            webSocket.sendText(strings[0]);
+            return null;
+        }
+    }
+
+    private class ConnectToServer extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                webSocket = connect();
+            } catch (IOException | WebSocketException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 }
