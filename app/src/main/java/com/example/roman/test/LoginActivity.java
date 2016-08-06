@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
         mSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, SettingsActivity.class));
+                startActivity(new Intent(LoginActivity.this, LoginSettingsActivity.class));
             }
         });
     }
