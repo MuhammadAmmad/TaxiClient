@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:drawableTop="@android:drawable/ic_input_add"
-                android:text="Take (10)" />
+                android:text="@string/detail_take" />
 
             <Button
                 android:id="@+id/action_style"
@@ -29,14 +29,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:drawableTop="@android:drawable/ic_menu_send"
-                android:text="Waiting time" />
+                android:text="@string/detail_waiting_time" />
         </LinearLayout>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableTop="@android:drawable/ic_delete"
-            android:text="cancel" />
+            android:text="@string/detail_cancel" />
 
     </LinearLayout>
 </RelativeLayout>

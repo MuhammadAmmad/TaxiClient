@@ -31,34 +31,23 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private static final int MAIN = 0;
     private static final int AIR = 1;
-    private static final int ORDER = 2;
 
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
     private SocketService mBoundService;
     private boolean mIsBound = true;
 
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
         //EDITED PART
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            // TODO Auto-generated method stub
             mBoundService = ((SocketService.LocalBinder)service).getService();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            // TODO Auto-generated method stub
             mBoundService = null;
         }
     };
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +55,6 @@ public class MainActivity extends AppCompatActivity
 
         Sector sectorInstance = new Sector();
         getContentResolver().insert(SectorsTable.CONTENT_URI, SectorsTable.getContentValues(sectorInstance, false));
-
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
         setSupportActionBar(myToolbar);
@@ -92,13 +80,13 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerToggle = new ActionBarDrawerToggle(
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 mDrawerLayout,
                 null,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close) {
+                R.string.nav_drawer_open,
+                R.string.nav_drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
@@ -134,7 +122,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private class MyPageAdapter extends FragmentPagerAdapter {
-        private List<Fragment> fragments;
+        private final List<Fragment> fragments;
 
         MyPageAdapter(FragmentManager fm, List<Fragment> fragments) {
             super(fm);
@@ -204,6 +192,10 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == 25) {
+            int x = 25;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -238,7 +230,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void showAlertDialog() {
+    private void showAlertDialog() {
         DialogFragment fragment = new AlertDialogFragment();
         fragment.show(getSupportFragmentManager(), "AlertDialogFragment");
     }

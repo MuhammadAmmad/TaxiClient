@@ -1,49 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_main"
             android:icon="@drawable/ic_home"
-            android:title="Main" />
+            android:title="@string/nav_drawer_main" />
+
         <item
             android:id="@+id/nav_my_orders"
-            android:icon="@drawable/ic_my_orders"
-            android:title="My orders" />
+            android:icon="@drawable/ic_local_taxi_black_24dp"
+            android:title="@string/nav_drawer_my_orders" />
         <item
             android:id="@+id/nav_messages"
             android:icon="@drawable/ic_message"
-            android:title="Messages" />
+            android:title="@string/nav_drawer_messages" />
 
         <item
             android:id="@+id/nav_gps_map"
             android:icon="@drawable/ic_gps_map"
-            android:title="GPS map" />
+            android:title="@string/nav_drawer_gps_map" />
 
         <item
             android:id="@+id/nav_meter"
             android:icon="@drawable/ic_meter"
-            android:title="Tax-o-meter" />
+            android:title="@string/nav_drawer_tax_o_meter" />
 
         <item
             android:id="@+id/nav_add_functions"
             android:icon="@drawable/ic_add_functions"
-            android:title="Additional functions" />
+            android:title="@string/nav_drawer_extra_functions" />
 
         <item
             android:id="@+id/nav_alarm"
             android:icon="@drawable/ic_alarm"
-            android:title="Alarm" />
+            android:title="@string/nav_drawer_alert" />
 
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings"
-            android:title="Settings" />
+            android:title="@string/nav_drawer_settings" />
 
         <item
             android:id="@+id/nav_exit"
             android:icon="@drawable/ic_exit"
-            android:title="Exit" />
+            android:title="@string/nav_drawer_exit" />
     </group>
 
     <!--<item android:title="Communicate">-->

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_sign_in">Вхід</string>
+    <string name="action_settings">Налаштування</string>
+    <string name="action_style">Тема</string>
+
+    <string name="title_activity_login_settings">LoginSettings</string>
+    <string name="title_activity_settings">@string/action_settings</string>
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">Загальні @string/action_settings</string>
+
+    <string name="pref_login_label">Позивний</string>
+
+    <string name="pref_password_label">Пароль</string>
+
+    <string name="pref_server_label">Адреса сервера</string>
+
+    <string name="pref_port_label">Порт</string>
+
+    <string name="pref_title_waiting_time">Час подачі за замовчуванням</string>
+    <string-array name="pref_waiting_time_titles">
+        <item>3 хвилин</item>
+        <item>5 хвилин</item>
+        <item>7 хвилин</item>
+        <item>10 хвилин</item>
+        <item>12 хвилин</item>
+    </string-array>
+
+    <string name="pref_title_languages">Мова</string>
+
+    <string name="pref_title_order_of_orders">Порядок замовлень</string>
+    <string-array name="pref_order_of_orders_titles">
+        <item>У хронологічному порядку</item>
+        <item>Свої зверху</item>
+    </string-array>
+
+    <string name="pref_title_vibrate">Вібрація</string>
+
+    <string name="title_activity_order">OrderActivity</string>
+    <string name="title_activity_navigation_drawer">NavigationDrawer</string>
+
+    <string name="login_failed">Неправильный логін або пароль, спробуйте ще раз</string>
+
+    <string name="nav_drawer_close">Close</string>
+    <string name="nav_drawer_open">Open</string>
+
+    <string name="nav_drawer_alert">Байкал!</string>
+    <string name="nav_drawer_alert_message">Якщо на вас здійснили напад, натисність @string/nav_drawer_alert</string>
+    <string name="nav_drawer_alert_fire">@string/nav_drawer_alert</string>
+    <string name="nav_drawer_alert_cancel">Ні</string>
+
+    <string name="nav_drawer_exit">Вихід</string>
+    <string name="nav_drawer_extra_functions">Додаткові функції</string>
+    <string name="nav_drawer_gps_map">GPS карта</string>
+    <string name="nav_drawer_tax_o_meter">Таксометр</string>
+    <string name="nav_drawer_messages">Повідомлення</string>
+    <string name="nav_drawer_my_orders">Мої замовлення</string>
+    <string name="nav_drawer_main">Головна</string>
+
+    <string name="detail_cancel">Скасувати</string>
+    <string name="detail_waiting_time">Час подачі</string>
+    <string name="detail_take">Узяти</string>
+
+    <string name="main_orders_map">Карта</string>
+    <string name="main_order_actions">Дії</string>
+</resources>

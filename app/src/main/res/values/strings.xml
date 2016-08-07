@@ -1,75 +1,37 @@
 <resources>
-    <string name="app_name">Taxi</string>
+    <string name="app_name" translatable="false">Taxi</string>
     <string name="action_sign_in">Sign In</string>
     <string name="action_settings">Settings</string>
     <string name="action_style">Theme</string>
 
-    <!--<string name="dummy_section_text">Section %1d is just a dummy section.</string>-->
-    <!--<string name="demo_external_activity">Demo External Activity</string>-->
-    <!--<string name="demo_collection">Demo Collection</string>-->
     <string name="title_activity_login_settings">LoginSettings</string>
     <string name="title_activity_settings">Settings</string>
-
-    <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
-
     <string name="pref_login_label">Call sign</string>
-    <string name="pref_login_key">login</string>
-    <string name="pref_login_default">3</string>
+    <string name="pref_login_key" translatable="false">login</string>
+    <string name="pref_login_default" translatable="false">3</string>
 
     <string name="pref_password_label">Password</string>
-    <string name="pref_password_key">password</string>
-    <string name="pref_password_default">password</string>
+    <string name="pref_password_key" translatable="false">password</string>
+    <string name="pref_password_default" translatable="false">@string/pref_password_key</string>
 
     <string name="pref_server_label">Server address</string>
-    <string name="pref_server_key">address</string>
-    <string name="pref_server_default">85.90.213.200</string>
+    <string name="pref_server_key" translatable="false">address</string>
+    <string name="pref_server_default" translatable="false">85.90.213.200</string>
 
-    <string-array name="pref_server_titles">
+    <string-array name="pref_server_titles" translatable="false">
         <item>85.90.213.200</item>
     </string-array>
-    <string-array name="pref_server_values">
+    <string-array name="pref_server_values" translatable="false">
         <item>85.90.213.200</item>
     </string-array>
 
     <string name="pref_port_label">Port</string>
-    <string name="pref_port_key">address</string>
-    <string name="pref_port_default">5008</string>
-
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
-    <string name="pref_theme">Add friends to messages</string>
-    <string-array name="pref_theme_titles">
-        <item>Day</item>
-        <item>Night</item>
-    </string-array>
-    <string-array name="pref_theme_values">
-        <item>1</item>
-        <item>-1</item>
-    </string-array>
-
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
+    <string name="pref_port_key" translatable="false">address</string>
+    <string name="pref_port_default" translatable="false">5008</string>
 
     <string name="pref_title_waiting_time">Default waiting time</string>
     <string-array name="pref_waiting_time_titles">
@@ -79,7 +41,7 @@
         <item>10 minutes</item>
         <item>12 minutes</item>
     </string-array>
-    <string-array name="pref_waiting_time_values">
+    <string-array name="pref_waiting_time_values" translatable="false">
         <item>3</item>
         <item>5</item>
         <item>7</item>
@@ -93,7 +55,7 @@
         <item>Українська</item>
         <item>English</item>
     </string-array>
-    <string-array name="pref_languages_values">
+    <string-array name="pref_languages_values" translatable="false">
         <item>3</item>
         <item>5</item>
         <item>7</item>
@@ -101,40 +63,44 @@
         <item>12</item>
     </string-array>
 
-    <string name="pref_title_order_of_orders">Languages</string>
-    <string-array name="pref_order_of_orders_titles" translatable="false">
+    <string name="pref_title_order_of_orders">Order of orders</string>
+    <string-array name="pref_order_of_orders_titles">
         <item>Chronologically</item>
         <item>Your at the top</item>
     </string-array>
-    <string-array name="pref_order_of_orders_values">
+    <string-array name="pref_order_of_orders_values" translatable="false">
         <item>-1</item>
         <item>1</item>
     </string-array>
 
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-    <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
     <string name="pref_title_vibrate">Vibrate</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_order">OrderActivity</string>
     <string name="title_activity_navigation_drawer">NavigationDrawer</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <string name="login_failed">Invalid credentials, please try again</string>
 
-    <string name="title_fragment_alert">Alert!</string>
-    <string name="alert_message">If you are being attacked press ALERT!!    !</string>
-    <string name="alert_fire">ALERT!!!</string>
-    <string name="alert_cancel">No</string>
+    <string name="nav_drawer_close">Close</string>
+    <string name="nav_drawer_open">Open</string>
+
+    <string name="nav_drawer_alert">Alert!</string>
+    <string name="nav_drawer_alert_message">If you are being attacked press @string/nav_drawer_alert</string>
+    <string name="nav_drawer_alert_fire">@string/nav_drawer_alert</string>
+    <string name="nav_drawer_alert_cancel">No</string>
+
+    <string name="nav_drawer_exit">Exit</string>
+    <string name="nav_drawer_settings" translatable="false">@string/action_settings</string>
+    <string name="nav_drawer_extra_functions">Additional functions</string>
+    <string name="nav_drawer_gps_map">GPS map</string>
+    <string name="nav_drawer_tax_o_meter">Tax-o-meter</string>
+    <string name="nav_drawer_messages">Messages</string>
+    <string name="nav_drawer_my_orders">My orders</string>
+    <string name="nav_drawer_main">Main</string>
+
+    <string name="detail_cancel">Сancel</string>
+    <string name="detail_waiting_time">Waiting time</string>
+    <string name="detail_take">Take</string>
+
+    <string name="main_orders_map">Map</string>
+    <string name="main_order_actions">Actions</string>
 </resources>

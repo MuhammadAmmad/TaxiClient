@@ -81,10 +81,6 @@ public class SocketService extends Service {
         sendMessage(json, Utility.METHOD_LOGOUT);
     }
 
-    public interface Callbacks {
-        void updateAir(String message);
-    }
-
     private class SocketListener extends WebSocketAdapter {
         @Override
         public void onTextMessage(WebSocket webSocket, String message) throws JSONException {

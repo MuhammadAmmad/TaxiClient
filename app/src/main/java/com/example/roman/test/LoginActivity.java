@@ -203,7 +203,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName className,

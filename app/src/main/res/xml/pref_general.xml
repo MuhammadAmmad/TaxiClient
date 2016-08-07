@@ -38,12 +38,12 @@
     <PreferenceScreen
         android:title="Style settings">
 
-        <ListPreference
-            android:defaultValue="-1"
-            android:entries="@array/pref_theme_titles"
-            android:entryValues="@array/pref_theme_values"
-            android:key="theme"
-            android:title="Theme" />
+        <!--<ListPreference-->
+            <!--android:defaultValue="-1"-->
+            <!--android:entries="@array/pref_theme_titles"-->
+            <!--android:entryValues="@array/pref_theme_values"-->
+            <!--android:key="theme"-->
+            <!--android:title="Theme" />-->
 
         <PreferenceCategory
             android:title="Fonts">

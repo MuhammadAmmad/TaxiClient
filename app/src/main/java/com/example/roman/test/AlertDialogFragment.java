@@ -7,26 +7,22 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
-/**
- * Created by Roman on 05/08/2016.
- */
-
 public class AlertDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the builder for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.alert_message)
-                .setTitle(R.string.title_fragment_alert)
+        builder.setMessage(R.string.nav_drawer_alert_message)
+                .setTitle(R.string.nav_drawer_alert)
                 .setIcon(R.drawable.ic_alarm)
-                .setPositiveButton(R.string.alert_fire, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.nav_drawer_alert_fire, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
                 })
-                .setNegativeButton(R.string.alert_cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.nav_drawer_alert_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();

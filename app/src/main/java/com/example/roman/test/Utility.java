@@ -3,10 +3,6 @@ package com.example.roman.test;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by Roman on 04/08/2016.
- */
-
 public class Utility {
     public static final int DEFAULT = -1;
 

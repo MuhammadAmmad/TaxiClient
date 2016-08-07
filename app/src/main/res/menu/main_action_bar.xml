@@ -13,7 +13,7 @@
         app:actionViewClass="android.widget.DigitalClock"
         android:textSize="22sp"
         android:iconifiedByDefault="true"
-        android:title="clock" />
+        android:title="" />
 
     <item android:id="@+id/stuff"
         app:showAsAction="always"

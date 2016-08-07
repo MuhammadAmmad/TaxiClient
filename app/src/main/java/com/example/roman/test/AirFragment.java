@@ -12,8 +12,7 @@ import android.widget.ListView;
 import java.util.Arrays;
 
 public class AirFragment extends Fragment {
-    private OrderAdapter mOrderAdapter;
-    Order[] ordersArray;
+    private Order[] ordersArray;
 
     static AirFragment newInstance() {
         AirFragment f = new AirFragment();
@@ -38,7 +37,7 @@ public class AirFragment extends Fragment {
                 new Order("вул. Івана Мазепи, 42", "вул. Європейська, 123", 314)
         };
 
-        mOrderAdapter = new OrderAdapter(getContext(), Arrays.asList(ordersArray));
+        OrderAdapter mOrderAdapter = new OrderAdapter(getContext(), Arrays.asList(ordersArray));
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_air);
         listView.setAdapter(mOrderAdapter);

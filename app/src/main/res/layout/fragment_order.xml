@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -20,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawableTop="@android:drawable/ic_menu_camera"
-            android:text="Maps" />
+            android:text="@string/main_orders_map" />
 
         <Button
             android:id="@+id/action_style"
@@ -28,6 +27,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawableTop="@android:drawable/ic_menu_search"
-            android:text="actions" />
+            android:text="@string/main_order_actions" />
     </LinearLayout>
 </RelativeLayout>

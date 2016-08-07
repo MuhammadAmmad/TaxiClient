@@ -13,6 +13,7 @@
         android:src="@drawable/logo"
         android:layout_margin="16dp"
         android:layout_gravity="center_vertical"
+        android:contentDescription="@string/app_name"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         />

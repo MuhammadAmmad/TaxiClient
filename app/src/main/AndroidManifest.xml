@@ -21,9 +21,15 @@
 
         <activity
             android:name=".MainActivity" />
+
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
 
         <activity
             android:name=".OrderActivity"
@@ -40,7 +46,8 @@
 
         <provider
             android:authorities="just.some.sector_provider.authority"
-            android:name=".data.SectorProvider"/>
+            android:name=".data.SectorProvider"
+            android:exported="false" />
     </application>
 
 </manifest>
