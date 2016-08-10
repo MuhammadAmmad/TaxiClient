@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Clear Cache">
+
+    <Preference
+        android:title="Orders + messages"/>
+    <Preference
+        android:title="Orders"/>
+    <Preference
+        android:title="Messages"/>
+</PreferenceScreen>

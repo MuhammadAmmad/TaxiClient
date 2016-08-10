@@ -1,7 +1,0 @@
-<preference-headers>
-    <!--<header-->
-        <!--android:fragment="com.example.roman.test.PrefsFragment"-->
-        <!--android:title="...">-->
-        <!--<extra android:name="resource" android:value="preferences" />-->
-    <!--</header>-->
-</preference-headers>

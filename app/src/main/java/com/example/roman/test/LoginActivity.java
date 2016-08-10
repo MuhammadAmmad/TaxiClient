@@ -92,23 +92,11 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SocketService.class);
         startService(new Intent(this, SocketService.class));
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         if (receiver == null) {
             receiver = new SocketServiceReceiver();
-            IntentFilter intentFilter = new IntentFilter(Utility.LOGIN_INTENT);
+            IntentFilter intentFilter = new IntentFilter(TaxiContract.LOGIN_INTENT);
             registerReceiver(receiver, intentFilter);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (receiver != null) {
-            unregisterReceiver(receiver);
         }
     }
 
@@ -118,6 +106,11 @@ public class LoginActivity extends AppCompatActivity {
         if (mBound) {
             unbindService(mConnection);
             mBound = false;
+        }
+
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
         }
     }
 
@@ -164,13 +157,11 @@ public class LoginActivity extends AppCompatActivity {
 //            // perform the user login attempt.
 //        }
 
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String login = prefs.getString(getString(R.string.pref_login_key), getString(R.string.pref_login_default));
         String password = prefs.getString(getString(R.string.pref_password_key), getString(R.string.pref_password_default));
         mService.login(login, password);
     }
-
 
     @Override
     public void recreate() {
@@ -188,18 +179,34 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            int error = intent.getIntExtra(Utility.ERROR, Utility.DEFAULT);
-            if (error != Utility.DEFAULT) {
-                Toast.makeText(context,
-                        context.getString(R.string.login_failed),
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                int method = intent.getIntExtra(Utility.METHOD, Utility.DEFAULT);
+            int error = intent.getIntExtra(TaxiContract.ERROR, TaxiContract.DEFAULT);
+            String errorMessage = "";
 
-                if (method == Utility.METHOD_LOGIN) {
+            switch (error) {
+                case TaxiContract.ERROR_NONE:
+                    int method = intent.getIntExtra(TaxiContract.METHOD, TaxiContract.DEFAULT);
+                    errorMessage = context.getString(R.string.login_error_success);
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                }
+                    break;
+                case TaxiContract.ERROR_LOGIN_INCORRECT:
+                    errorMessage = context.getString(R.string.login_error_incorrect);
+                    break;
+                case TaxiContract.ERROR_LOGIN_BLOCKED:
+                    errorMessage = context.getString(R.string.login_error_blocked);
+                    break;
+                case TaxiContract.ERROR_LOGIN_OCCUPIED:
+                    errorMessage = context.getString(R.string.login_error_occupied);
+                    break;
+                case TaxiContract.ERROR_LOGIN_RADIO:
+                    errorMessage = context.getString(R.string.login_error_radio);
+                    break;
+                case TaxiContract.ERROR_LOGIN_TAKEN:
+                    errorMessage = context.getString(R.string.login_error_taken);
+                    break;
             }
+
+            Toast.makeText(context,
+                    errorMessage, Toast.LENGTH_SHORT).show();
         }
     }
 

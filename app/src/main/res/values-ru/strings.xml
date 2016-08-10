@@ -64,4 +64,15 @@
 
     <string name="main_orders_map">Карта</string>
     <string name="main_order_actions">Действия</string>
+
+    <string name="main_main">Главная</string>
+    <string name="main_air">Эфир</string>
+    <string name="main_order">Заказ</string>
+
+    <string name="login_error_success">Вход выполнен успешно</string>
+    <string name="login_error_incorrect">Неверный логин или пароль</string>
+    <string name="login_error_blocked">Водитель заблокирован</string>
+    <string name="login_error_occupied">Вход выполнить невозможно. Водитель уже на линии!</string>
+    <string name="login_error_radio">Водитель работает на рации. Обратитесь к администрации</string>
+    <string name="login_error_taken">Неверный логин и пароль, или позывной занят другим </string>
 </resources>

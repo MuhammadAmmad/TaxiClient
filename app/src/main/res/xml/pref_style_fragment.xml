@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Style settings">
+
+    <PreferenceCategory
+        android:title="Fonts">
+
+        <EditTextPreference
+            android:capitalize="words"
+            android:defaultValue="22"
+            android:inputType="numberDecimal"
+            android:key="text_size"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Text size" />
+
+        <EditTextPreference
+            android:capitalize="words"
+            android:defaultValue="22"
+            android:inputType="numberDecimal"
+            android:key="text_tabs_size"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Button text size" />
+
+        <EditTextPreference
+            android:capitalize="words"
+            android:defaultValue="22"
+            android:inputType="numberDecimal"
+            android:key="button_text_size"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Tabs text size" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="quantity"
+            android:title="Some stuff about quantity" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="bold_text"
+            android:title="Bold text" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="screen_rotate"
+            android:title="Allow screen rotating" />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -1,8 +1,10 @@
 package com.example.roman.test;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -21,20 +23,27 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
-import com.example.roman.test.data.Sector;
-import com.example.roman.test.data.SectorsTable;
 import com.example.roman.test.socket.SocketService;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final int MAIN = 0;
     private static final int AIR = 1;
+    private static final int ORDER = 2;
 
+    MyPageAdapter mPageAdapter;
+    private SocketServiceReceiver receiver;
     private SocketService mBoundService;
-    private boolean mIsBound = true;
+
+    String balance;
+    private boolean mBound = true;
 
     private final ServiceConnection mConnection = new ServiceConnection() {
         //EDITED PART
@@ -49,23 +58,51 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    private class SocketServiceReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int error = intent.getIntExtra(TaxiContract.ERROR, TaxiContract.DEFAULT);
+            String errorMessage = "";
+
+            switch (error) {
+                case TaxiContract.DEFAULT:
+                    int method = intent.getIntExtra(TaxiContract.METHOD, TaxiContract.DEFAULT);
+                    switch (method) {
+                        case TaxiContract.METHOD_DELETE_ORDERS:
+                            int deleteOrderId = intent.getIntExtra(
+                                    TaxiContract.RESPONSE, TaxiContract.DEFAULT);
+                            ((AirFragment) mPageAdapter.getRegisteredFragment(AIR))
+                                    .removeOrder(deleteOrderId);
+                            return;
+                    }
+                    break;
+
+                case TaxiContract.ERROR_LOGIN_INCORRECT:
+                    errorMessage = context.getString(R.string.login_failed);
+                    break;
+            }
+
+            Toast.makeText(context,
+                    context.getString(R.string.login_failed),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = new Intent(this, SocketService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
         setContentView(R.layout.activity_main);
 
-        Sector sectorInstance = new Sector();
-        getContentResolver().insert(SectorsTable.CONTENT_URI, SectorsTable.getContentValues(sectorInstance, false));
+//        Sector sectorInstance = new Sector();
+//        getContentResolver().insert(SectorsTable.CONTENT_URI, SectorsTable.getContentValues(sectorInstance, false));
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        List<Fragment> fragments = getFragments();
-
-        MyPageAdapter pageAdapter = new MyPageAdapter(getSupportFragmentManager(), fragments);
-        ViewPager mViewPager = (ViewPager) findViewById(R.id.view_pager);
-        mViewPager.setAdapter(pageAdapter);
-        mViewPager.setCurrentItem(AIR);
 
 //        setContentView(R.layout.activity_navigation_drawer);
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -107,8 +144,46 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        List<Fragment> fragments = getFragments();
+
+        MyPageAdapter pageAdapter = new MyPageAdapter(getSupportFragmentManager(), fragments);
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mViewPager.setAdapter(pageAdapter);
+        mViewPager.setCurrentItem(AIR);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         Intent intent = new Intent(this, SocketService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (receiver == null) {
+            receiver = new SocketServiceReceiver();
+            IntentFilter intentFilter = new IntentFilter(TaxiContract.MAIN_INTENT);
+            registerReceiver(receiver, intentFilter);
+        }
     }
 
     private List<Fragment> getFragments() {
@@ -143,14 +218,18 @@ public class MainActivity extends AppCompatActivity
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Main";
+                    return getString(R.string.main_main);
                 case 1:
-                    return "Air";
+                    return getString(R.string.main_air);
                 case 2:
-                    return "Order/Messages";
+                    return getString(R.string.main_order);
                 default:
                     return "";
             }
+        }
+
+        public Fragment getRegisteredFragment(int position) {
+            return fragments.get(position);
         }
     }
 
@@ -177,7 +256,6 @@ public class MainActivity extends AppCompatActivity
         return super.onKeyDown(keyCode, e);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -199,7 +277,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -222,7 +299,12 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.nav_exit) {
-
+            try {
+                mBoundService.logout();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            System.exit(1);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

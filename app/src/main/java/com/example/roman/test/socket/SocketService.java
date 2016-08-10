@@ -1,6 +1,7 @@
 package com.example.roman.test.socket;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
@@ -8,7 +9,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.roman.test.Utility;
+import com.example.roman.test.TaxiContract;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
@@ -24,8 +25,9 @@ public class SocketService extends Service {
     private static final String LOG_TAG = SocketService.class.getSimpleName();
     private static final String SERVER = "ws://gw.staxi.com.ua:16999/test";
     private static final int TIMEOUT = 5000;
-    private int id;
+
     private WebSocket webSocket;
+    private String id;
 
     private final IBinder myBinder = new LocalBinder();
 
@@ -58,9 +60,9 @@ public class SocketService extends Service {
     }
 
     public void sendMessage(final JSONObject object, final int method) throws JSONException {
-        final JSONObject json = Utility.getRQObject();
-        json.put(Utility.REQUEST, object);
-        json.put(Utility.METHOD, method);
+        final JSONObject json = TaxiContract.getRQObject();
+        json.put(TaxiContract.REQUEST, object);
+        json.put(TaxiContract.METHOD, method);
         (new SendText()).execute(json.toString());
     }
 
@@ -72,13 +74,25 @@ public class SocketService extends Service {
         json.put(LOGIN, username);
         json.put(PASSWORD, password);
 
-        sendMessage(json, Utility.METHOD_LOGIN);
+        sendMessage(json, TaxiContract.METHOD_LOGIN);
     }
 
     public void logout() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put(Utility.DG, id);
-        sendMessage(json, Utility.METHOD_LOGOUT);
+        json.put(TaxiContract.DG, id);
+        sendMessage(json, TaxiContract.METHOD_LOGOUT);
+    }
+
+    public void alert() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put(TaxiContract.DG, id);
+        sendMessage(json, TaxiContract.METHOD_SET_ALERT);
+    }
+
+    public void getBalance() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put(TaxiContract.DG, id);
+        sendMessage(json, TaxiContract.METHOD_GET_BALANCE);
     }
 
     private class SocketListener extends WebSocketAdapter {
@@ -88,30 +102,42 @@ public class SocketService extends Service {
             Intent broadcastIntent = new Intent();
 
             JSONObject object = new JSONObject(message);
-            int error = Utility.getError(object);
+            int error = TaxiContract.getError(object);
+            broadcastIntent.putExtra(TaxiContract.ERROR, error);
             switch (error) {
-                case Utility.ERROR_NONE:
-                    int type = Utility.getMethod(object);
+                case TaxiContract.ERROR_NONE:
+                    int type = TaxiContract.getMethod(object);
+                    broadcastIntent.putExtra(TaxiContract.METHOD, type);
 
                     switch (type) {
-                        case Utility.METHOD_LOGIN: {
-                            id = object.getInt(Utility.RESPONSE);
-                            broadcastIntent.setAction(Utility.LOGIN_INTENT);
-                            broadcastIntent.putExtra(Utility.METHOD, Utility.METHOD_LOGIN);
+                        case TaxiContract.METHOD_LOGIN:
+                            id = object.getString(TaxiContract.RESPONSE);
+                            getBalance();
+                            broadcastIntent.setAction(TaxiContract.LOGIN_INTENT);
                             break;
-                        }
-                        case Utility.METHOD_LOGOUT: {
-                            broadcastIntent.putExtra(Utility.METHOD, Utility.METHOD_LOGOUT);
+
+                        case TaxiContract.METHOD_GET_BALANCE:
+                            String balance = object.getString(TaxiContract.RESPONSE);
+                            getSharedPreferences(TaxiContract.MY_PREFS_NAME, Context.MODE_PRIVATE)
+                                    .edit()
+                                    .putString("balance", balance)
+                                    .apply();
                             break;
-                        }
+
+                        case TaxiContract.METHOD_DELETE_ORDERS:
+                            int deleteOrderId  = object.getInt(TaxiContract.RESPONSE);
+                            broadcastIntent.setAction(TaxiContract.MAIN_INTENT);
+                            broadcastIntent.putExtra(TaxiContract.RESPONSE, deleteOrderId);
+                            break;
                     }
                     break;
-
-                case Utility.ERROR_LOGIN_FAILED: {
-                    broadcastIntent.setAction(Utility.LOGIN_INTENT);
-                    broadcastIntent.putExtra(Utility.ERROR, Utility.METHOD_LOGIN);
+                case TaxiContract.ERROR_LOGIN_INCORRECT:
+                case TaxiContract.ERROR_LOGIN_BLOCKED:
+                case TaxiContract.ERROR_LOGIN_OCCUPIED:
+                case TaxiContract.ERROR_LOGIN_RADIO:
+                case TaxiContract.ERROR_LOGIN_TAKEN:
+                    broadcastIntent.setAction(TaxiContract.LOGIN_INTENT);
                     break;
-                }
             }
 
             sendBroadcast(broadcastIntent);

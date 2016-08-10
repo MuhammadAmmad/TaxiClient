@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/tools">
     <string name="app_name" translatable="false">Taxi</string>
     <string name="action_sign_in">Sign In</string>
     <string name="action_settings">Settings</string>
@@ -7,31 +7,38 @@
     <string name="title_activity_login_settings">LoginSettings</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Example General settings -->
+    <!-- Login settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_login_label">Call sign</string>
+    <string name="pref_header_login">Login settings</string>
+    <string name="pref_header_network">Network settings</string>
+
+    <string name="pref_login_label">Callsign</string>
     <string name="pref_login_key" translatable="false">login</string>
-    <string name="pref_login_default" translatable="false">3</string>
+    <string name="pref_login_default" translatable="false">000</string>
 
     <string name="pref_password_label">Password</string>
     <string name="pref_password_key" translatable="false">password</string>
-    <string name="pref_password_default" translatable="false">@string/pref_password_key</string>
+    <string name="pref_password_default" translatable="false">000</string>
 
     <string name="pref_server_label">Server address</string>
-    <string name="pref_server_key" translatable="false">address</string>
-    <string name="pref_server_default" translatable="false">85.90.213.200</string>
+    <string name="pref_server_key" translatable="false">server</string>
+    <string name="pref_server_default" translatable="false">85.90.213.212</string>
 
     <string-array name="pref_server_titles" translatable="false">
         <item>85.90.213.200</item>
+        <item>85.114.213.200</item>
     </string-array>
     <string-array name="pref_server_values" translatable="false">
-        <item>85.90.213.200</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
 
     <string name="pref_port_label">Port</string>
     <string name="pref_port_key" translatable="false">address</string>
     <string name="pref_port_default" translatable="false">5008</string>
+
+    <!--General settings-->
 
     <string name="pref_title_waiting_time">Default waiting time</string>
     <string-array name="pref_waiting_time_titles">
@@ -103,4 +110,20 @@
 
     <string name="main_orders_map">Map</string>
     <string name="main_order_actions">Actions</string>
+
+    <string name="format_balance">Balance: <xliff:g id="condition">%1$s</xliff:g>
+    </string>
+    <string name="format_price" translatable="false"><xliff:g id="condition">%1$s</xliff:g> \u20B4
+    </string>
+
+    <string name="main_main">Main</string>
+    <string name="main_air">Air</string>
+    <string name="main_order">Order</string>
+
+    <string name="login_error_success">Login successful</string>
+    <string name="login_error_incorrect">Incorrect login or password</string>
+    <string name="login_error_blocked">Driver is blocked</string>
+    <string name="login_error_occupied">Can\u0027t login. Driver\u0027s already online</string>
+    <string name="login_error_radio">Driver is working on radio. Please, contact administration</string>
+    <string name="login_error_taken">Incorrect login or password, or callsign is taken</string>
 </resources>

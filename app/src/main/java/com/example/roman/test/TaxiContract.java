@@ -3,11 +3,15 @@ package com.example.roman.test;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Utility {
+public class TaxiContract {
+    public static int id;
+
+    public static final String MY_PREFS_NAME = "MyPrefsFile";
     public static final int DEFAULT = -1;
 
     public static final String LOGIN_INTENT = "login_intent";
     public static final String AIR_INTENT = "air_intent";
+    public static final String MAIN_INTENT = "main_intent";
 
     public static final String METHOD = "M";
     public static final String ERROR = "E";
@@ -46,10 +50,11 @@ public class Utility {
     public static final int METHOD_GET_EXEVORDERS = 134;
 
     public static final int ERROR_NONE = 0;
-    public static final int ERROR_LOGIN_FAILED = 1;
-    public static final int ERROR_DRIVER_BLOCKED = 2;
-    public static final int ERROR_DOUBLE_USER = 3;
-    public static final int ERROR_LOGIN_FAILED_TAKEN = 5;
+    public static final int ERROR_LOGIN_INCORRECT = 1;
+    public static final int ERROR_LOGIN_BLOCKED = 2;
+    public static final int ERROR_LOGIN_OCCUPIED= 3;
+    public static final int ERROR_LOGIN_RADIO = 4;
+    public static final int ERROR_LOGIN_TAKEN = 5;
     public static final int ERROR_FULL_QUEUE = 6;
     public static final int ERROR_SECTOR_FAILED = 7;
     public static final int ERROR_ORDER_NOT_FOUND = 10;

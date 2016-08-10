@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Air">
+
+    <PreferenceCategory
+        android:title="Order of orders">
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pref_order_of_orders_titles"
+            android:entryValues="@array/pref_order_of_orders_values"
+            android:key="waiting_time_list"
+            android:title="@string/pref_title_order_of_orders" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="preorder_switch"
+            android:title="Show order and preorder together" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="hide_deleted_switch"
+            android:title="Hide deleted orders from air" />
+    </PreferenceCategory>
+</PreferenceScreen>

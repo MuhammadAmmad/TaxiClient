@@ -1,12 +1,102 @@
 package com.example.roman.test;
 
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceFragmentCompat;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends AppCompatActivity {
+    private final static String AIR = "com.example.roman.test.AIR";
+    private final static String STYLE = "com.example.roman.test.STYLE";
+    private final static String UPDATE = "com.example.roman.test.UPDATE";
+    private final static String CACHE = "com.example.roman.test.CACHE";
+    private final static String GENERAL = "com.example.roman.test.GENERAL";
+
+    private final static String ACTION_KEY = "action";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.pref_general);
+
+        Bundle bundle = new Bundle();
+        String action = getIntent().getAction();
+        bundle.putString(ACTION_KEY, action);
+
+        Fragment settingFragment = new SettingsFragment();
+        settingFragment.setArguments(bundle);
+
+        // Display the fragment as the main content.
+        getSupportFragmentManager().beginTransaction()
+                .replace(android.R.id.content, settingFragment)
+                .commit();
+    }
+
+    public static class SettingsFragment extends PreferenceFragmentCompat
+            implements Preference.OnPreferenceChangeListener {
+
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            String type = getArguments().getString(ACTION_KEY);
+            int action = R.xml.pref_general;
+
+            if (type != null) {
+                switch (type) {
+                    case AIR:
+                        action = R.xml.pref_air_fragment;
+                        break;
+                    case STYLE:
+                        action = R.xml.pref_style_fragment;
+                        break;
+                    case UPDATE:
+                        action = R.xml.pref_update_fragment;
+                        break;
+                    case CACHE:
+                        action = R.xml.pref_clear_cache_fragment;
+                        break;
+                }
+            }
+
+            addPreferencesFromResource(action);
+        }
+
+        /**
+         * Attaches a listener so the summary is always updated with the preference value.
+         * Also fires the listener once, to initialize the summary (so it shows up before the value
+         * is changed.)
+         */
+        private void bindPreferenceSummaryToValue(Preference preference) {
+            // Set the listener to watch for value changes.
+            preference.setOnPreferenceChangeListener(this);
+
+            // Trigger the listener immediately with the preference's
+            // current value.
+            onPreferenceChange(preference,
+                    PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getString(preference.getKey(), ""));
+        }
+
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object value) {
+            String stringValue = value.toString();
+
+            if (preference instanceof ListPreference) {
+                // For list preferences, look up the correct display value in
+                // the preference's 'entries' list (since they have separate labels/values).
+                ListPreference listPreference = (ListPreference) preference;
+                int prefIndex = listPreference.findIndexOfValue(stringValue);
+                if (prefIndex >= 0) {
+                    preference.setSummary(listPreference.getEntries()[prefIndex]);
+                }
+            } else {
+                // For other preferences, set the summary to the value's simple string representation.
+                preference.setSummary(stringValue);
+            }
+            return true;
+        }
     }
 }

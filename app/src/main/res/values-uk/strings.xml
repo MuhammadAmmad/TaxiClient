@@ -64,4 +64,15 @@
 
     <string name="main_orders_map">Карта</string>
     <string name="main_order_actions">Дії</string>
+
+    <string name="main_main">Головна</string>
+    <string name="main_air">Ефір</string>
+    <string name="main_order">Замовлення</string>
+
+    <string name="login_error_success">Вхід здійснено успішно</string>
+    <string name="login_error_incorrect">Неправильний позивний або пароль</string>
+    <string name="login_error_occupied">Водій заблокований</string>
+    <string name="login_error_blocked">Вхід здійснити не можливо. Водій уже на лінії!</string>
+    <string name="login_error_radio">Водій працює на рації. Зверніться до адміністрації</string>
+    <string name="login_error_taken">Неправильний логін або пароль, або позивний зайнятий іншим водієм</string>
 </resources>

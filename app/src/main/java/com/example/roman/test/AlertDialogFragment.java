@@ -15,7 +15,6 @@ public class AlertDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.nav_drawer_alert_message)
                 .setTitle(R.string.nav_drawer_alert)
-                .setIcon(R.drawable.ic_alarm)
                 .setPositiveButton(R.string.nav_drawer_alert_fire, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

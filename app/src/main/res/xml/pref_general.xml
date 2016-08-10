@@ -1,29 +1,14 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceScreen
-        android:title="Air">
-
-        <PreferenceCategory
-            android:title="Order of orders">
-            <ListPreference
-                android:defaultValue="-1"
-                android:entries="@array/pref_order_of_orders_titles"
-                android:entryValues="@array/pref_order_of_orders_values"
-                android:key="waiting_time_list"
-                android:title="@string/pref_title_order_of_orders" />
-
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="preorder_switch"
-                android:title="Show order and preorder together" />
-
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="hide_deleted_switch"
-                android:title="Hide deleted orders from air" />
-        </PreferenceCategory>
-    </PreferenceScreen>
+    <Preference
+        android:title="Air"
+        android:summary="some stuff">
+        <intent
+            android:targetPackage="com.example.roman.test"
+            android:targetClass="com.example.roman.test.SettingsActivity"
+            android:action="com.example.roman.test.AIR" />
+    </Preference>
 
     <PreferenceScreen
         android:title="Sound"
@@ -35,66 +20,14 @@
         android:key="example_switch"
         android:title="Vibration" />
 
-    <PreferenceScreen
-        android:title="Style settings">
-
-        <!--<ListPreference-->
-            <!--android:defaultValue="-1"-->
-            <!--android:entries="@array/pref_theme_titles"-->
-            <!--android:entryValues="@array/pref_theme_values"-->
-            <!--android:key="theme"-->
-            <!--android:title="Theme" />-->
-
-        <PreferenceCategory
-            android:title="Fonts">
-
-            <EditTextPreference
-                android:capitalize="words"
-                android:defaultValue="22"
-                android:inputType="numberDecimal"
-                android:key="text_size"
-                android:maxLines="1"
-                android:selectAllOnFocus="true"
-                android:singleLine="true"
-                android:title="Text size" />
-
-            <EditTextPreference
-                android:capitalize="words"
-                android:defaultValue="22"
-                android:inputType="numberDecimal"
-                android:key="text_tabs_size"
-                android:maxLines="1"
-                android:selectAllOnFocus="true"
-                android:singleLine="true"
-                android:title="Button text size" />
-
-            <EditTextPreference
-                android:capitalize="words"
-                android:defaultValue="22"
-                android:inputType="numberDecimal"
-                android:key="button_text_size"
-                android:maxLines="1"
-                android:selectAllOnFocus="true"
-                android:singleLine="true"
-                android:title="Tabs text size" />
-
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="quantity"
-                android:title="Some stuff about quantity" />
-
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="bold_text"
-                android:title="Bold text" />
-
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="screen_rotate"
-                android:title="Allow screen rotating" />
-
-        </PreferenceCategory>
-    </PreferenceScreen>
+    <Preference
+        android:title="Style"
+        android:summary="some stuff">
+        <intent
+            android:targetPackage="com.example.roman.test"
+            android:targetClass="com.example.roman.test.SettingsActivity"
+            android:action="com.example.roman.test.STYLE" />
+    </Preference>
 
     <ListPreference
         android:defaultValue="-1"
@@ -103,30 +36,6 @@
         android:key="waiting_time_list"
         android:title="@string/pref_title_waiting_time" />
 
-    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
-    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
-    <!--<EditTextPreference-->
-        <!--android:capitalize="words"-->
-        <!--android:defaultValue="@string/pref_default_display_name"-->
-        <!--android:inputType="textCapWords"-->
-        <!--android:key="example_text"-->
-        <!--android:maxLines="1"-->
-        <!--android:selectAllOnFocus="true"-->
-        <!--android:singleLine="true"-->
-        <!--android:title="@string/pref_title_display_name" />-->
-
-    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-         dismiss it. -->
-    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
-    <!--<ListPreference-->
-        <!--android:defaultValue="-1"-->
-        <!--android:entries="@array/pref_example_list_titles"-->
-        <!--android:entryValues="@array/pref_example_list_values"-->
-        <!--android:key="example_list"-->
-        <!--android:negativeButtonText="@null"-->
-        <!--android:positiveButtonText="@null"-->
-        <!--android:title="@string/pref_title_add_friends_to_messages" />-->
-
     <ListPreference
         android:defaultValue="-1"
         android:entries="@array/pref_languages_titles"
@@ -134,31 +43,23 @@
         android:key="languages_list"
         android:title="@string/pref_title_languages" />
 
-    <PreferenceScreen
-        android:title="Clear Cache">
+    <Preference
+        android:title="Clear memory"
+        android:summary="some stuff">
+        <intent
+            android:targetPackage="com.example.roman.test"
+            android:targetClass="com.example.roman.test.SettingsActivity"
+            android:action="com.example.roman.test.CACHE" />
+    </Preference>
 
-        <Preference
-            android:title="Orders + messages"/>
-        <Preference
-            android:title="Orders"/>
-        <Preference
-            android:title="Messages"/>
-
-    </PreferenceScreen>
-
-    <PreferenceScreen
-        android:title="Updates">
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="example_switch"
-            android:title="Do not remind about updates" />
-
-        <Preference
-            android:title="Update"/>
-        <Preference
-            android:title="Rollback"/>
-    </PreferenceScreen>
+    <Preference
+        android:title="Updates"
+        android:summary="some stuff">
+        <intent
+            android:targetPackage="com.example.roman.test"
+            android:targetClass="com.example.roman.test.SettingsActivity"
+            android:action="com.example.roman.test.UPDATE" />
+    </Preference>
 
     <CheckBoxPreference
         android:defaultValue="true"
