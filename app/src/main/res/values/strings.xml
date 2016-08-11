@@ -34,6 +34,16 @@
         <item>2</item>
     </string-array>
 
+    <string name="pref_theme_label">Theme</string>
+    <string name="pref_theme_key" translatable="false">theme</string>
+    <string name="pref_theme_default">@string/pref_theme_night</string>
+
+    <string name="pref_theme_label_day">Day</string>
+    <string name="pref_theme_label_night">Night</string>
+
+    <string name="pref_theme_day" translatable="false">day</string>
+    <string name="pref_theme_night" translatable="false">night</string>
+
     <string name="pref_port_label">Port</string>
     <string name="pref_port_key" translatable="false">address</string>
     <string name="pref_port_default" translatable="false">5008</string>

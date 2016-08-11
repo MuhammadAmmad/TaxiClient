@@ -23,7 +23,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.roman.test.socket.SocketService;
 
@@ -62,15 +61,15 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            int error = intent.getIntExtra(TaxiContract.ERROR, TaxiContract.DEFAULT);
+            int error = intent.getIntExtra(Utility.ERROR, Utility.DEFAULT);
 
             switch (error) {
-                case TaxiContract.DEFAULT:
-                    int method = intent.getIntExtra(TaxiContract.METHOD, TaxiContract.DEFAULT);
+                case Utility.DEFAULT:
+                    int method = intent.getIntExtra(Utility.METHOD, Utility.DEFAULT);
                     switch (method) {
-                        case TaxiContract.METHOD_DELETE_ORDERS:
+                        case Utility.METHOD_DELETE_ORDERS:
                             int deleteOrderId = intent.getIntExtra(
-                                    TaxiContract.RESPONSE, TaxiContract.DEFAULT);
+                                    Utility.RESPONSE, Utility.DEFAULT);
                             ((AirFragment) mPageAdapter.getRegisteredFragment(AIR))
                                     .removeOrder(deleteOrderId);
                             return;
@@ -147,14 +146,13 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         Intent intent = new Intent(this, SocketService.class);
+        startService(new Intent(this, SocketService.class));
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (receiver != null) {
-            unregisterReceiver(receiver);
+        if (receiver == null) {
+            receiver = new SocketServiceReceiver();
+            IntentFilter intentFilter = new IntentFilter(Utility.LOGIN_INTENT);
+            registerReceiver(receiver, intentFilter);
         }
     }
 
@@ -165,6 +163,11 @@ public class MainActivity extends AppCompatActivity
             unbindService(mConnection);
             mBound = false;
         }
+
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
     }
 
     @Override
@@ -172,7 +175,7 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         if (receiver == null) {
             receiver = new SocketServiceReceiver();
-            IntentFilter intentFilter = new IntentFilter(TaxiContract.MAIN_INTENT);
+            IntentFilter intentFilter = new IntentFilter(Utility.MAIN_INTENT);
             registerReceiver(receiver, intentFilter);
         }
     }

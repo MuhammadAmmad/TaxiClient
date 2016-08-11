@@ -9,12 +9,11 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class AirFragment extends Fragment {
     private List<Order> ordersArray;
-    OrderAdapter mOrderAdapter;
+    private OrderAdapter mOrderAdapter;
 
     static AirFragment newInstance() {
         AirFragment f = new AirFragment();

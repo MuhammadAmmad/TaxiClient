@@ -18,7 +18,7 @@ public class MainFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.pref_main);
         String balance = (getActivity().getSharedPreferences(
-                TaxiContract.MY_PREFS_NAME, Context.MODE_PRIVATE)).getString("balance", "Unknown");
+                Utility.MY_PREFS_NAME, Context.MODE_PRIVATE)).getString("balance", "Unknown");
         Preference preference = findPreference("balance");
         preference.setTitle(getActivity().getString(R.string.format_balance, balance));
     }

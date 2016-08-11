@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- Layout for weather forecast list item for future day (not today) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,24 +8,20 @@
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal">
 
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"/>
-
     <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <TextView
+        <CheckedTextView
             android:id="@+id/list_item_sector"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:fontFamily="sans-serif-condensed"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_height="match_parent"
+            android:paddingLeft="8dp"
+            android:drawablePadding="8dp"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:drawableLeft="?android:attr/listChoiceIndicatorMultiple" />
     </LinearLayout>
 
     <FrameLayout
@@ -36,10 +30,10 @@
 
         <TextView
             android:id="@+id/list_item_drivers"
-            android:textColor="#0000FF"
             android:layout_gravity="center"
+            android:textColor="#0000FF"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:textAppearance="?android:textAppearanceLarge" />
     </FrameLayout>
 </LinearLayout>

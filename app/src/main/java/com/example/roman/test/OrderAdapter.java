@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 public class OrderAdapter extends ArrayAdapter<Order> {
+
     private static class ViewHolder {
         TextView from;
         TextView to;
@@ -33,8 +34,10 @@ public class OrderAdapter extends ArrayAdapter<Order> {
         if (convertView == null) {
             // If there's no view to re-use, inflate a brand new view for now
             viewHolder = new ViewHolder();
+
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.list_item_air, parent, false);
+
             viewHolder.from = (TextView) convertView.findViewById(R.id.list_item_from);
             viewHolder.to = (TextView) convertView.findViewById(R.id.list_item_to);
             viewHolder.price = (TextView) convertView.findViewById(R.id.list_item_price);

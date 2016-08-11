@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.example.roman.test.data.Sector;
@@ -15,8 +16,8 @@ import java.util.List;
 public class SectorAdapter extends ArrayAdapter<Sector> {
 
     private static class ViewHolder {
-        TextView sectorView;
-        TextView driversView;
+        CheckedTextView name;
+        TextView drivers;
     }
 
     public SectorAdapter(Context context, List<Sector> sectors) {
@@ -35,10 +36,12 @@ public class SectorAdapter extends ArrayAdapter<Sector> {
         if (convertView == null) {
             // If there's no view to re-use, inflate a brand new view for now
             viewHolder = new ViewHolder();
+
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.list_item_air, parent, false);
-            viewHolder.driversView = (TextView) convertView.findViewById(R.id.list_item_drivers);
-            viewHolder.sectorView = (TextView) convertView.findViewById(R.id.list_item_sector);
+            convertView = inflater.inflate(R.layout.list_item_sector, parent, false);
+
+            viewHolder.name = (CheckedTextView) convertView.findViewById(R.id.list_item_sector);
+            viewHolder.drivers = (TextView) convertView.findViewById(R.id.list_item_drivers);
 
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);
@@ -48,8 +51,10 @@ public class SectorAdapter extends ArrayAdapter<Sector> {
         }
 
         // Populate the data into the template view using the data object
-        viewHolder.sectorView.setText(sector.name);
-        viewHolder.driversView.setText(sector.numOfDrivers);
+        viewHolder.name.setText(sector.name);
+        if (sector.numOfDrivers != 0) {
+            viewHolder.drivers.setText(String.valueOf(sector.numOfDrivers).toUpperCase());
+        }
 
         // Return the completed view to render on screen
         return convertView;

@@ -8,14 +8,6 @@
             android:key="@string/pref_login_key"
             android:defaultValue="@string/pref_login_default"/>
 
-        <!--<EditTextPreference-->
-
-            <!--android:password="true"-->
-            <!--android:inputType="textPassword"-->
-            <!--android:summary="12354"-->
-            <!--android:defaultValue="@string/pref_password_default"-->
-            <!--android:title="@string/pref_password_label"/>-->
-
         <EditTextPreference
             android:key="@string/pref_password_key"
             android:title="@string/pref_password_label"

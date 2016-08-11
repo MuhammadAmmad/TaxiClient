@@ -10,7 +10,7 @@
 
     <item android:id="@+id/clock"
         app:showAsAction="always"
-        app:actionViewClass="android.widget.DigitalClock"
+        app:actionViewClass="com.example.roman.test.CustomClock"
         android:textSize="22sp"
         android:iconifiedByDefault="true"
         android:title="" />

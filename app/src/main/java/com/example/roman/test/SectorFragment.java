@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
 
 import com.example.roman.test.data.Sector;
@@ -17,29 +19,39 @@ public class SectorFragment extends Fragment {
     private List<Sector> sectorArray;
     private SectorAdapter mSectorAdapter;
 
-    private ListView mListView;
-    private int mPosition = ListView.INVALID_POSITION;
+    static SectorFragment newInstance() {
+        SectorFragment f = new SectorFragment();
+        Bundle bd1 = new Bundle(1);
+        f.setArguments(bd1);
+        return f;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_air, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_sectors, container, false);
 
         Cursor cursor = getActivity().getContentResolver().query(
                 SectorsTable.CONTENT_URI, null, null, null, null);
 
         sectorArray = SectorsTable.getRows(cursor, false);
-
         mSectorAdapter = new SectorAdapter(getContext(), sectorArray);
 
-        ListView listView = (ListView) rootView.findViewById(R.id.list_view_air);
-        listView.setAdapter(mSectorAdapter);
-
+        ListView mListView = (ListView) rootView.findViewById(R.id.list_view_sectors);
+        mListView.setAdapter(mSectorAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                CheckedTextView checkedTextView = (CheckedTextView) view
+                        .findViewById(R.id.list_item_sector);
+                checkedTextView.setChecked(!checkedTextView.isChecked());
+            }
+        });
         return rootView;
     }
 
-    public void addOrders(List<Sector> sectors) {
+    public void addSectors(List<Sector> sectors) {
         for (Sector s : sectors) {
             mSectorAdapter.add(s);
         }

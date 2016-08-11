@@ -1,9 +1,12 @@
 package com.example.roman.test;
 
+import android.app.Activity;
+import android.content.Context;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class TaxiContract {
+public class Utility {
     public static int id;
 
     public static final String MY_PREFS_NAME = "MyPrefsFile";
@@ -64,6 +67,10 @@ public class TaxiContract {
     public static final int ERROR_SHIFT_CLOSED = 100;
     public static final int ERROR_USER_BLOCKED = 106;
 
+    public static final String THEME = "theme";
+    public static final String NIGHT = "night";
+    public static final String DAY = "day";
+
     public static final String SECTORS = "SC";
 
     public static JSONObject getRQObject() throws JSONException {
@@ -80,5 +87,27 @@ public class TaxiContract {
 
     public static int getError(JSONObject object) throws JSONException {
         return object.getInt(ERROR);
+    }
+
+    public static boolean isNight(Activity activity) {
+        boolean isNight = true;
+        String state = activity.getPreferences(Context.MODE_PRIVATE)
+                .getString(THEME, null);
+
+        if (state != null) {
+            isNight = state.equals(NIGHT);
+        }
+
+        return isNight;
+    }
+
+    public static void setWholeTheme(Activity activity) {
+        boolean isNight = Utility.isNight(activity);
+
+        if (isNight) {
+            activity.setTheme(R.style.AppThemeNight);
+        } else {
+            activity.setTheme(R.style.AppThemeDay);
+        }
     }
 }

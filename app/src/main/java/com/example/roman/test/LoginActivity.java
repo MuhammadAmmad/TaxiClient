@@ -33,6 +33,10 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            Utility.setWholeTheme(this);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -57,19 +61,35 @@ public class LoginActivity extends AppCompatActivity {
                 int currentNightMode = getResources().getConfiguration().uiMode
                         & Configuration.UI_MODE_NIGHT_MASK;
 
-                switch (currentNightMode) {
-                    case Configuration.UI_MODE_NIGHT_NO:
-                        getDelegate().setLocalNightMode(
-                                AppCompatDelegate.MODE_NIGHT_YES);
-                        break;
-                    case Configuration.UI_MODE_NIGHT_YES:
-                        getDelegate().setLocalNightMode(
-                                AppCompatDelegate.MODE_NIGHT_NO);
-                        break;
-                    case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                        getDelegate().setLocalNightMode(
-                                AppCompatDelegate.MODE_NIGHT_YES);
-                        break;
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    boolean isNight = Utility.isNight(LoginActivity.this);
+                    String newState;
+
+                    if (isNight) {
+                        newState = Utility.DAY;
+                    } else {
+                        newState = Utility.NIGHT;
+                    }
+
+                    getPreferences(Context.MODE_PRIVATE)
+                            .edit()
+                            .putString(Utility.THEME, newState)
+                            .apply();
+                } else {
+                    switch (currentNightMode) {
+                        case Configuration.UI_MODE_NIGHT_NO:
+                            getDelegate().setLocalNightMode(
+                                    AppCompatDelegate.MODE_NIGHT_YES);
+                            break;
+                        case Configuration.UI_MODE_NIGHT_YES:
+                            getDelegate().setLocalNightMode(
+                                    AppCompatDelegate.MODE_NIGHT_NO);
+                            break;
+                        case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                            getDelegate().setLocalNightMode(
+                                    AppCompatDelegate.MODE_NIGHT_YES);
+                            break;
+                    }
                 }
 
                 recreate();
@@ -95,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (receiver == null) {
             receiver = new SocketServiceReceiver();
-            IntentFilter intentFilter = new IntentFilter(TaxiContract.LOGIN_INTENT);
+            IntentFilter intentFilter = new IntentFilter(Utility.LOGIN_INTENT);
             registerReceiver(receiver, intentFilter);
         }
     }
@@ -179,27 +199,27 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            int error = intent.getIntExtra(TaxiContract.ERROR, TaxiContract.DEFAULT);
+            int error = intent.getIntExtra(Utility.ERROR, Utility.DEFAULT);
             String errorMessage = "";
 
             switch (error) {
-                case TaxiContract.ERROR_NONE:
+                case Utility.ERROR_NONE:
                     errorMessage = context.getString(R.string.login_error_success);
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     break;
-                case TaxiContract.ERROR_LOGIN_INCORRECT:
+                case Utility.ERROR_LOGIN_INCORRECT:
                     errorMessage = context.getString(R.string.login_error_incorrect);
                     break;
-                case TaxiContract.ERROR_LOGIN_BLOCKED:
+                case Utility.ERROR_LOGIN_BLOCKED:
                     errorMessage = context.getString(R.string.login_error_blocked);
                     break;
-                case TaxiContract.ERROR_LOGIN_OCCUPIED:
+                case Utility.ERROR_LOGIN_OCCUPIED:
                     errorMessage = context.getString(R.string.login_error_occupied);
                     break;
-                case TaxiContract.ERROR_LOGIN_RADIO:
+                case Utility.ERROR_LOGIN_RADIO:
                     errorMessage = context.getString(R.string.login_error_radio);
                     break;
-                case TaxiContract.ERROR_LOGIN_TAKEN:
+                case Utility.ERROR_LOGIN_TAKEN:
                     errorMessage = context.getString(R.string.login_error_taken);
                     break;
             }
