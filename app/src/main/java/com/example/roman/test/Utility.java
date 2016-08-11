@@ -91,7 +91,7 @@ public class Utility {
 
     public static boolean isNight(Activity activity) {
         boolean isNight = true;
-        String state = activity.getPreferences(Context.MODE_PRIVATE)
+        String state = activity.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE)
                 .getString(THEME, null);
 
         if (state != null) {

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.NavigationView;
@@ -80,15 +81,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            Utility.setWholeTheme(this);
+        }
+
         super.onCreate(savedInstanceState);
 
         Intent intent = new Intent(this, SocketService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         setContentView(R.layout.activity_main);
-
-//        Sector sectorInstance = new Sector();
-//        getContentResolver().insert(SectorsTable.CONTENT_URI, SectorsTable.getContentValues(sectorInstance, false));
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
         setSupportActionBar(myToolbar);

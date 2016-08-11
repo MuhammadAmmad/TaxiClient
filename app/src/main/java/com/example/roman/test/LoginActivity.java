@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                         newState = Utility.NIGHT;
                     }
 
-                    getPreferences(Context.MODE_PRIVATE)
+                    getSharedPreferences(Utility.MY_PREFS_NAME, Context.MODE_PRIVATE)
                             .edit()
                             .putString(Utility.THEME, newState)
                             .apply();

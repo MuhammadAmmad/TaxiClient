@@ -16,7 +16,7 @@ import java.util.List;
 public class SectorAdapter extends ArrayAdapter<Sector> {
 
     private static class ViewHolder {
-        CheckedTextView name;
+        TextView name;
         TextView drivers;
     }
 
@@ -40,7 +40,7 @@ public class SectorAdapter extends ArrayAdapter<Sector> {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.list_item_sector, parent, false);
 
-            viewHolder.name = (CheckedTextView) convertView.findViewById(R.id.list_item_sector);
+            viewHolder.name = (TextView) convertView.findViewById(R.id.list_item_sector);
             viewHolder.drivers = (TextView) convertView.findViewById(R.id.list_item_drivers);
 
             // Cache the viewHolder object inside the fresh view

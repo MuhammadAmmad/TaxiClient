@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 
@@ -43,9 +44,8 @@ public class SectorFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                CheckedTextView checkedTextView = (CheckedTextView) view
-                        .findViewById(R.id.list_item_sector);
-                checkedTextView.setChecked(!checkedTextView.isChecked());
+                CheckBox checkBox = (CheckBox) view.findViewById(R.id.sector_check_box);
+                checkBox.setChecked(!checkBox.isChecked());
             }
         });
         return rootView;

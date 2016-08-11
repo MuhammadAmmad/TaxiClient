@@ -14,14 +14,21 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <CheckedTextView
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:id="@+id/sector_check_box"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:clickable="false"
+            android:focusableInTouchMode="false"/>
+
+        <TextView
             android:id="@+id/list_item_sector"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:paddingLeft="8dp"
             android:drawablePadding="8dp"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:drawableLeft="?android:attr/listChoiceIndicatorMultiple" />
+            android:textAppearance="?android:textAppearanceMedium" />
     </LinearLayout>
 
     <FrameLayout
