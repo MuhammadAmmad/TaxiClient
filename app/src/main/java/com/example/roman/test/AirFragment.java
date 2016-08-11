@@ -52,9 +52,7 @@ public class AirFragment extends Fragment {
     }
 
     public void removeOrder(int id) {
-        Iterator<Order> it = ordersArray.iterator();
-        while (it.hasNext()) {
-            Order order = it.next();
+        for (Order order : ordersArray) {
             if (order.id == id) {
                 mOrderAdapter.remove(order);
                 return;

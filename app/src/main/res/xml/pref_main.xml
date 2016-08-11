@@ -3,11 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
     <Preference
         android:key="set_sector"
-        android:title="Set Sector" />
+        android:title="Set Sector">
+        <intent
+            android:targetPackage="com.example.roman.test"
+            android:targetClass="com.example.roman.test.SectorActivity" />
+    </Preference>
 
     <Preference
         android:key="filter"
-        android:title="Filter" />
+        android:title="Filter">
+    </Preference>
 
     <Preference
         android:key="extended_filter"

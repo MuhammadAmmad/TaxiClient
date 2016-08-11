@@ -12,6 +12,7 @@ public class TaxiContract {
     public static final String LOGIN_INTENT = "login_intent";
     public static final String AIR_INTENT = "air_intent";
     public static final String MAIN_INTENT = "main_intent";
+    public static final String SECTORS_INTENT = "sectors_intent";
 
     public static final String METHOD = "M";
     public static final String ERROR = "E";
@@ -62,6 +63,8 @@ public class TaxiContract {
     public static final int ERROR_LOW_BALANCE = 15;
     public static final int ERROR_SHIFT_CLOSED = 100;
     public static final int ERROR_USER_BLOCKED = 106;
+
+    public static final String SECTORS = "SC";
 
     public static JSONObject getRQObject() throws JSONException {
         JSONObject json = new JSONObject();

@@ -184,7 +184,6 @@ public class LoginActivity extends AppCompatActivity {
 
             switch (error) {
                 case TaxiContract.ERROR_NONE:
-                    int method = intent.getIntExtra(TaxiContract.METHOD, TaxiContract.DEFAULT);
                     errorMessage = context.getString(R.string.login_error_success);
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     break;

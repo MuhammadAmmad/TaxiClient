@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             int error = intent.getIntExtra(TaxiContract.ERROR, TaxiContract.DEFAULT);
-            String errorMessage = "";
 
             switch (error) {
                 case TaxiContract.DEFAULT:
@@ -77,15 +76,7 @@ public class MainActivity extends AppCompatActivity
                             return;
                     }
                     break;
-
-                case TaxiContract.ERROR_LOGIN_INCORRECT:
-                    errorMessage = context.getString(R.string.login_failed);
-                    break;
             }
-
-            Toast.makeText(context,
-                    context.getString(R.string.login_failed),
-                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -268,11 +259,7 @@ public class MainActivity extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id == 25) {
-            int x = 25;
-        }
+//        int id = item.getItemId();
 
         return super.onOptionsItemSelected(item);
     }

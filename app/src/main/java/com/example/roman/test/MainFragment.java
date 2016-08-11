@@ -22,4 +22,6 @@ public class MainFragment extends PreferenceFragmentCompat {
         Preference preference = findPreference("balance");
         preference.setTitle(getActivity().getString(R.string.format_balance, balance));
     }
+
+
 }

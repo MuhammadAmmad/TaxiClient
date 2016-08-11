@@ -13,7 +13,7 @@ import com.example.roman.test.data.SectorsTable;
 
 import java.util.List;
 
-public class SectorFragment extends Fragment  {
+public class SectorFragment extends Fragment {
     private List<Sector> sectorArray;
     private SectorAdapter mSectorAdapter;
 
@@ -37,5 +37,11 @@ public class SectorFragment extends Fragment  {
         listView.setAdapter(mSectorAdapter);
 
         return rootView;
+    }
+
+    public void addOrders(List<Sector> sectors) {
+        for (Sector s : sectors) {
+            mSectorAdapter.add(s);
+        }
     }
 }

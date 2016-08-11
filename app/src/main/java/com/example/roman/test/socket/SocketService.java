@@ -1,8 +1,10 @@
 package com.example.roman.test.socket;
 
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
@@ -10,16 +12,20 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.roman.test.TaxiContract;
+import com.example.roman.test.data.Sector;
+import com.example.roman.test.data.SectorsTable;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketExtension;
 import com.neovisionaries.ws.client.WebSocketFactory;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class SocketService extends Service {
     private static final String LOG_TAG = SocketService.class.getSimpleName();
@@ -77,6 +83,12 @@ public class SocketService extends Service {
         sendMessage(json, TaxiContract.METHOD_LOGIN);
     }
 
+    public void getSettings() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put(TaxiContract.DG, id);
+        sendMessage(json, TaxiContract.METHOD_GET_SETTINGS);
+    }
+
     public void logout() throws JSONException {
         JSONObject json = new JSONObject();
         json.put(TaxiContract.DG, id);
@@ -113,9 +125,9 @@ public class SocketService extends Service {
                         case TaxiContract.METHOD_LOGIN:
                             id = object.getString(TaxiContract.RESPONSE);
                             getBalance();
+                            getSettings();
                             broadcastIntent.setAction(TaxiContract.LOGIN_INTENT);
                             break;
-
                         case TaxiContract.METHOD_GET_BALANCE:
                             String balance = object.getString(TaxiContract.RESPONSE);
                             getSharedPreferences(TaxiContract.MY_PREFS_NAME, Context.MODE_PRIVATE)
@@ -123,12 +135,32 @@ public class SocketService extends Service {
                                     .putString("balance", balance)
                                     .apply();
                             break;
-
                         case TaxiContract.METHOD_DELETE_ORDERS:
                             int deleteOrderId  = object.getInt(TaxiContract.RESPONSE);
                             broadcastIntent.setAction(TaxiContract.MAIN_INTENT);
                             broadcastIntent.putExtra(TaxiContract.RESPONSE, deleteOrderId);
                             break;
+                        case TaxiContract.METHOD_GET_SETTINGS:
+                            JSONObject response = object.getJSONObject(TaxiContract.RESPONSE);
+                            JSONArray sectorsArray = response.getJSONArray(TaxiContract.SECTORS);
+
+                            Cursor c = getContentResolver().query(SectorsTable.CONTENT_URI, null, null, null, null);
+                            if (c.getCount() == 0) {
+                                ArrayList<Sector> sectors = new ArrayList<>();
+                                for (int i = 0; i < sectorsArray.length(); i++) {
+                                    try {
+                                        sectors.add((Sector) sectorsArray.get(i));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                for (Sector s : sectors) {
+                                    getContentResolver().insert(SectorsTable.CONTENT_URI,
+                                            SectorsTable.getContentValues(s, false));
+                                }
+                            }
+                            return;
                     }
                     break;
                 case TaxiContract.ERROR_LOGIN_INCORRECT:

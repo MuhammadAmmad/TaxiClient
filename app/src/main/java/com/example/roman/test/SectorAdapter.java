@@ -23,6 +23,7 @@ public class SectorAdapter extends ArrayAdapter<Sector> {
         super(context, R.layout.list_item_sector, sectors);
     }
 
+    @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Get the data item for this position
