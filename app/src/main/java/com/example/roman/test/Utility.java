@@ -23,9 +23,9 @@ public class Utility {
     public static final String RESPONSE = "RS";
     public static final String DG = "DG";
 
-    public static final int METHOD_GET_PERF = 1;
+    public static final int METHOD_GET_PREF = 1;
     public static final int METHOD_GET_CURRENT_STATE = 5;
-    public static final int METHOD_GET_INFOORDER_BY_ID = 18;
+    public static final int METHOD_GET_INFO_ORDER_BY_ID = 18;
     public static final int METHOD_LOGIN = 102;
     public static final int METHOD_GET_SETTINGS = 103;
     public static final int METHOD_GET_SECTORS  = 104;
@@ -39,7 +39,7 @@ public class Utility {
     public static final int METHOD_NEW_ORDERS = 116;
     public static final int METHOD_DELETE_ORDERS = 117;
     public static final int METHOD_GET_ORDERS  = 118;
-    public static final int METHOD_GET_PREVORDERS = 119;
+    public static final int METHOD_GET_PREV_ORDERS = 119;
     public static final int METHOD_SET_ORDER = 120;
     public static final int METHOD_SET_STATUS = 121;
     public static final int METHOD_SET_LATE_DATA = 122;
@@ -51,7 +51,7 @@ public class Utility {
     public static final int METHOD_DENY_ORDER = 128;
     public static final int METHOD_SET_ORDER_NEW = 130;
     public static final int METHOD_GET_ORDER_COUNT = 131;
-    public static final int METHOD_GET_EXEVORDERS = 134;
+    public static final int METHOD_GET_EXEC_ORDERS = 134;
 
     public static final int ERROR_NONE = 0;
     public static final int ERROR_LOGIN_INCORRECT = 1;
@@ -89,7 +89,7 @@ public class Utility {
         return object.getInt(ERROR);
     }
 
-    public static boolean isNight(Activity activity) {
+    static boolean isNight(Activity activity) {
         boolean isNight = true;
         String state = activity.getSharedPreferences(MY_PREFS_NAME, Context.MODE_PRIVATE)
                 .getString(THEME, null);
@@ -101,7 +101,7 @@ public class Utility {
         return isNight;
     }
 
-    public static void setWholeTheme(Activity activity) {
+    static void setWholeTheme(Activity activity) {
         boolean isNight = Utility.isNight(activity);
 
         if (isNight) {

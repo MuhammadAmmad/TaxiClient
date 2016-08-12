@@ -7,18 +7,19 @@
     <string name="title_activity_login_settings">LoginSettings</string>
     <string name="title_activity_settings">Настройки</string>
 
-    <!-- Example General settings -->
+    <!--Login settings-->
+
+    <string name="pref_header_login">Настройки входа</string>
+    <string name="pref_header_network">Настройки сети</string>
+    <string name="pref_header_fonts">Шрифты</string>
     <string name="pref_header_general">Общие настройки</string>
 
     <string name="pref_login_label">Позывной</string>
-
     <string name="pref_password_label">Пароль</string>
-
     <string name="pref_server_label">Адрес сервера</string>
-
     <string name="pref_port_label">Порт</string>
 
-    <string name="pref_title_waiting_time">Время подачи по умолчанию</string>
+    <string name="pref_waiting_time_label">Время подачи по умолчанию</string>
     <string-array name="pref_waiting_time_titles">
         <item>3 минут</item>
         <item>5 минут</item>
@@ -27,15 +28,45 @@
         <item>12 минут</item>
     </string-array>
 
-    <string name="pref_title_languages">Язык</string>
+    <string name="pref_languages_label">Язык</string>
 
-    <string name="pref_title_order_of_orders">Порядок заказов</string>
+    <string name="pref_order_of_orders_label">Порядок заказов</string>
     <string-array name="pref_order_of_orders_titles">
         <item>В хронологическом порядке</item>
         <item>Свои сверху</item>
     </string-array>
 
-    <string name="pref_title_vibrate">Вибрация</string>
+    <string name="pref_show_pre_label">Предзаказы</string>
+    <string name="pref_show_pre_summary">Показывать заказы и презаказы вместе</string>
+
+    <string name="pref_del_orders_msg_label">Заказы + сообщения</string>
+    <string name="pref_del_orders_label">Заказы</string>
+    <string name="pref_del_msg_label">Сообщения</string>
+
+    <string name="pref_air_label">Эфир</string>
+    <string name="pref_sound_label">Звук</string>
+    <string name="pref_style_label">Оформление</string>
+    <string name="pref_vibration_label">Вибрация</string>
+    <string name="pref_clear_cache_label">Очистить кэш</string>
+    <string name="pref_updates_label">Обновления</string>
+    <string name="pref_gps_label">Передача Gps</string>
+    <string name="pref_sector_label">Встать в сектор</string>
+    <string name="pref_filter_label">Фильтр</string>
+    <string name="pref_ex_filter_label">Расширенный фильтр</string>
+    <string name="pref_rating_label">Рейтинг</string>
+    <string name="pref_status_label">Статус</string>
+
+    <string name="pref_text_size_label">Размер текста</string>
+    <string name="pref_btn_text_size_label">Размер текста кнопок</string>
+    <string name="pref_tab_text_size_label">Размер текста вкладок</string>
+    <string name="pref_bold_text_label">Жирный текст</string>
+    <string name="pref_rotation_label">Разрешить переворачивание экрана</string>
+
+    <string name="pref_update_remind_label">Не напоминать об обновлениях</string>
+    <string name="pref_update_label">Обновить</string>
+    <string name="pref_rollback_label">Откатить</string>
+
+    <string name="pref_cat_orders">Порядок заказов</string>
 
     <string name="title_activity_order">OrderActivity</string>
     <string name="title_activity_navigation_drawer">NavigationDrawer</string>

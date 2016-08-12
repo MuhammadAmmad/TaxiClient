@@ -1,4 +1,4 @@
-package com.example.roman.test;
+package com.example.roman.test.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,29 +6,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
 import android.widget.TextView;
 
-import com.example.roman.test.data.Sector;
+import com.example.roman.test.Order;
+import com.example.roman.test.R;
 
 import java.util.List;
 
-public class SectorAdapter extends ArrayAdapter<Sector> {
+public class OrderAdapter extends ArrayAdapter<Order> {
 
     private static class ViewHolder {
-        TextView name;
-        TextView drivers;
+        TextView from;
+        TextView to;
+        TextView price;
     }
 
-    public SectorAdapter(Context context, List<Sector> sectors) {
-        super(context, R.layout.list_item_sector, sectors);
+    public OrderAdapter(Context context, List<Order> orders) {
+        super(context, R.layout.list_item_air, orders);
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Get the data item for this position
-        Sector sector = getItem(position);
+        Order order = getItem(position);
 
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder;
@@ -38,10 +39,11 @@ public class SectorAdapter extends ArrayAdapter<Sector> {
             viewHolder = new ViewHolder();
 
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.list_item_sector, parent, false);
+            convertView = inflater.inflate(R.layout.list_item_air, parent, false);
 
-            viewHolder.name = (TextView) convertView.findViewById(R.id.list_item_sector);
-            viewHolder.drivers = (TextView) convertView.findViewById(R.id.list_item_drivers);
+            viewHolder.from = (TextView) convertView.findViewById(R.id.list_item_from);
+            viewHolder.to = (TextView) convertView.findViewById(R.id.list_item_to);
+            viewHolder.price = (TextView) convertView.findViewById(R.id.list_item_price);
 
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);
@@ -51,9 +53,11 @@ public class SectorAdapter extends ArrayAdapter<Sector> {
         }
 
         // Populate the data into the template view using the data object
-        viewHolder.name.setText(sector.name);
-        if (sector.numOfDrivers != 0) {
-            viewHolder.drivers.setText(String.valueOf(sector.numOfDrivers).toUpperCase());
+        if (order != null) {
+            viewHolder.to.setText(order.to);
+            viewHolder.from.setText(order.from);
+            viewHolder.price.setText(getContext()
+                    .getString(R.string.format_price, String.valueOf(order.price)));
         }
 
         // Return the completed view to render on screen

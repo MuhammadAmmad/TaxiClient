@@ -1,7 +1,6 @@
 package com.example.roman.test;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -14,17 +13,14 @@ import java.util.Calendar;
 
 public class CustomClock extends TextView {
 
-    Calendar mCalendar;
+    private Calendar mCalendar;
     private final static String m12 = "h:mm aa";
     private final static String m24 = "k:mm";
-    private FormatChangeObserver mFormatChangeObserver;
 
     private Runnable mTicker;
     private Handler mHandler;
-
     private boolean mTickerStopped = false;
-
-    String mFormat;
+    private String mFormat;
 
     public CustomClock(Context context) {
         super(context);
@@ -37,13 +33,11 @@ public class CustomClock extends TextView {
     }
 
     private void initClock(Context context) {
-        Resources r = context.getResources();
-
         if (mCalendar == null) {
             mCalendar = Calendar.getInstance();
         }
 
-        mFormatChangeObserver = new FormatChangeObserver();
+        FormatChangeObserver mFormatChangeObserver = new FormatChangeObserver();
         getContext().getContentResolver().registerContentObserver(
                 Settings.System.CONTENT_URI, true, mFormatChangeObserver);
 
@@ -95,7 +89,7 @@ public class CustomClock extends TextView {
     }
 
     private class FormatChangeObserver extends ContentObserver {
-        public FormatChangeObserver() {
+        FormatChangeObserver() {
             super(new Handler());
         }
 

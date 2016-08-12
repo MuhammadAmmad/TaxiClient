@@ -8,16 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.ListView;
 
+import com.example.roman.test.adapters.SectorAdapter;
 import com.example.roman.test.data.Sector;
 import com.example.roman.test.data.SectorsTable;
 
 import java.util.List;
 
 public class SectorFragment extends Fragment {
-    private List<Sector> sectorArray;
     private SectorAdapter mSectorAdapter;
 
     static SectorFragment newInstance() {
@@ -36,7 +35,7 @@ public class SectorFragment extends Fragment {
         Cursor cursor = getActivity().getContentResolver().query(
                 SectorsTable.CONTENT_URI, null, null, null, null);
 
-        sectorArray = SectorsTable.getRows(cursor, false);
+        List<Sector> sectorArray = SectorsTable.getRows(cursor, false);
         mSectorAdapter = new SectorAdapter(getContext(), sectorArray);
 
         ListView mListView = (ListView) rootView.findViewById(R.id.list_view_sectors);

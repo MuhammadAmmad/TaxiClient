@@ -4,9 +4,14 @@
     android:title="Clear Cache">
 
     <Preference
-        android:title="Orders + messages"/>
+        android:title="@string/pref_del_orders_msg_label"
+        android:key="@string/pref_del_orders_msg_key" />
+
     <Preference
-        android:title="Orders"/>
+        android:title="@string/pref_del_orders_label"
+        android:key="@string/pref_del_orders_key" />
+
     <Preference
-        android:title="Messages"/>
+        android:title="@string/pref_del_msg_label"
+        android:key="@string/pref_del_msg_key" />
 </PreferenceScreen>

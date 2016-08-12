@@ -144,7 +144,7 @@ public class SocketService extends Service {
                             JSONArray sectorsArray = response.getJSONArray(Utility.SECTORS);
 
                             Cursor c = getContentResolver().query(SectorsTable.CONTENT_URI, null, null, null, null);
-                            if (c.getCount() == 0) {
+                            if (c != null && c.getCount() == 0) {
                                 ArrayList<Sector> sectors = new ArrayList<>();
                                 for (int i = 0; i < sectorsArray.length(); i++) {
                                     try {
@@ -158,7 +158,9 @@ public class SocketService extends Service {
                                     getContentResolver().insert(SectorsTable.CONTENT_URI,
                                             SectorsTable.getContentValues(s, false));
                                 }
+                                c.close();
                             }
+
                             return;
                     }
                     break;

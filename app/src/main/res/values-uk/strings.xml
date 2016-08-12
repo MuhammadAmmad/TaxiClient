@@ -7,18 +7,19 @@
     <string name="title_activity_login_settings">LoginSettings</string>
     <string name="title_activity_settings">@string/action_settings</string>
 
-    <!-- Example General settings -->
-    <string name="pref_header_general">Загальні @string/action_settings</string>
+    <!-- Login settings -->
+
+    <string name="pref_header_login">Налаштування входу</string>
+    <string name="pref_header_general">Загальні налаштування</string>
+    <string name="pref_header_network">Налаштування мережі</string>
+    <string name="pref_header_fonts">Шрифти</string>
 
     <string name="pref_login_label">Позивний</string>
-
     <string name="pref_password_label">Пароль</string>
-
     <string name="pref_server_label">Адреса сервера</string>
-
     <string name="pref_port_label">Порт</string>
 
-    <string name="pref_title_waiting_time">Час подачі за замовчуванням</string>
+    <string name="pref_waiting_time_label">Час подачі за замовчуванням</string>
     <string-array name="pref_waiting_time_titles">
         <item>3 хвилин</item>
         <item>5 хвилин</item>
@@ -27,15 +28,45 @@
         <item>12 хвилин</item>
     </string-array>
 
-    <string name="pref_title_languages">Мова</string>
+    <string name="pref_languages_label">Мова</string>
 
-    <string name="pref_title_order_of_orders">Порядок замовлень</string>
+    <string name="pref_order_of_orders_label">Порядок замовлень</string>
     <string-array name="pref_order_of_orders_titles">
         <item>У хронологічному порядку</item>
         <item>Свої зверху</item>
     </string-array>
 
-    <string name="pref_title_vibrate">Вібрація</string>
+    <string name="pref_show_pre_label">Передзамовлення</string>
+    <string name="pref_show_pre_summary">Показувати попередні й звичайні замовлення разом</string>
+
+    <string name="pref_del_orders_msg_label">Замовлення + повідомлення</string>
+    <string name="pref_del_orders_label">Замовлення</string>
+    <string name="pref_del_msg_label">Повідомлення</string>
+
+    <string name="pref_air_label">Ефір</string>
+    <string name="pref_sound_label">Звук</string>
+    <string name="pref_style_label">Оформлення</string>
+    <string name="pref_vibration_label">Вібрація</string>
+    <string name="pref_clear_cache_label">Очистити кеш</string>
+    <string name="pref_updates_label">Оновлення</string>
+    <string name="pref_gps_label">Передача Gps</string>
+    <string name="pref_sector_label">Стати до сектору</string>
+    <string name="pref_filter_label">Фільтр</string>
+    <string name="pref_ex_filter_label">Розширений фільтр</string>
+    <string name="pref_rating_label">Рейтинг</string>
+    <string name="pref_status_label">Статус</string>
+
+    <string name="pref_text_size_label">Розмір тексту</string>
+    <string name="pref_btn_text_size_label">Розмір тексту кнопок</string>
+    <string name="pref_tab_text_size_label">Розмір тексту вкладок</string>
+    <string name="pref_bold_text_label">Жирний текст</string>
+    <string name="pref_rotation_label">Дозволити перевертання екрану</string>
+
+    <string name="pref_update_remind_label">Не нагадувати про оновлення</string>
+    <string name="pref_update_label">Оновити</string>
+    <string name="pref_rollback_label">Відкотити</string>
+
+    <string name="pref_cat_orders">Порядок замовлень</string>
 
     <string name="title_activity_order">OrderActivity</string>
     <string name="title_activity_navigation_drawer">NavigationDrawer</string>

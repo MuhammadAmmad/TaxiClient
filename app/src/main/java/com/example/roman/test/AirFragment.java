@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.example.roman.test.adapters.OrderAdapter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

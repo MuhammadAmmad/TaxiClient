@@ -12,6 +12,7 @@
 
     <string name="pref_header_login">Login settings</string>
     <string name="pref_header_network">Network settings</string>
+    <string name="pref_header_fonts">Fonts</string>
 
     <string name="pref_login_label">Callsign</string>
     <string name="pref_login_key" translatable="false">login</string>
@@ -20,6 +21,10 @@
     <string name="pref_password_label">Password</string>
     <string name="pref_password_key" translatable="false">password</string>
     <string name="pref_password_default" translatable="false">000</string>
+
+    <string name="pref_port_label">Port</string>
+    <string name="pref_port_key" translatable="false">port</string>
+    <string name="pref_port_default" translatable="false">5008</string>
 
     <string name="pref_server_label">Server address</string>
     <string name="pref_server_key" translatable="false">server</string>
@@ -44,13 +49,21 @@
     <string name="pref_theme_day" translatable="false">day</string>
     <string name="pref_theme_night" translatable="false">night</string>
 
-    <string name="pref_port_label">Port</string>
-    <string name="pref_port_key" translatable="false">address</string>
-    <string name="pref_port_default" translatable="false">5008</string>
-
     <!--General settings-->
+    <string name="pref_air_label">Air</string>
+    <string name="pref_air_key" translatable="false">air</string>
 
-    <string name="pref_title_waiting_time">Default waiting time</string>
+    <string name="pref_sound_label">Sound</string>
+    <string name="pref_sound_key" translatable="false">sound</string>
+
+    <string name="pref_vibration_label">Vibration</string>
+    <string name="pref_vibration_key" translatable="false">vibration</string>
+
+    <string name="pref_style_label">Style</string>
+    <string name="pref_style_key" translatable="false">style</string>
+
+    <string name="pref_waiting_time_label">Default waiting time</string>
+    <string name="pref_waiting_time_key">waiting time</string>
     <string-array name="pref_waiting_time_titles">
         <item>3 minutes</item>
         <item>5 minutes</item>
@@ -66,7 +79,8 @@
         <item>12</item>
     </string-array>
 
-    <string name="pref_title_languages">Languages</string>
+    <string name="pref_languages_label">Languages</string>
+    <string name="pref_languages_key">languages</string>
     <string-array name="pref_languages_titles" translatable="false">
         <item>Русский</item>
         <item>Українська</item>
@@ -80,7 +94,19 @@
         <item>12</item>
     </string-array>
 
-    <string name="pref_title_order_of_orders">Order of orders</string>
+    <string name="pref_clear_cache_label">Clear cache</string>
+    <string name="pref_clear_cache_key" translatable="false">cache</string>
+
+    <string name="pref_updates_label">Updates</string>
+    <string name="pref_updates_key" translatable="false">updates</string>
+
+    <string name="pref_gps_label">GPS Tracking</string>
+    <string name="pref_gps_key" translatable="false">tracking</string>
+
+    <string name="pref_order_of_orders_label">Order of orders</string>
+    <string name="pref_order_of_orders_key" translatable="false">orders</string>
+    <string name="pref_order_of_orders_default" translatable="false">-1</string>
+
     <string-array name="pref_order_of_orders_titles">
         <item>Chronologically</item>
         <item>Your at the top</item>
@@ -90,12 +116,68 @@
         <item>1</item>
     </string-array>
 
-    <string name="pref_title_vibrate">Vibrate</string>
+    <string name="pref_show_pre_label">Pre-orders</string>
+    <string name="pref_show_pre_key" translatable="false">pre-orders</string>
+    <string name="pref_show_pre_summary">Show orders and pre-orders together</string>
+
+    <string name="pref_del_orders_msg_label">Orders + messages</string>
+    <string name="pref_del_orders_msg_key" translatable="false">orders+messages</string>
+
+    <string name="pref_del_orders_label">Orders</string>
+    <string name="pref_del_orders_key" translatable="false">orders</string>
+
+    <string name="pref_del_msg_label">Messages</string>
+    <string name="pref_del_msg_key" translatable="false">messages</string>
+
+    <string name="pref_sector_label">Set sector</string>
+    <string name="pref_sector_key" translatable="false">sector</string>
+
+    <string name="pref_filter_label">Filter</string>
+    <string name="pref_filter_key" translatable="false">filter</string>
+
+    <string name="pref_ex_filter_label">Extended filter</string>
+    <string name="pref_ex_filter_key" translatable="false">ex_filter</string>
+
+    <string name="pref_balance_key" translatable="false">balance</string>
+
+    <string name="pref_rating_label">Rating</string>
+    <string name="pref_rating_key" translatable="false">rating</string>
+
+    <string name="pref_status_label">Status</string>
+    <string name="pref_status_key" translatable="false">status</string>
+
+    <string name="pref_text_size_label">Text size</string>
+    <string name="pref_text_size_key" translatable="false">text_size</string>
+
+    <string name="pref_btn_text_size_label">Button text size</string>
+    <string name="pref_btn_text_size_key" translatable="false">btn_text_size</string>
+
+    <string name="pref_tab_text_size_label">Tab text size</string>
+    <string name="pref_tab_text_size_key" translatable="false">tab_text_size</string>
+
+    <string name="pref_bold_text_label">Bold text</string>
+    <string name="pref_bold_text_key" translatable="false">bold_text</string>
+
+    <string name="pref_rotation_label">Allow screen rotation</string>
+    <string name="pref_rotation_key" translatable="false">rotation</string>
+
+    <string name="pref_update_remind_label">Do not remind about updates</string>
+    <string name="pref_update_remind_key" translatable="false">update_remind</string>
+
+    <string name="pref_update_label">Update</string>
+    <string name="pref_update_key" translatable="false">update</string>
+
+    <string name="pref_rollback_label">Rollback</string>
+    <string name="pref_rollback_key" translatable="false">rollback</string>
+
+    <string name="pref_cat_orders">Order of orders</string>
 
     <string name="title_activity_order">OrderActivity</string>
     <string name="title_activity_navigation_drawer">NavigationDrawer</string>
 
     <string name="login_failed">Invalid credentials, please try again</string>
+
+    <!--Drawer settings-->
 
     <string name="nav_drawer_close">Close</string>
     <string name="nav_drawer_open">Open</string>

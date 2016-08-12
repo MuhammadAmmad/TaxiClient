@@ -1,6 +1,6 @@
 package com.example.roman.test;
 
-class Order {
+public class Order {
     public final int id;
     public final String from;
     public final String to;

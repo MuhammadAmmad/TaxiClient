@@ -34,15 +34,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private static final int MAIN = 0;
     private static final int AIR = 1;
-    private static final int ORDER = 2;
 
-    MyPageAdapter mPageAdapter;
+    private MyPageAdapter mPageAdapter;
     private SocketServiceReceiver receiver;
     private SocketService mBoundService;
 
-    String balance;
     private boolean mBound = true;
 
     private final ServiceConnection mConnection = new ServiceConnection() {
@@ -104,7 +101,7 @@ public class MainActivity extends AppCompatActivity
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                SnackBar.make(view, "Replace with your own action", SnackBar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 //            }
 //        });
@@ -264,7 +261,7 @@ public class MainActivity extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
+        int id = item.getItemId();
 
         return super.onOptionsItemSelected(item);
     }
@@ -276,15 +273,15 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_main) {
 
-        } else if (id == R.id.nav_my_orders) {
-
-        } else if (id == R.id.nav_messages) {
-
-        } else if (id == R.id.nav_gps_map) {
-
-        } else if (id == R.id.nav_meter) {
-
-        } else if (id == R.id.nav_add_functions) {
+//        } else if (id == R.id.nav_my_orders) {
+//
+//        } else if (id == R.id.nav_messages) {
+//
+//        } else if (id == R.id.nav_gps_map) {
+//
+//        } else if (id == R.id.nav_meter) {
+//
+//        } else if (id == R.id.nav_add_functions) {
 
         } else if (id == R.id.nav_alarm) {
             showAlertDialog();

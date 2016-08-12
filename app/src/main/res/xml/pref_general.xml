@@ -2,8 +2,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
-        android:title="Air"
-        android:summary="some stuff">
+        android:title="@string/pref_air_label"
+        android:key="@string/pref_air_key">
         <intent
             android:targetPackage="com.example.roman.test"
             android:targetClass="com.example.roman.test.SettingsActivity"
@@ -11,18 +11,20 @@
     </Preference>
 
     <PreferenceScreen
-        android:title="Sound"
+        android:title="@string/pref_sound_label"
+        android:key="@string/pref_sound_key"
         android:enabled="false">
     </PreferenceScreen>
 
     <CheckBoxPreference
         android:defaultValue="true"
-        android:key="example_switch"
-        android:title="Vibration" />
+        android:title="@string/pref_vibration_label"
+        android:key="@string/pref_vibration_key"
+        android:widgetLayout="@layout/switch_compat" />
 
     <Preference
-        android:title="Style"
-        android:summary="some stuff">
+        android:title="@string/pref_style_label"
+        android:key="@string/pref_style_key">
         <intent
             android:targetPackage="com.example.roman.test"
             android:targetClass="com.example.roman.test.SettingsActivity"
@@ -33,19 +35,19 @@
         android:defaultValue="-1"
         android:entries="@array/pref_waiting_time_titles"
         android:entryValues="@array/pref_waiting_time_values"
-        android:key="waiting_time_list"
-        android:title="@string/pref_title_waiting_time" />
+        android:key="@string/pref_waiting_time_key"
+        android:title="@string/pref_waiting_time_label" />
 
     <ListPreference
         android:defaultValue="-1"
         android:entries="@array/pref_languages_titles"
         android:entryValues="@array/pref_languages_values"
-        android:key="languages_list"
-        android:title="@string/pref_title_languages" />
+        android:key="@string/pref_languages_key"
+        android:title="@string/pref_languages_label" />
 
     <Preference
-        android:title="Clear memory"
-        android:summary="some stuff">
+        android:title="@string/pref_clear_cache_label"
+        android:key="@string/pref_clear_cache_key">
         <intent
             android:targetPackage="com.example.roman.test"
             android:targetClass="com.example.roman.test.SettingsActivity"
@@ -53,8 +55,8 @@
     </Preference>
 
     <Preference
-        android:title="Updates"
-        android:summary="some stuff">
+        android:title="@string/pref_updates_label"
+        android:key="@string/pref_updates_key">
         <intent
             android:targetPackage="com.example.roman.test"
             android:targetClass="com.example.roman.test.SettingsActivity"
@@ -63,6 +65,7 @@
 
     <CheckBoxPreference
         android:defaultValue="true"
-        android:key="example_switch"
-        android:title="GPS Tracking" />
+        android:key="@string/pref_gps_key"
+        android:title="@string/pref_gps_label"
+        android:widgetLayout="@layout/switch_compat" />
 </PreferenceScreen>

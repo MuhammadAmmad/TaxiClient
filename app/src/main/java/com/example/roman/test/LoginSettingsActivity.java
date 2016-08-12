@@ -69,6 +69,7 @@ public class LoginSettingsActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View v = super.onCreateView(inflater, container, savedInstanceState);
+            assert v != null;
             v.setPadding(0, 32, 0, 32);
 
             return v;

@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class OrderActivity extends AppCompatActivity {
 
@@ -66,9 +67,9 @@ public class OrderActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_detail_order, container, false);
 
             if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-//                String forecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);
-//                ((TextView) rootView.findViewById(R.id.order_text))
-//                        .setText(forecastStr);
+                String forecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);
+                ((TextView) rootView.findViewById(android.R.id.content))
+                        .setText(forecastStr);
             }
             return rootView;
         }

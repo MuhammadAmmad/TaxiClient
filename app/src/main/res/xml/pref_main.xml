@@ -2,30 +2,30 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android" >
     <Preference
-        android:key="set_sector"
-        android:title="Set Sector">
+        android:key="@string/pref_sector_key"
+        android:title="@string/pref_sector_label">
         <intent
             android:targetPackage="com.example.roman.test"
             android:targetClass="com.example.roman.test.SectorActivity" />
     </Preference>
 
     <Preference
-        android:key="filter"
-        android:title="Filter">
+        android:key="@string/pref_filter_key"
+        android:title="@string/pref_filter_label">
     </Preference>
 
     <Preference
-        android:key="extended_filter"
-        android:title="Extended Filter" />
+        android:key="@string/pref_ex_filter_key"
+        android:title="@string/pref_ex_filter_label" />
 
     <Preference
-        android:key="balance"
-        android:title="Balance: 60.0 грн." />
+        android:key="@string/pref_balance_key"/>
 
     <Preference
-        android:key="rating"
-        android:title="Rating: - " />
+        android:key="@string/pref_rating_key"
+        android:title="@string/pref_rating_label" />
 
     <CheckBoxPreference
-        android:title="Status"/>
+        android:title="@string/pref_status_label"
+        android:key="@string/pref_status_key"/>
 </PreferenceScreen>

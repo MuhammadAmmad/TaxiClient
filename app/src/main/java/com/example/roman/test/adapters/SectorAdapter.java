@@ -1,4 +1,4 @@
-package com.example.roman.test;
+package com.example.roman.test.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,25 +8,27 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.example.roman.test.R;
+import com.example.roman.test.data.Sector;
+
 import java.util.List;
 
-public class OrderAdapter extends ArrayAdapter<Order> {
+public class SectorAdapter extends ArrayAdapter<Sector> {
 
     private static class ViewHolder {
-        TextView from;
-        TextView to;
-        TextView price;
+        TextView name;
+        TextView drivers;
     }
 
-    public OrderAdapter(Context context, List<Order> orders) {
-        super(context, R.layout.list_item_air, orders);
+    public SectorAdapter(Context context, List<Sector> sectors) {
+        super(context, R.layout.list_item_sector, sectors);
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Get the data item for this position
-        Order order = getItem(position);
+        Sector sector = getItem(position);
 
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder;
@@ -36,11 +38,10 @@ public class OrderAdapter extends ArrayAdapter<Order> {
             viewHolder = new ViewHolder();
 
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.list_item_air, parent, false);
+            convertView = inflater.inflate(R.layout.list_item_sector, parent, false);
 
-            viewHolder.from = (TextView) convertView.findViewById(R.id.list_item_from);
-            viewHolder.to = (TextView) convertView.findViewById(R.id.list_item_to);
-            viewHolder.price = (TextView) convertView.findViewById(R.id.list_item_price);
+            viewHolder.name = (TextView) convertView.findViewById(R.id.list_item_sector);
+            viewHolder.drivers = (TextView) convertView.findViewById(R.id.list_item_drivers);
 
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);
@@ -50,10 +51,12 @@ public class OrderAdapter extends ArrayAdapter<Order> {
         }
 
         // Populate the data into the template view using the data object
-        viewHolder.to.setText(order.to);
-        viewHolder.from.setText(order.from);
-        viewHolder.price.setText(getContext()
-                .getString(R.string.format_price, String.valueOf(order.price)));
+        if (sector != null) {
+            viewHolder.name.setText(sector.name);
+            if (sector.numOfDrivers != 0) {
+                viewHolder.drivers.setText(String.valueOf(sector.numOfDrivers).toUpperCase());
+            }
+        }
 
         // Return the completed view to render on screen
         return convertView;

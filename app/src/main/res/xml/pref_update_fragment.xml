@@ -4,12 +4,16 @@
     android:title="Updates">
 
     <CheckBoxPreference
+        android:title="@string/pref_update_remind_label"
+        android:key="@string/pref_update_remind_key"
         android:defaultValue="false"
-        android:key="example_switch"
-        android:title="Do not remind about updates" />
+        android:widgetLayout="@layout/switch_compat" />
 
     <Preference
-        android:title="Update"/>
+        android:title="@string/pref_update_label"
+        android:key="@string/pref_update_key" />
+
     <Preference
-        android:title="Rollback"/>
+        android:title="@string/pref_rollback_label"
+        android:key="@string/pref_rollback_key" />
 </PreferenceScreen>

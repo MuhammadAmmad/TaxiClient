@@ -19,19 +19,19 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Network Settings">
+        android:title="@string/pref_header_network">
 
         <EditTextPreference
             android:key="@string/pref_port_key"
+            android:title="@string/pref_port_label"
             android:inputType="number"
-            android:defaultValue="@string/pref_port_default"
-            android:title="@string/pref_port_label">
+            android:defaultValue="@string/pref_port_default">
         </EditTextPreference>
 
         <ListPreference
             android:key="@string/pref_server_key"
-            android:defaultValue="85.90.213.212"
             android:title="@string/pref_server_label"
+            android:defaultValue="85.90.213.212"
             android:entries="@array/pref_server_titles"
             android:entryValues="@array/pref_server_values">
         </ListPreference>
