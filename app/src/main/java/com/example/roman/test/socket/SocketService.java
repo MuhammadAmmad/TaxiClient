@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.roman.test.Utility;
+import com.example.roman.test.data.Message;
+import com.example.roman.test.data.MessagesTable;
 import com.example.roman.test.data.Sector;
 import com.example.roman.test.data.SectorsTable;
 import com.neovisionaries.ws.client.WebSocket;
@@ -127,6 +129,7 @@ public class SocketService extends Service {
                             getSettings();
                             broadcastIntent.setAction(Utility.LOGIN_INTENT);
                             break;
+
                         case Utility.METHOD_GET_BALANCE:
                             String balance = object.getString(Utility.RESPONSE);
                             getSharedPreferences(Utility.MY_PREFS_NAME, Context.MODE_PRIVATE)
@@ -134,11 +137,13 @@ public class SocketService extends Service {
                                     .putString("balance", balance)
                                     .apply();
                             break;
+
                         case Utility.METHOD_DELETE_ORDERS:
                             int deleteOrderId  = object.getInt(Utility.RESPONSE);
                             broadcastIntent.setAction(Utility.MAIN_INTENT);
                             broadcastIntent.putExtra(Utility.RESPONSE, deleteOrderId);
                             break;
+
                         case Utility.METHOD_GET_SETTINGS:
                             JSONObject response = object.getJSONObject(Utility.RESPONSE);
                             JSONArray sectorsArray = response.getJSONArray(Utility.SECTORS);
@@ -161,7 +166,20 @@ public class SocketService extends Service {
                                 c.close();
                             }
 
+                        case Utility.METHOD_NEW_ORDERS:
+                            String order = object.getString(Utility.RESPONSE);
+                            broadcastIntent.setAction(Utility.MAIN_INTENT);
+                            broadcastIntent.putExtra(Utility.RESPONSE, order);
                             return;
+
+                        case Utility.METHOD_NEW_MESSAGE:
+                            String msg = object.getJSONObject(Utility.RESPONSE).toString();
+                            broadcastIntent.setAction(Utility.MAIN_INTENT);
+                            broadcastIntent.putExtra(Utility.RESPONSE, msg);
+                            getContentResolver().insert(SectorsTable.CONTENT_URI,
+                                    MessagesTable.getContentValues(
+                                            new Message(new JSONObject(msg)), false));
+                            break;
                     }
                     break;
                 case Utility.ERROR_LOGIN_INCORRECT:
@@ -178,7 +196,6 @@ public class SocketService extends Service {
     }
 
     private class SendText extends AsyncTask<String, Void, Void> {
-
         @Override
         protected Void doInBackground(String... strings) {
             webSocket.sendText(strings[0]);
@@ -187,7 +204,6 @@ public class SocketService extends Service {
     }
 
     private class ConnectToServer extends AsyncTask<Void, Void, Void> {
-
         @Override
         protected Void doInBackground(Void... voids) {
             try {

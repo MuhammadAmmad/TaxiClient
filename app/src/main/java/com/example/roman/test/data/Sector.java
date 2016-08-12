@@ -34,4 +34,16 @@ public class Sector {
         this.name = sector.getString(name);
         this.numOfDrivers = sector.getInt(numOfDrivers);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getNumOfDrivers() {
+        return numOfDrivers;
+    }
 }

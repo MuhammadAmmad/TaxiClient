@@ -3,6 +3,7 @@ package com.example.roman.test;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -18,6 +19,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -25,9 +27,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.roman.test.data.Message;
 import com.example.roman.test.socket.SocketService;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,11 +70,29 @@ public class MainActivity extends AppCompatActivity
                     int method = intent.getIntExtra(Utility.METHOD, Utility.DEFAULT);
                     switch (method) {
                         case Utility.METHOD_DELETE_ORDERS:
-                            int deleteOrderId = intent.getIntExtra(
-                                    Utility.RESPONSE, Utility.DEFAULT);
+                            int delOrderId = intent.getIntExtra(Utility.RESPONSE, Utility.DEFAULT);
                             ((AirFragment) mPageAdapter.getRegisteredFragment(AIR))
-                                    .removeOrder(deleteOrderId);
-                            return;
+                                    .removeOrder(delOrderId);
+                            break;
+                        case Utility.METHOD_NEW_ORDERS:
+                            Order order = null;
+                            try {
+                                order = new Order(new JSONObject(
+                                        intent.getStringExtra(Utility.RESPONSE)));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            ((AirFragment) mPageAdapter.getRegisteredFragment(AIR))
+                                    .addOrder(order);
+                            break;
+                        case Utility.METHOD_NEW_MESSAGE:
+                            Message msg = null;
+                            try {
+                                msg = new Message(new JSONObject(intent.getStringExtra(Utility.RESPONSE)));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            showMessage(msg);
                     }
                     break;
             }
@@ -93,19 +115,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-//        setContentView(R.layout.activity_navigation_drawer);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                SnackBar.make(view, "Replace with your own action", SnackBar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
         DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this,
@@ -115,12 +124,14 @@ public class MainActivity extends AppCompatActivity
                 R.string.nav_drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state. */
+            @Override
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 getSupportActionBar().setTitle("slow");
             }
 
             /** Called when a drawer has settled in a completely open state. */
+            @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 getSupportActionBar().setTitle("fast");
@@ -284,7 +295,7 @@ public class MainActivity extends AppCompatActivity
 //        } else if (id == R.id.nav_add_functions) {
 
         } else if (id == R.id.nav_alarm) {
-            showAlertDialog();
+            showAlert();
         } else if (id == R.id.nav_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.nav_exit) {
@@ -301,8 +312,23 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void showAlertDialog() {
+    private void showAlert() {
+
         DialogFragment fragment = new AlertDialogFragment();
         fragment.show(getSupportFragmentManager(), "AlertDialogFragment");
+    }
+
+    private void showMessage(Message message) {
+        if (message != null) {
+            String text = message.message;
+            AlertDialog.Builder helpBuilder = Utility.getDialog(this, "New message", text);
+            helpBuilder.setPositiveButton("Positive",
+                    new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                        }
+                    }).create().show();
+        }
     }
 }

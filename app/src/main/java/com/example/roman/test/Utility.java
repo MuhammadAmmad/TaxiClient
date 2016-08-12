@@ -1,6 +1,7 @@
 package com.example.roman.test;
 
 import android.app.Activity;
+import android.support.v7.app.AlertDialog;
 import android.content.Context;
 
 import org.json.JSONException;
@@ -31,7 +32,7 @@ public class Utility {
     public static final int METHOD_GET_SECTORS  = 104;
     public static final int METHOD_GET_BALANCE = 105;
     public static final int METHOD_SET_ALERT = 106;
-    public static final int METHOD_GER_CURRENT_SECTOR = 107;
+    public static final int METHOD_GET_CURRENT_SECTOR = 107;
     public static final int METHOD_SET_TO_SECTOR = 108;
     public static final int METHOD_LOGOUT = 113;
     public static final int METHOD_SET_NEW_STATUS = 114;
@@ -109,5 +110,12 @@ public class Utility {
         } else {
             activity.setTheme(R.style.AppThemeDay);
         }
+    }
+
+    static AlertDialog.Builder getDialog(Context context, String title, String message) {
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(context);
+        helpBuilder.setTitle(title);
+        helpBuilder.setMessage(message);
+        return helpBuilder;
     }
 }
