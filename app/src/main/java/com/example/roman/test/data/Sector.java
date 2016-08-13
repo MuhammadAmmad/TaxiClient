@@ -1,7 +1,6 @@
 package com.example.roman.test.data;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Date;
 
 import ckm.simple.sql_provider.annotation.SimpleSQLColumn;
 import ckm.simple.sql_provider.annotation.SimpleSQLTable;
@@ -10,40 +9,27 @@ import ckm.simple.sql_provider.annotation.SimpleSQLTable;
         table = "sectors",
         provider = "SectorProvider")
 public class Sector {
-    @SimpleSQLColumn(value = "col_id", primary = true)
-    public int id;
+    public static final String ID = "I";
+    public static final String NAME = "N";
+    public static final String DRIVERS = "P";
 
+//    @SerializedName(ID)
+    @SimpleSQLColumn(value = "col_id", primary = true)
+    public String id;
+
+//    @SerializedName(NAME)
     @SimpleSQLColumn("name")
     public String name;
 
+//    @SerializedName(DRIVERS)
     @SimpleSQLColumn("drivers")
-    public int numOfDrivers;
+    public int drivers;
 
-    public Sector() {
-        id = 0;
-        name = "name";
-        numOfDrivers = 4;
-    }
+    public Sector() { }
 
-    public Sector(JSONObject sector) throws JSONException {
-        final String id = "I";
-        final String name = "N";
-        final String numOfDrivers = "P";
-
-        this.id = sector.getInt(id);
-        this.name = sector.getString(name);
-        this.numOfDrivers = sector.getInt(numOfDrivers);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getNumOfDrivers() {
-        return numOfDrivers;
+    public Sector(String id, String name, int drivers){
+        this.id = id;
+        this.name = name;
+        this.drivers = drivers;
     }
 }

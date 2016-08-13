@@ -53,8 +53,8 @@ public class SectorAdapter extends ArrayAdapter<Sector> {
         // Populate the data into the template view using the data object
         if (sector != null) {
             viewHolder.name.setText(sector.name);
-            if (sector.numOfDrivers != 0) {
-                viewHolder.drivers.setText(String.valueOf(sector.numOfDrivers).toUpperCase());
+            if (sector.drivers != 0) {
+                viewHolder.drivers.setText(String.valueOf(sector.drivers).toUpperCase());
             }
         }
 

@@ -1,5 +1,7 @@
 package com.example.roman.test.data;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,12 +16,15 @@ public class Message {
     public static final String DATE = "D";
     public static final String MESSAGE = "MS";
 
+    @SerializedName(ID)
     @SimpleSQLColumn(value = "col_id", primary = true)
     public int id;
 
+    @SerializedName(MESSAGE)
     @SimpleSQLColumn("message")
     public String message;
 
+    @SerializedName(DATE)
     @SimpleSQLColumn("date")
     public String date;
 

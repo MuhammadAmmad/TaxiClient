@@ -16,11 +16,11 @@
 
     <string name="pref_login_label">Callsign</string>
     <string name="pref_login_key" translatable="false">login</string>
-    <string name="pref_login_default" translatable="false">000</string>
+    <string name="pref_login_default" translatable="false">712</string>
 
     <string name="pref_password_label">Password</string>
     <string name="pref_password_key" translatable="false">password</string>
-    <string name="pref_password_default" translatable="false">000</string>
+    <string name="pref_password_default" translatable="false">712</string>
 
     <string name="pref_port_label">Port</string>
     <string name="pref_port_key" translatable="false">port</string>

@@ -14,7 +14,9 @@ import com.example.roman.test.Utility;
 import com.example.roman.test.data.Message;
 import com.example.roman.test.data.MessagesTable;
 import com.example.roman.test.data.Sector;
+import com.example.roman.test.data.SectorResponse;
 import com.example.roman.test.data.SectorsTable;
+import com.google.gson.Gson;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
@@ -26,7 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 public class SocketService extends Service {
     private static final String LOG_TAG = SocketService.class.getSimpleName();
@@ -150,19 +152,23 @@ public class SocketService extends Service {
 
                             Cursor c = getContentResolver().query(SectorsTable.CONTENT_URI, null, null, null, null);
                             if (c != null && c.getCount() == 0) {
-                                ArrayList<Sector> sectors = new ArrayList<>();
-                                for (int i = 0; i < sectorsArray.length(); i++) {
-                                    try {
-                                        sectors.add(new Sector(sectorsArray.getJSONObject(i)));
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
+                                List<Sector> scts;
 
-                                for (Sector s : sectors) {
-                                    getContentResolver().insert(SectorsTable.CONTENT_URI,
-                                            SectorsTable.getContentValues(s, false));
-                                }
+                                Gson gson = new Gson();
+                                Sector[] sectors = gson.fromJson(sectorsArray.toString(), Sector[].class);
+
+//                                for (int i = 0; i < sectorsArray.length(); i++) {
+//                                    try {
+//                                        sectors.add(gson.fromJson(sectorsArray.getJSONObject(i)));
+//                                    } catch (JSONException e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                }
+
+//                                for (Sector s : sectors) {
+//                                    getContentResolver().insert(SectorsTable.CONTENT_URI,
+//                                            SectorsTable.getContentValues(s, false));
+//                                }
                                 c.close();
                             }
 
