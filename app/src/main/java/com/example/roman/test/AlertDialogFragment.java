@@ -13,15 +13,15 @@ public class AlertDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the builder for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.nav_drawer_alert_message)
+        builder.setMessage(R.string.alert_message)
                 .setTitle(R.string.nav_drawer_alert)
-                .setPositiveButton(R.string.nav_drawer_alert_fire, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.alert_fire, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
                 })
-                .setNegativeButton(R.string.nav_drawer_alert_cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.alert_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();

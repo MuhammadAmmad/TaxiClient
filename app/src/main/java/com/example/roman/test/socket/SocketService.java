@@ -14,7 +14,6 @@ import com.example.roman.test.Utility;
 import com.example.roman.test.data.Message;
 import com.example.roman.test.data.MessagesTable;
 import com.example.roman.test.data.Sector;
-import com.example.roman.test.data.SectorResponse;
 import com.example.roman.test.data.SectorsTable;
 import com.google.gson.Gson;
 import com.neovisionaries.ws.client.WebSocket;
@@ -28,7 +27,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
 
 public class SocketService extends Service {
     private static final String LOG_TAG = SocketService.class.getSimpleName();
@@ -38,7 +36,10 @@ public class SocketService extends Service {
     private WebSocket webSocket;
     private String id;
 
+    Gson gson = new Gson();
+
     private final IBinder myBinder = new LocalBinder();
+
 
     @Nullable
     @Override
@@ -68,13 +69,6 @@ public class SocketService extends Service {
                 .connect();
     }
 
-    public void sendMessage(final JSONObject object, final int method) throws JSONException {
-        final JSONObject json = Utility.getRQObject();
-        json.put(Utility.REQUEST, object);
-        json.put(Utility.METHOD, method);
-        (new SendText()).execute(json.toString());
-    }
-
     public void login(String username, String password) throws JSONException {
         final String LOGIN = "L";
         final String PASSWORD = "P";
@@ -86,28 +80,12 @@ public class SocketService extends Service {
         sendMessage(json, Utility.METHOD_LOGIN);
     }
 
-    public void getSettings() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put(Utility.DG, id);
-        sendMessage(json, Utility.METHOD_GET_SETTINGS);
-    }
-
     public void logout() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put(Utility.DG, id);
-        sendMessage(json, Utility.METHOD_LOGOUT);
+        sendRequest(Utility.METHOD_LOGOUT);
     }
 
     public void alert() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put(Utility.DG, id);
-        sendMessage(json, Utility.METHOD_SET_ALERT);
-    }
-
-    public void getBalance() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put(Utility.DG, id);
-        sendMessage(json, Utility.METHOD_GET_BALANCE);
+        sendRequest(Utility.METHOD_SET_ALERT);
     }
 
     private class SocketListener extends WebSocketAdapter {
@@ -140,51 +118,40 @@ public class SocketService extends Service {
                                     .apply();
                             break;
 
-                        case Utility.METHOD_DELETE_ORDERS:
+                        case Utility.METHOD_DELETE_ORDER:
                             int deleteOrderId  = object.getInt(Utility.RESPONSE);
                             broadcastIntent.setAction(Utility.MAIN_INTENT);
                             broadcastIntent.putExtra(Utility.RESPONSE, deleteOrderId);
                             break;
 
                         case Utility.METHOD_GET_SETTINGS:
-                            JSONObject response = object.getJSONObject(Utility.RESPONSE);
-                            JSONArray sectorsArray = response.getJSONArray(Utility.SECTORS);
+                            JSONArray sectorsArray = object.getJSONObject(Utility.RESPONSE)
+                                    .getJSONArray(Utility.SECTORS);
 
                             Cursor c = getContentResolver().query(SectorsTable.CONTENT_URI, null, null, null, null);
                             if (c != null && c.getCount() == 0) {
-                                List<Sector> scts;
-
-                                Gson gson = new Gson();
                                 Sector[] sectors = gson.fromJson(sectorsArray.toString(), Sector[].class);
 
-//                                for (int i = 0; i < sectorsArray.length(); i++) {
-//                                    try {
-//                                        sectors.add(gson.fromJson(sectorsArray.getJSONObject(i)));
-//                                    } catch (JSONException e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                }
-
-//                                for (Sector s : sectors) {
-//                                    getContentResolver().insert(SectorsTable.CONTENT_URI,
-//                                            SectorsTable.getContentValues(s, false));
-//                                }
+                                for (Sector s : sectors) {
+                                    getContentResolver().insert(SectorsTable.CONTENT_URI,
+                                            SectorsTable.getContentValues(s, false));
+                                }
                                 c.close();
                             }
 
-                        case Utility.METHOD_NEW_ORDERS:
+                        case Utility.METHOD_NEW_ORDER:
                             String order = object.getString(Utility.RESPONSE);
                             broadcastIntent.setAction(Utility.MAIN_INTENT);
                             broadcastIntent.putExtra(Utility.RESPONSE, order);
-                            return;
+                            break;
 
                         case Utility.METHOD_NEW_MESSAGE:
                             String msg = object.getJSONObject(Utility.RESPONSE).toString();
                             broadcastIntent.setAction(Utility.MAIN_INTENT);
                             broadcastIntent.putExtra(Utility.RESPONSE, msg);
+
                             getContentResolver().insert(SectorsTable.CONTENT_URI,
-                                    MessagesTable.getContentValues(
-                                            new Message(new JSONObject(msg)), false));
+                                    MessagesTable.getContentValues(gson.fromJson(msg, Message.class), false));
                             break;
                     }
                     break;
@@ -196,7 +163,6 @@ public class SocketService extends Service {
                     broadcastIntent.setAction(Utility.LOGIN_INTENT);
                     break;
             }
-
             sendBroadcast(broadcastIntent);
         }
     }
@@ -219,5 +185,26 @@ public class SocketService extends Service {
             }
             return null;
         }
+    }
+
+    private void sendRequest(int method) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put(Utility.DG, id);
+        sendMessage(json, method);
+    }
+
+    private void getBalance() throws JSONException {
+        sendRequest(Utility.METHOD_GET_BALANCE);
+    }
+
+    private void getSettings() throws JSONException {
+        sendRequest(Utility.METHOD_GET_SETTINGS);
+    }
+
+    public void sendMessage(final JSONObject object, final int method) throws JSONException {
+        final JSONObject json = Utility.getRQObject();
+        json.put(Utility.REQUEST, object);
+        json.put(Utility.METHOD, method);
+        (new SendText()).execute(json.toString());
     }
 }

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.roman.test.adapters.OrderAdapter;
+import com.example.roman.test.data.Order;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +27,10 @@ public class AirFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_air, container, false);
+
+        MainActivity activity = (MainActivity) getActivity();
 
 //        ordersArray = new ArrayList<>(Arrays.asList(new Order[]{
 //                new Order("вул. Головка, 8", "вул. Карла Лібкнехта, 10", 22, 1),
@@ -50,13 +51,19 @@ public class AirFragment extends Fragment {
         return rootView;
     }
 
+    public void addOrders(Order[] orders) {
+        for (Order order : orders) {
+            addOrder(order);
+        }
+    }
+
     public void addOrder(Order order) {
         mOrderAdapter.add(order);
     }
 
-    public void removeOrder(int id) {
+    public void removeOrder(String id) {
         for (Order order : ordersArray) {
-            if (order.id == id) {
+            if (order.getOrderId().equals(id)) {
                 mOrderAdapter.remove(order);
                 return;
             }

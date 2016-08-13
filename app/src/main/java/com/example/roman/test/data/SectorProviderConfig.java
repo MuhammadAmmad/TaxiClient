@@ -6,7 +6,7 @@ import ckm.simple.sql_provider.annotation.SimpleSQLConfig;
 @SimpleSQLConfig(
         name = "SectorProvider",
         authority = "just.some.sector_provider.authority",
-        database = "taxi.db",
+        database = "two.db",
         version = 1
 )
 

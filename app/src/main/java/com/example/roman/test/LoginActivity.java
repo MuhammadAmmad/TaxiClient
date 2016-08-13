@@ -18,9 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.roman.test.data.Sector;
 import com.example.roman.test.socket.SocketService;
-import com.google.gson.Gson;
 
 import org.json.JSONException;
 

@@ -37,8 +37,8 @@ public class Utility {
     public static final int METHOD_LOGOUT = 113;
     public static final int METHOD_SET_NEW_STATUS = 114;
     public static final int METHOD_GET_NEW_STATUS = 115;
-    public static final int METHOD_NEW_ORDERS = 116;
-    public static final int METHOD_DELETE_ORDERS = 117;
+    public static final int METHOD_NEW_ORDER = 116;
+    public static final int METHOD_DELETE_ORDER = 117;
     public static final int METHOD_GET_ORDERS  = 118;
     public static final int METHOD_GET_PREV_ORDERS = 119;
     public static final int METHOD_SET_ORDER = 120;

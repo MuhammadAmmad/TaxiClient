@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -25,16 +24,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.example.roman.test.data.Message;
+import com.example.roman.test.data.Order;
 import com.example.roman.test.socket.SocketService;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -43,68 +44,22 @@ public class MainActivity extends AppCompatActivity
     private MyPageAdapter mPageAdapter;
     private SocketServiceReceiver receiver;
     private SocketService mBoundService;
+    private AirFragment mAirFragment;
+
+    @Inject
+    Gson gson;
 
     private boolean mBound = true;
 
-    private final ServiceConnection mConnection = new ServiceConnection() {
-        //EDITED PART
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mBoundService = ((SocketService.LocalBinder)service).getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mBoundService = null;
-        }
-    };
-
-    private class SocketServiceReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int error = intent.getIntExtra(Utility.ERROR, Utility.DEFAULT);
-
-            switch (error) {
-                case Utility.DEFAULT:
-                    int method = intent.getIntExtra(Utility.METHOD, Utility.DEFAULT);
-                    switch (method) {
-                        case Utility.METHOD_DELETE_ORDERS:
-                            int delOrderId = intent.getIntExtra(Utility.RESPONSE, Utility.DEFAULT);
-                            ((AirFragment) mPageAdapter.getRegisteredFragment(AIR))
-                                    .removeOrder(delOrderId);
-                            break;
-                        case Utility.METHOD_NEW_ORDERS:
-                            Order order = null;
-                            try {
-                                order = new Order(new JSONObject(
-                                        intent.getStringExtra(Utility.RESPONSE)));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            ((AirFragment) mPageAdapter.getRegisteredFragment(AIR))
-                                    .addOrder(order);
-                            break;
-                        case Utility.METHOD_NEW_MESSAGE:
-                            Message msg = null;
-                            try {
-                                msg = new Message(new JSONObject(intent.getStringExtra(Utility.RESPONSE)));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            showMessage(msg);
-                    }
-                    break;
-            }
-        }
-    }
-
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             Utility.setWholeTheme(this);
         }
 
         super.onCreate(savedInstanceState);
+
+        ((TaxiApp) getApplication()).getNetComponent().inject(this);
 
         Intent intent = new Intent(this, SocketService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -122,20 +77,6 @@ public class MainActivity extends AppCompatActivity
                 null,
                 R.string.nav_drawer_open,
                 R.string.nav_drawer_close) {
-
-            /** Called when a drawer has settled in a completely closed state. */
-            @Override
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle("slow");
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("fast");
-            }
         };
 
         mDrawerLayout.addDrawerListener(mDrawerToggle);
@@ -146,10 +87,12 @@ public class MainActivity extends AppCompatActivity
 
         List<Fragment> fragments = getFragments();
 
-        MyPageAdapter pageAdapter = new MyPageAdapter(getSupportFragmentManager(), fragments);
+        mPageAdapter = new MyPageAdapter(getSupportFragmentManager(), fragments);
         ViewPager mViewPager = (ViewPager) findViewById(R.id.view_pager);
-        mViewPager.setAdapter(pageAdapter);
+        mViewPager.setAdapter(mPageAdapter);
         mViewPager.setCurrentItem(AIR);
+
+        mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
     }
 
     @Override
@@ -190,61 +133,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private List<Fragment> getFragments() {
-        List<Fragment> fList = new ArrayList<>();
-
-        fList.add(MainFragment.newInstance());
-        fList.add(AirFragment.newInstance());
-        fList.add(OrderFragment.newInstance());
-
-        return fList;
-    }
-
-    private class MyPageAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> fragments;
-
-        MyPageAdapter(FragmentManager fm, List<Fragment> fragments) {
-            super(fm);
-            this.fragments = fragments;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return fragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return fragments.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return getString(R.string.main_main);
-                case 1:
-                    return getString(R.string.main_air);
-                case 2:
-                    return getString(R.string.main_order);
-                default:
-                    return "";
-            }
-        }
-
-        public Fragment getRegisteredFragment(int position) {
-            return fragments.get(position);
-        }
-    }
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
         }
+
+        super.onBackPressed();
     }
 
     @Override
@@ -312,21 +208,130 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void showAlert() {
+    private class SocketServiceReceiver extends BroadcastReceiver {
 
-        DialogFragment fragment = new AlertDialogFragment();
-        fragment.show(getSupportFragmentManager(), "AlertDialogFragment");
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int error = intent.getIntExtra(Utility.ERROR, Utility.DEFAULT);
+
+            switch (error) {
+                case Utility.ERROR_NONE:
+                    int method = intent.getIntExtra(Utility.METHOD, Utility.DEFAULT);
+                    switch (method) {
+                        case Utility.METHOD_GET_ORDERS:
+                            Order[] orders = gson.fromJson(intent.getStringExtra(Utility.RESPONSE), Order[].class);
+                            mAirFragment.addOrders(orders);
+                            break;
+                        case Utility.METHOD_NEW_ORDER:
+                            Order order = gson.fromJson(intent.getStringExtra(Utility.RESPONSE), Order.class);
+                            mAirFragment.addOrder(order);
+                            break;
+                        case Utility.METHOD_DELETE_ORDER:
+                            String delOrderId = intent.getStringExtra(Utility.RESPONSE);
+                            mAirFragment.removeOrder(delOrderId);
+                            break;
+                        case Utility.METHOD_NEW_MESSAGE:
+                            Message msg = gson.fromJson(intent.getStringExtra(Utility.RESPONSE), Message.class);
+                            showMessage(msg);
+                            break;
+                    }
+            }
+        }
+    }
+
+    private class MyPageAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> fragments;
+
+        MyPageAdapter(FragmentManager fm, List<Fragment> fragments) {
+            super(fm);
+            this.fragments = fragments;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragments.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return getString(R.string.main_main);
+                case 1:
+                    return getString(R.string.main_air);
+                case 2:
+                    return getString(R.string.main_order);
+                default:
+                    return "";
+            }
+        }
+
+        Fragment getRegisteredFragment(int position) {
+            return fragments.get(position);
+        }
+    }
+
+    private final ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mBoundService = ((SocketService.LocalBinder)service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mBoundService = null;
+        }
+    };
+
+    private List<Fragment> getFragments() {
+        List<Fragment> fList = new ArrayList<>();
+
+        fList.add(MainFragment.newInstance());
+        fList.add(AirFragment.newInstance());
+        fList.add(OrderFragment.newInstance());
+
+        return fList;
+    }
+
+    private void showAlert() {
+        AlertDialog.Builder helpBuilder = Utility.getDialog(this,
+                getString(R.string.alert_fire),
+                getString(R.string.alert_message));
+
+        helpBuilder.setPositiveButton(getString(R.string.alert_fire),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        try {
+                            mBoundService.alert();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).setNegativeButton(getString(R.string.alert_cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                }).create().show();
     }
 
     private void showMessage(Message message) {
         if (message != null) {
-            String text = message.message;
+            String text = message.getMessage();
             AlertDialog.Builder helpBuilder = Utility.getDialog(this, "New message", text);
+
             helpBuilder.setPositiveButton("Positive",
                     new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
 
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Do nothing but close the dialog
                         }
                     }).create().show();
         }

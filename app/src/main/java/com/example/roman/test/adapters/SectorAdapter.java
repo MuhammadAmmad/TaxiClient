@@ -13,11 +13,21 @@ import com.example.roman.test.data.Sector;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class SectorAdapter extends ArrayAdapter<Sector> {
 
-    private static class ViewHolder {
+    static class ViewHolder {
+        @BindView(R.id.list_item_sector)
         TextView name;
+
+        @BindView(R.id.list_item_drivers)
         TextView drivers;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     public SectorAdapter(Context context, List<Sector> sectors) {
@@ -26,39 +36,36 @@ public class SectorAdapter extends ArrayAdapter<Sector> {
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position, View view, @NonNull ViewGroup parent) {
         // Get the data item for this position
         Sector sector = getItem(position);
 
         // Check if an existing view is being reused, otherwise inflate the view
-        ViewHolder viewHolder;
+        ViewHolder holder;
 
-        if (convertView == null) {
+        if (view == null) {
             // If there's no view to re-use, inflate a brand new view for now
-            viewHolder = new ViewHolder();
-
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.list_item_sector, parent, false);
+            view = inflater.inflate(R.layout.list_item_sector, parent, false);
 
-            viewHolder.name = (TextView) convertView.findViewById(R.id.list_item_sector);
-            viewHolder.drivers = (TextView) convertView.findViewById(R.id.list_item_drivers);
+            holder = new ViewHolder(view);
 
             // Cache the viewHolder object inside the fresh view
-            convertView.setTag(viewHolder);
+            view.setTag(holder);
         } else {
             // View is being recycled, retrieve the viewHolder object from tag
-            viewHolder = (ViewHolder) convertView.getTag();
+            holder = (ViewHolder) view.getTag();
         }
 
         // Populate the data into the template view using the data object
         if (sector != null) {
-            viewHolder.name.setText(sector.name);
-            if (sector.drivers != 0) {
-                viewHolder.drivers.setText(String.valueOf(sector.drivers).toUpperCase());
+            holder.name.setText(sector.getName());
+            int drivers = sector.getDrivers();
+            if (drivers != 0) {
+                holder.drivers.setText(String.valueOf(drivers).toUpperCase());
             }
         }
 
-        // Return the completed view to render on screen
-        return convertView;
+        return view;
     }
 }

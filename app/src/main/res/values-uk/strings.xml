@@ -76,10 +76,11 @@
     <string name="nav_drawer_close">Close</string>
     <string name="nav_drawer_open">Open</string>
 
-    <string name="nav_drawer_alert">Байкал!</string>
-    <string name="nav_drawer_alert_message">Якщо на вас здійснили напад, натисність @string/nav_drawer_alert</string>
-    <string name="nav_drawer_alert_fire">@string/nav_drawer_alert</string>
-    <string name="nav_drawer_alert_cancel">Ні</string>
+    <string name="nav_drawer_alert">Байкал</string>
+
+    <string name="alert_message">Якщо на вас здійснили напад, натисність Байкал!!!</string>
+    <string name="alert_fire">Байкал!!!</string>
+    <string name="alert_cancel">Скасувати</string>
 
     <string name="nav_drawer_exit">Вихід</string>
     <string name="nav_drawer_extra_functions">Додаткові функції</string>

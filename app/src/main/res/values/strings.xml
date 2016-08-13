@@ -182,10 +182,11 @@
     <string name="nav_drawer_close">Close</string>
     <string name="nav_drawer_open">Open</string>
 
-    <string name="nav_drawer_alert">Alert!</string>
-    <string name="nav_drawer_alert_message">If you are being attacked press @string/nav_drawer_alert</string>
-    <string name="nav_drawer_alert_fire">@string/nav_drawer_alert</string>
-    <string name="nav_drawer_alert_cancel">No</string>
+    <string name="nav_drawer_alert">Alert</string>
+
+    <string name="alert_message">If you are being attacked press ALERT!!!</string>
+    <string name="alert_fire">ALERT!!!</string>
+    <string name="alert_cancel">Cancel</string>
 
     <string name="nav_drawer_exit">Exit</string>
     <string name="nav_drawer_settings" translatable="false">@string/action_settings</string>

@@ -15,6 +15,7 @@ import com.example.roman.test.data.MessagesTable;
 
 import java.util.List;
 
+
 public class MessageFragment extends Fragment {
 
     static MessageFragment newInstance() {

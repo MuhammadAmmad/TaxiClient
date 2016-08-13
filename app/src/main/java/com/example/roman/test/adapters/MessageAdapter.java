@@ -13,11 +13,21 @@ import com.example.roman.test.data.Message;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MessageAdapter extends ArrayAdapter<Message> {
 
-    private static class ViewHolder {
+    static class ViewHolder {
+        @BindView(R.id.list_item_message)
         TextView message;
+
+        @BindView(R.id.list_item_date)
         TextView date;
+
+        ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     public MessageAdapter(Context context, List<Message> messages) {
@@ -26,37 +36,32 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position, View view, @NonNull ViewGroup parent) {
         // Get the data item for this position
         Message message = getItem(position);
 
         // Check if an existing view is being reused, otherwise inflate the view
-        ViewHolder viewHolder;
+        ViewHolder holder;
 
-        if (convertView == null) {
+        if (view == null) {
             // If there's no view to re-use, inflate a brand new view for now
-            viewHolder = new ViewHolder();
-
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.list_item_sector, parent, false);
+            view = inflater.inflate(R.layout.list_item_sector, parent, false);
 
-            viewHolder.message = (TextView) convertView.findViewById(R.id.list_item_message);
-            viewHolder.date = (TextView) convertView.findViewById(R.id.list_item_date);
+            holder = new ViewHolder(view);
 
             // Cache the viewHolder object inside the fresh view
-            convertView.setTag(viewHolder);
+            view.setTag(holder);
         } else {
             // View is being recycled, retrieve the viewHolder object from tag
-            viewHolder = (ViewHolder) convertView.getTag();
+            holder = (ViewHolder) view.getTag();
         }
 
         // Populate the data into the template view using the data object
         if (message != null) {
-            viewHolder.date.setText(message.date);
-            viewHolder.message.setText(message.message);
+            holder.date.setText(message.getDate());
+            holder.message.setText(message.getMessage());
         }
-
-        // Return the completed view to render on screen
-        return convertView;
+        return view;
     }
 }

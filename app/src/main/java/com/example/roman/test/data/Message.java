@@ -2,9 +2,6 @@ package com.example.roman.test.data;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import ckm.simple.sql_provider.annotation.SimpleSQLColumn;
 import ckm.simple.sql_provider.annotation.SimpleSQLTable;
 
@@ -12,43 +9,49 @@ import ckm.simple.sql_provider.annotation.SimpleSQLTable;
         table = "messages",
         provider = "MessageProvider")
 public class Message {
-    public static final String ID = "I";
-    public static final String DATE = "D";
-    public static final String MESSAGE = "MS";
+    private static final String ID = "I";
+    private static final String DATE = "D";
+    private static final String MESSAGE = "MS";
 
     @SerializedName(ID)
     @SimpleSQLColumn(value = "col_id", primary = true)
-    public int id;
+    private String id;
 
     @SerializedName(MESSAGE)
     @SimpleSQLColumn("message")
-    public String message;
+    private String message;
 
     @SerializedName(DATE)
     @SimpleSQLColumn("date")
-    public String date;
+    private String date;
 
     public Message() {
-        id = 0;
+        id = "";
         message = "";
         date = "";
     }
 
-    public Message(JSONObject sector) throws JSONException {
-        id = sector.getInt(ID);
-        date = sector.getString(DATE);
-        message = sector.getString(MESSAGE);
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getMessage() {
         return message;
     }
 
+    void setMessage(String message) {
+        this.message = message;
+    }
+
     public String getDate() {
         return date;
     }
 
-    public int getId() {
-        return id;
+    void setDate(String date) {
+        this.date = date;
     }
 }
