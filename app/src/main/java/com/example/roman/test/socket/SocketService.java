@@ -40,7 +40,6 @@ public class SocketService extends Service {
 
     private final IBinder myBinder = new LocalBinder();
 
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -127,17 +126,8 @@ public class SocketService extends Service {
                         case Utility.METHOD_GET_SETTINGS:
                             JSONArray sectorsArray = object.getJSONObject(Utility.RESPONSE)
                                     .getJSONArray(Utility.SECTORS);
-
-                            Cursor c = getContentResolver().query(SectorsTable.CONTENT_URI, null, null, null, null);
-                            if (c != null && c.getCount() == 0) {
-                                Sector[] sectors = gson.fromJson(sectorsArray.toString(), Sector[].class);
-
-                                for (Sector s : sectors) {
-                                    getContentResolver().insert(SectorsTable.CONTENT_URI,
-                                            SectorsTable.getContentValues(s, false));
-                                }
-                                c.close();
-                            }
+                            new GetSettingsTask(sectorsArray).execute();
+                            break;
 
                         case Utility.METHOD_NEW_ORDER:
                             String order = object.getString(Utility.RESPONSE);
@@ -149,7 +139,6 @@ public class SocketService extends Service {
                             String msg = object.getJSONObject(Utility.RESPONSE).toString();
                             broadcastIntent.setAction(Utility.MAIN_INTENT);
                             broadcastIntent.putExtra(Utility.RESPONSE, msg);
-
                             getContentResolver().insert(SectorsTable.CONTENT_URI,
                                     MessagesTable.getContentValues(gson.fromJson(msg, Message.class), false));
                             break;
@@ -206,5 +195,28 @@ public class SocketService extends Service {
         json.put(Utility.REQUEST, object);
         json.put(Utility.METHOD, method);
         (new SendText()).execute(json.toString());
+    }
+
+    public class GetSettingsTask extends AsyncTask<Void, Void, Boolean> {
+        private final JSONArray mSectors;
+
+        GetSettingsTask(JSONArray sectors) {
+            mSectors = sectors;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Cursor c = getContentResolver().query(SectorsTable.CONTENT_URI, null, null, null, null);
+            if (c != null && c.getCount() == 0) {
+                Sector[] sectors = gson.fromJson(mSectors.toString(), Sector[].class);
+
+                for (Sector s : sectors) {
+                    getContentResolver().insert(SectorsTable.CONTENT_URI,
+                            SectorsTable.getContentValues(s, false));
+                }
+                c.close();
+            }
+            return true;
+        }
     }
 }

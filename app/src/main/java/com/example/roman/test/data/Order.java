@@ -26,29 +26,29 @@ public class Order {
     @SerializedName(ORDER_ID)
     private String orderId;
 
-    @SerializedName(STATUS_ID)
-    private int statusId;
-
-    @SerializedName(DATE_CREATED)
-    private String dateCreated;
-
-    @SerializedName(TIME_CREATED)
-    private String timeCreated;
-
-    @SerializedName(INFO_STATUS_ID)
-    private int infoStatusId;
-
-    @SerializedName(PHONE)
-    private String phone;
-
-    @SerializedName(DESCRIPTION)
-    private String description;
+//    @SerializedName(STATUS_ID)
+//    private int statusId;
+//
+//    @SerializedName(DATE_CREATED)
+//    private String dateCreated;
+//
+//    @SerializedName(TIME_CREATED)
+//    private String timeCreated;
+//
+//    @SerializedName(INFO_STATUS_ID)
+//    private int infoStatusId;
+//
+//    @SerializedName(PHONE)
+//    private String phone;
+//
+//    @SerializedName(DESCRIPTION)
+//    private String description;
 
     @SerializedName(PRICE)
     private int price;
 
-    @SerializedName(OPTION)
-    private String option;
+//    @SerializedName(OPTION)
+//    private String option;
 
     @SerializedName(FROM)
     private String from;
@@ -56,31 +56,38 @@ public class Order {
     @SerializedName(TO)
     private String to;
 
-    @SerializedName(CAN_TAKE)
-    private boolean canTake;
-
-    @SerializedName(SECTOR_FROM)
-    private String sectorFrom;
-
-    @SerializedName(TARIFF_ID)
-    private String tariffId;
-
-    @SerializedName(DATE)
-    private String date;
-
-    @SerializedName(TIME)
-    private String time;
-
-    @SerializedName(LENGTH)
-    private double length;
-
-    @SerializedName(IS_PREVIOUS)
-    private boolean isPrevious;
-
-    @SerializedName(CAN_REFUSE)
-    private boolean canRefuse;
+//    @SerializedName(CAN_TAKE)
+//    private boolean canTake;
+//
+//    @SerializedName(SECTOR_FROM)
+//    private String sectorFrom;
+//
+//    @SerializedName(TARIFF_ID)
+//    private String tariffId;
+//
+//    @SerializedName(DATE)
+//    private String date;
+//
+//    @SerializedName(TIME)
+//    private String time;
+//
+//    @SerializedName(LENGTH)
+//    private double length;
+//
+//    @SerializedName(IS_PREVIOUS)
+//    private boolean isPrevious;
+//
+//    @SerializedName(CAN_REFUSE)
+//    private boolean canRefuse;
 
     Order() { }
+
+    public Order(String from, String to, int price, String id) {
+        this.orderId = id;
+        this.price = price;
+        this.from = from;
+        this.to = to;
+    }
 
     public int getPrice() {
         return price;

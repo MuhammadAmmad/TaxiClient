@@ -7,13 +7,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -24,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.roman.test.data.Message;
 import com.example.roman.test.data.Order;
@@ -37,17 +43,17 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import static android.os.Debug.stopMethodTracing;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final int AIR = 1;
 
-    private MyPageAdapter mPageAdapter;
     private SocketServiceReceiver receiver;
     private SocketService mBoundService;
     private AirFragment mAirFragment;
 
-    @Inject
-    Gson gson;
+    @Inject Gson gson;
 
     private boolean mBound = true;
 
@@ -72,9 +78,7 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
-                this,
-                mDrawerLayout,
-                null,
+                this, mDrawerLayout, null,
                 R.string.nav_drawer_open,
                 R.string.nav_drawer_close) {
         };
@@ -87,10 +91,31 @@ public class MainActivity extends AppCompatActivity
 
         List<Fragment> fragments = getFragments();
 
-        mPageAdapter = new MyPageAdapter(getSupportFragmentManager(), fragments);
+        MyPageAdapter mPageAdapter = new MyPageAdapter(getSupportFragmentManager(), fragments);
         ViewPager mViewPager = (ViewPager) findViewById(R.id.view_pager);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
+                    expandToolbar();
+                }
+            }
+        });
+
         mViewPager.setAdapter(mPageAdapter);
         mViewPager.setCurrentItem(AIR);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        tabLayout.setupWithViewPager(mViewPager);
 
         mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
     }
@@ -220,15 +245,15 @@ public class MainActivity extends AppCompatActivity
                     switch (method) {
                         case Utility.METHOD_GET_ORDERS:
                             Order[] orders = gson.fromJson(intent.getStringExtra(Utility.RESPONSE), Order[].class);
-                            mAirFragment.addOrders(orders);
+//                            mAirFragment.addOrders(orders);
                             break;
                         case Utility.METHOD_NEW_ORDER:
                             Order order = gson.fromJson(intent.getStringExtra(Utility.RESPONSE), Order.class);
-                            mAirFragment.addOrder(order);
+//                            mAirFragment.addOrder(order);
                             break;
                         case Utility.METHOD_DELETE_ORDER:
                             String delOrderId = intent.getStringExtra(Utility.RESPONSE);
-                            mAirFragment.removeOrder(delOrderId);
+//                            mAirFragment.removeOrder(delOrderId);
                             break;
                         case Utility.METHOD_NEW_MESSAGE:
                             Message msg = gson.fromJson(intent.getStringExtra(Utility.RESPONSE), Message.class);
@@ -239,7 +264,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private class MyPageAdapter extends FragmentPagerAdapter {
+    private class MyPageAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> fragments;
 
         MyPageAdapter(FragmentManager fm, List<Fragment> fragments) {
@@ -335,5 +360,9 @@ public class MainActivity extends AppCompatActivity
                         }
                     }).create().show();
         }
+    }
+
+    private void expandToolbar() {
+        ((AppBarLayout) findViewById(R.id.app_bar_layout)).setExpanded(true);
     }
 }
