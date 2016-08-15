@@ -4,9 +4,10 @@
 
     <!-- Settings, should always be in the overflow -->
 
-    <item android:id="@+id/address"
+    <item
+        android:id="@+id/address"
         app:showAsAction="always"
-        android:title="улица Героев АТО, 79" />
+        android:title="" />
 
     <item android:id="@+id/clock"
         app:showAsAction="always"

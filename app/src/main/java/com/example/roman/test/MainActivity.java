@@ -1,5 +1,8 @@
 package com.example.roman.test;
 
+import android.Manifest;
+import android.app.ActivityManager;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -7,18 +10,27 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.net.ConnectivityManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -33,44 +45,99 @@ import android.view.View;
 
 import com.example.roman.test.data.Message;
 import com.example.roman.test.data.Order;
-import com.example.roman.test.socket.SocketService;
+import com.example.roman.test.services.SocketService;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
-import static android.os.Debug.stopMethodTracing;
+import static com.example.roman.test.Utility.getStreetFromLocation;
+import static com.example.roman.test.Utility.isBetterLocation;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, NetworkChangeReceiver.SnackInterface {
+    private static final int REQUEST_LOCATION = 1;
     private static final int AIR = 1;
 
-    private SocketServiceReceiver receiver;
+    private Menu mMenu;
+    private boolean mBound = true;
+    private Location mCurrentBestLocation;
+    private NetworkChangeReceiver mNetworkReceiver;
+    private SocketServiceReceiver mReceiver;
     private SocketService mBoundService;
+    private LocationManager mLocationManager;
+    private LocationListener mLocationListener;
     private AirFragment mAirFragment;
 
-    @Inject Gson gson;
-
-    private boolean mBound = true;
+    @Inject
+    Gson gson;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             Utility.setWholeTheme(this);
         }
-
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
 
+        registerReceiver(new NetworkChangeReceiver(),
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+        mNetworkReceiver = new NetworkChangeReceiver();
+        mNetworkReceiver.registerReceiver(this);
+
+        // Acquire a reference to the system Location Manager
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        mLocationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                if (isBetterLocation(location, mCurrentBestLocation)) {
+                    mCurrentBestLocation = location;
+                    String address = getStreetFromLocation(MainActivity.this, location);
+                    if (mMenu != null) {
+                        mMenu.findItem(R.id.address).setTitle(address);
+                    }
+                    // TODO send location to server
+                }
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+        } else {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+        }
+
         Intent intent = new Intent(this, SocketService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-        setContentView(R.layout.activity_main);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
         setSupportActionBar(myToolbar);
@@ -127,10 +194,20 @@ public class MainActivity extends AppCompatActivity
         startService(new Intent(this, SocketService.class));
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        if (receiver == null) {
-            receiver = new SocketServiceReceiver();
+        if (mReceiver == null) {
+            mReceiver = new SocketServiceReceiver();
             IntentFilter intentFilter = new IntentFilter(Utility.LOGIN_INTENT);
-            registerReceiver(receiver, intentFilter);
+            registerReceiver(mReceiver, intentFilter);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mReceiver == null) {
+            mReceiver = new SocketServiceReceiver();
+            IntentFilter intentFilter = new IntentFilter(Utility.MAIN_INTENT);
+            registerReceiver(mReceiver, intentFilter);
         }
     }
 
@@ -142,20 +219,24 @@ public class MainActivity extends AppCompatActivity
             mBound = false;
         }
 
-        if (receiver != null) {
-            unregisterReceiver(receiver);
-            receiver = null;
+        if (mReceiver != null) {
+            unregisterReceiver(mReceiver);
+            mReceiver = null;
         }
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (receiver == null) {
-            receiver = new SocketServiceReceiver();
-            IntentFilter intentFilter = new IntentFilter(Utility.MAIN_INTENT);
-            registerReceiver(receiver, intentFilter);
+    protected void onDestroy() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+        } else {
+            mLocationManager.removeUpdates(mLocationListener);
         }
+        super.onDestroy();
     }
 
     @Override
@@ -184,7 +265,21 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        mMenu = menu;
         getMenuInflater().inflate(R.menu.main_action_bar, menu);
+
+        Location location = null;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+
+        String address = getStreetFromLocation(this, location);
+        mMenu.findItem(R.id.address).setTitle(address);
         return true;
     }
 
@@ -208,7 +303,7 @@ public class MainActivity extends AppCompatActivity
 //        } else if (id == R.id.nav_my_orders) {
 //
 //        } else if (id == R.id.nav_messages) {
-//
+
 //        } else if (id == R.id.nav_gps_map) {
 //
 //        } else if (id == R.id.nav_meter) {
@@ -233,8 +328,25 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private class SocketServiceReceiver extends BroadcastReceiver {
+    @Override
+    public void reconnect(boolean isConnected) {
+        View view = findViewById(android.R.id.content);
 
+        if (isConnected) {
+            final Snackbar snackBar = Snackbar.make(view, "Connection established", Snackbar.LENGTH_INDEFINITE);
+            snackBar.setAction("GO ONLINE", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    snackBar.dismiss();
+                }
+            });
+            snackBar.show();
+        } else {
+            Snackbar.make(view, "No internet connection", Snackbar.LENGTH_INDEFINITE).show();
+        }
+    }
+
+    private class SocketServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             int error = intent.getIntExtra(Utility.ERROR, Utility.DEFAULT);
@@ -347,12 +459,12 @@ public class MainActivity extends AppCompatActivity
                 }).create().show();
     }
 
-    private void showMessage(Message message) {
+    public void showMessage(final Message message) {
         if (message != null) {
             String text = message.getMessage();
             AlertDialog.Builder helpBuilder = Utility.getDialog(this, "New message", text);
 
-            helpBuilder.setPositiveButton("Positive",
+            helpBuilder.setPositiveButton(getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -365,4 +477,36 @@ public class MainActivity extends AppCompatActivity
     private void expandToolbar() {
         ((AppBarLayout) findViewById(R.id.app_bar_layout)).setExpanded(true);
     }
+
+    private void newMessage(Message message) {
+        ActivityManager activityManager = (ActivityManager)
+                getApplication().getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> services = activityManager
+                .getRunningTasks(Integer.MAX_VALUE);
+
+        if (services.size() > 0) {
+            new MyDialogFragment().show(getSupportFragmentManager(), "tag");
+        } else {
+            Utility.showMessageNotification(this, message);
+        }
+    }
+
+    public static class MyDialogFragment extends DialogFragment {
+        private Message message;
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle("New message")
+                    .setMessage("This is your message since I'm to lazy to create bundle to add parametres inside this fragment")
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    }).create();
+        }
+    }
+
+    // TODO add onRequestPermissionResult for location
 }

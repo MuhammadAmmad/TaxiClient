@@ -2,7 +2,6 @@ package com.example.roman.test;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,11 +17,12 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.roman.test.socket.SocketService;
+import com.example.roman.test.services.SocketService;
 
 import org.json.JSONException;
 
@@ -50,6 +50,8 @@ public class LoginActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             Utility.setWholeTheme(this);
         }
+
+        Log.e("Some stuff", "Create");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);

@@ -1,7 +1,7 @@
 package com.example.roman.test.dagger;
 
 import com.example.roman.test.MainActivity;
-import com.example.roman.test.socket.SocketService;
+import com.example.roman.test.services.SocketService;
 
 import javax.inject.Singleton;
 

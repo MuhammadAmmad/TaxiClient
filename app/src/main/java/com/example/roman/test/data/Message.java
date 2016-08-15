@@ -31,6 +31,12 @@ public class Message {
         date = "";
     }
 
+    public Message(String id, String message, String date) {
+        this.id = id;
+        this.message = message;
+        this.date = date;
+    }
+
     public String getId() {
         return id;
     }
