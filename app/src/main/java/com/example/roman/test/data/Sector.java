@@ -14,7 +14,7 @@ public class Sector {
     private static final String DRIVERS = "P";
 
     @SerializedName(ID)
-    @SimpleSQLColumn(value = "col_id", primary = true)
+    @SimpleSQLColumn("id")
     private String id;
 
     @SerializedName(NAME)

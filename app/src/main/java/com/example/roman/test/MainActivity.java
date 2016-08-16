@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -38,10 +39,13 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.roman.test.data.Message;
 import com.example.roman.test.data.Order;
 import com.example.roman.test.services.SocketService;
+import com.example.roman.test.utilities.Constants;
+import com.example.roman.test.utilities.Functions;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -51,23 +55,24 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import static com.example.roman.test.Utility.getStreetFromLocation;
-import static com.example.roman.test.Utility.isBetterLocation;
+import static com.example.roman.test.LoginActivity.attemptLogin;
+import static com.example.roman.test.utilities.Functions.getStreetFromLocation;
+import static com.example.roman.test.utilities.Functions.isBetterLocation;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, NetworkChangeReceiver.SnackInterface {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        NetworkChangeReceiver.SnackInterface {
     private static final int REQUEST_LOCATION = 1;
     private static final int AIR = 1;
 
-    private Menu mMenu;
     private boolean mBound = true;
+    private Menu mMenu;
     private Location mCurrentBestLocation;
     private NetworkChangeReceiver mNetworkReceiver;
     private SocketServiceReceiver mReceiver;
     private SocketService mBoundService;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
-    private AirFragment mAirFragment;
 
     @Inject
     Gson gson;
@@ -75,21 +80,24 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Utility.setWholeTheme(this);
+            Functions.setWholeTheme(this);
         }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
 
-        registerReceiver(new NetworkChangeReceiver(),
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-
-        mNetworkReceiver = new NetworkChangeReceiver();
-        mNetworkReceiver.registerReceiver(this);
-
         // Acquire a reference to the system Location Manager
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria criteria = new Criteria();
+        criteria.setPowerRequirement(Criteria.POWER_LOW); // Chose your desired power consumption level.
+        criteria.setAccuracy(Criteria.ACCURACY_FINE); // Choose your accuracy requirement.
+        criteria.setSpeedRequired(true); // Chose if speed for first location fix is required.
+        criteria.setAltitudeRequired(false); // Choose if you use altitude.
+        criteria.setBearingRequired(false); // Choose if you use bearing.
+        criteria.setCostAllowed(false);
 
         // Define a listener that responds to location updates
         mLocationListener = new LocationListener() {
@@ -111,10 +119,16 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onProviderEnabled(String s) {
+                Toast.makeText(MainActivity.this,
+                        "Provider enabled: " + s, Toast.LENGTH_SHORT)
+                        .show();
             }
 
             @Override
             public void onProviderDisabled(String s) {
+                Toast.makeText(MainActivity.this,
+                        "Provider disabled: " + s, Toast.LENGTH_SHORT)
+                        .show();
             }
         };
 
@@ -127,9 +141,13 @@ public class MainActivity extends AppCompatActivity
                     Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         }
 
-
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+//        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+//        String name = mLocationManager.getBestProvider(criteria, true);
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, mLocationListener);
+
+        boolean isOne = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean isTwo = mLocationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER);
 
         Intent intent = new Intent(this, SocketService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -178,8 +196,6 @@ public class MainActivity extends AppCompatActivity
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(mViewPager);
-
-        mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
     }
 
     @Override
@@ -191,8 +207,14 @@ public class MainActivity extends AppCompatActivity
 
         if (mReceiver == null) {
             mReceiver = new SocketServiceReceiver();
-            IntentFilter intentFilter = new IntentFilter(Utility.LOGIN_INTENT);
+            IntentFilter intentFilter = new IntentFilter(Constants.LOGIN_INTENT);
             registerReceiver(mReceiver, intentFilter);
+        }
+
+        if (mNetworkReceiver == null) {
+            mNetworkReceiver = new NetworkChangeReceiver();
+            IntentFilter intentNetworkFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(mNetworkReceiver, intentNetworkFilter);
         }
     }
 
@@ -201,7 +223,7 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         if (mReceiver == null) {
             mReceiver = new SocketServiceReceiver();
-            IntentFilter intentFilter = new IntentFilter(Utility.MAIN_INTENT);
+            IntentFilter intentFilter = new IntentFilter(Constants.MAIN_INTENT);
             registerReceiver(mReceiver, intentFilter);
         }
     }
@@ -218,6 +240,11 @@ public class MainActivity extends AppCompatActivity
             unregisterReceiver(mReceiver);
             mReceiver = null;
         }
+
+        if (mNetworkReceiver != null) {
+            unregisterReceiver(mNetworkReceiver);
+            mNetworkReceiver = null;
+        }
     }
 
     @Override
@@ -230,6 +257,10 @@ public class MainActivity extends AppCompatActivity
                     Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         } else {
             mLocationManager.removeUpdates(mLocationListener);
+        }
+
+        if (mNetworkReceiver != null) {
+            unregisterReceiver(mNetworkReceiver);
         }
         super.onDestroy();
     }
@@ -263,25 +294,17 @@ public class MainActivity extends AppCompatActivity
         mMenu = menu;
         getMenuInflater().inflate(R.menu.main_action_bar, menu);
 
-        Location location = null;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                        PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return true;
-        }
-
-        location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        } else if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if (location == null) {
+            location = mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
         }
 
         if (location != null) {
-            String address = getStreetFromLocation(this, location);
-            mMenu.findItem(R.id.address).setTitle(address);
+            mMenu.findItem(R.id.address).setTitle(Functions.getStreetFromLocation(this, location));
         }
+
         return true;
     }
 
@@ -339,7 +362,14 @@ public class MainActivity extends AppCompatActivity
             snackBar.setAction("GO ONLINE", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    try {
+                        attemptLogin(MainActivity.this);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                     snackBar.dismiss();
+                    recreate();
                 }
             });
             snackBar.show();
@@ -351,26 +381,26 @@ public class MainActivity extends AppCompatActivity
     private class SocketServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            int error = intent.getIntExtra(Utility.ERROR, Utility.DEFAULT);
+            int error = intent.getIntExtra(Constants.ERROR, Constants.DEFAULT);
 
             switch (error) {
-                case Utility.ERROR_NONE:
-                    int method = intent.getIntExtra(Utility.METHOD, Utility.DEFAULT);
+                case Constants.ERROR_NONE:
+                    int method = intent.getIntExtra(Constants.METHOD, Constants.DEFAULT);
                     switch (method) {
-                        case Utility.METHOD_GET_ORDERS:
-                            Order[] orders = gson.fromJson(intent.getStringExtra(Utility.RESPONSE), Order[].class);
+                        case Constants.METHOD_GET_ORDERS:
+                            Order[] orders = gson.fromJson(intent.getStringExtra(Constants.RESPONSE), Order[].class);
 //                            mAirFragment.addOrders(orders);
                             break;
-                        case Utility.METHOD_NEW_ORDER:
-                            Order order = gson.fromJson(intent.getStringExtra(Utility.RESPONSE), Order.class);
+                        case Constants.METHOD_NEW_ORDER:
+                            Order order = gson.fromJson(intent.getStringExtra(Constants.RESPONSE), Order.class);
 //                            mAirFragment.addOrder(order);
                             break;
-                        case Utility.METHOD_DELETE_ORDER:
-                            String delOrderId = intent.getStringExtra(Utility.RESPONSE);
+                        case Constants.METHOD_DELETE_ORDER:
+                            String delOrderId = intent.getStringExtra(Constants.RESPONSE);
 //                            mAirFragment.removeOrder(delOrderId);
                             break;
-                        case Utility.METHOD_NEW_MESSAGE:
-                            Message msg = gson.fromJson(intent.getStringExtra(Utility.RESPONSE), Message.class);
+                        case Constants.METHOD_NEW_MESSAGE:
+                            Message msg = gson.fromJson(intent.getStringExtra(Constants.RESPONSE), Message.class);
                             showMessage(msg);
                             break;
                     }
@@ -418,7 +448,7 @@ public class MainActivity extends AppCompatActivity
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mBoundService = ((SocketService.LocalBinder)service).getService();
+            mBoundService = ((SocketService.LocalBinder) service).getService();
         }
 
         @Override
@@ -438,7 +468,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showAlert() {
-        AlertDialog.Builder helpBuilder = Utility.getDialog(this,
+        AlertDialog.Builder helpBuilder = Functions.getDialog(this,
                 getString(R.string.alert_fire),
                 getString(R.string.alert_message));
 
@@ -464,7 +494,7 @@ public class MainActivity extends AppCompatActivity
     public void showMessage(final Message message) {
         if (message != null) {
             String text = message.getMessage();
-            AlertDialog.Builder helpBuilder = Utility.getDialog(this, "New message", text);
+            AlertDialog.Builder helpBuilder = Functions.getDialog(this, "New message", text);
 
             helpBuilder.setPositiveButton(getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
@@ -473,23 +503,6 @@ public class MainActivity extends AppCompatActivity
 
                         }
                     }).create().show();
-        }
-    }
-
-    private void expandToolbar() {
-        ((AppBarLayout) findViewById(R.id.app_bar_layout)).setExpanded(true);
-    }
-
-    private void newMessage(Message message) {
-        ActivityManager activityManager = (ActivityManager)
-                getApplication().getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> services = activityManager
-                .getRunningTasks(Integer.MAX_VALUE);
-
-        if (services.size() > 0) {
-            new MyDialogFragment().show(getSupportFragmentManager(), "tag");
-        } else {
-            Utility.showMessageNotification(this, message);
         }
     }
 
@@ -510,5 +523,31 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    // TODO add onRequestPermissionResult for location
+    private void expandToolbar() {
+        ((AppBarLayout) findViewById(R.id.app_bar_layout)).setExpanded(true);
+    }
+
+    private void newMessage(Message message) {
+        ActivityManager activityManager = (ActivityManager)
+                getApplication().getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> services = activityManager
+                .getRunningTasks(Integer.MAX_VALUE);
+
+        if (services.size() > 0) {
+            new MyDialogFragment().show(getSupportFragmentManager(), "tag");
+        } else {
+            Functions.showMessageNotification(this, message);
+        }
+    }
+
+    @Override
+    public void recreate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            super.recreate();
+        } else {
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+        }
+    }
 }

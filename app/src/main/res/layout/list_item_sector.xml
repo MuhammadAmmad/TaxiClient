@@ -14,9 +14,9 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <CheckBox
+        <RadioButton
             android:layout_width="wrap_content"
-            android:id="@+id/sector_check_box"
+            android:id="@+id/sector_radio_button"
             android:layout_height="wrap_content"
             android:focusable="false"
             android:clickable="false"

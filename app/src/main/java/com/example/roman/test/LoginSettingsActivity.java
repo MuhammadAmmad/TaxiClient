@@ -12,12 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.roman.test.utilities.Functions;
+
 public class LoginSettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Utility.setWholeTheme(this);
+            Functions.setWholeTheme(this);
         }
 
         super.onCreate(savedInstanceState);

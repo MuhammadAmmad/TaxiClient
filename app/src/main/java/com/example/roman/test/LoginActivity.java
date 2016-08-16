@@ -23,13 +23,13 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.roman.test.services.SocketService;
+import com.example.roman.test.utilities.Constants;
+import com.example.roman.test.utilities.Functions;
 
 import org.json.JSONException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static android.os.Debug.startMethodTracing;
 
 public class LoginActivity extends AppCompatActivity {
     private SocketServiceReceiver receiver;
@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Utility.setWholeTheme(this);
+            Functions.setWholeTheme(this);
         }
 
         Log.e("Some stuff", "Create");
@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    attemptLogin();
+                    attemptLogin(LoginActivity.this);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -80,18 +80,18 @@ public class LoginActivity extends AppCompatActivity {
                         & Configuration.UI_MODE_NIGHT_MASK;
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    boolean isNight = Utility.isNight(LoginActivity.this);
+                    boolean isNight = Functions.isNight(LoginActivity.this);
                     String newState;
 
                     if (isNight) {
-                        newState = Utility.DAY;
+                        newState = Constants.DAY;
                     } else {
-                        newState = Utility.NIGHT;
+                        newState = Constants.NIGHT;
                     }
 
-                    getSharedPreferences(Utility.MY_PREFS_NAME, Context.MODE_PRIVATE)
+                    getSharedPreferences(Constants.MY_PREFS_NAME, Context.MODE_PRIVATE)
                             .edit()
-                            .putString(Utility.THEME, newState)
+                            .putString(Constants.THEME, newState)
                             .apply();
                 } else {
                     switch (currentNightMode) {
@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (receiver == null) {
             receiver = new SocketServiceReceiver();
-            IntentFilter intentFilter = new IntentFilter(Utility.LOGIN_INTENT);
+            IntentFilter intentFilter = new IntentFilter(Constants.LOGIN_INTENT);
             registerReceiver(receiver, intentFilter);
         }
     }
@@ -152,10 +152,14 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void attemptLogin() throws JSONException {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String login = prefs.getString(getString(R.string.pref_login_key), getString(R.string.pref_login_default));
-        String password = prefs.getString(getString(R.string.pref_password_key), getString(R.string.pref_password_default));
+    static void attemptLogin(Context context) throws JSONException {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        String login = prefs.getString(context.getString(R.string.pref_login_key),
+                context.getString(R.string.pref_login_default));
+        String password = prefs.getString(context.getString(R.string.pref_password_key),
+                context.getString(R.string.pref_password_default));
+
         new UserLoginTask(login, password).execute();
     }
 
@@ -207,37 +211,36 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            int error = intent.getIntExtra(Utility.ERROR, Utility.DEFAULT);
+            int error = intent.getIntExtra(Constants.ERROR, Constants.DEFAULT);
             String errorMessage = "";
 
             switch (error) {
-                case Utility.ERROR_NONE:
+                case Constants.ERROR_NONE:
                     errorMessage = context.getString(R.string.login_error_success);
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     break;
-                case Utility.ERROR_LOGIN_INCORRECT:
+                case Constants.ERROR_LOGIN_INCORRECT:
                     errorMessage = context.getString(R.string.login_error_incorrect);
                     break;
-                case Utility.ERROR_LOGIN_BLOCKED:
+                case Constants.ERROR_LOGIN_BLOCKED:
                     errorMessage = context.getString(R.string.login_error_blocked);
                     break;
-                case Utility.ERROR_LOGIN_OCCUPIED:
+                case Constants.ERROR_LOGIN_OCCUPIED:
                     errorMessage = context.getString(R.string.login_error_occupied);
                     break;
-                case Utility.ERROR_LOGIN_RADIO:
+                case Constants.ERROR_LOGIN_RADIO:
                     errorMessage = context.getString(R.string.login_error_radio);
                     break;
-                case Utility.ERROR_LOGIN_TAKEN:
+                case Constants.ERROR_LOGIN_TAKEN:
                     errorMessage = context.getString(R.string.login_error_taken);
                     break;
             }
 
-            Toast.makeText(context,
-                    errorMessage, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private final ServiceConnection mConnection = new ServiceConnection() {
+    final ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName className,
@@ -254,7 +257,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public static class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
         private final String mLogin;
         private final String mPassword;
 
@@ -266,7 +269,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                mService.login(mLogin, mPassword);
+                SocketService.getInstance().login(mLogin, mPassword);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

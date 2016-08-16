@@ -17,7 +17,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class SectorAdapter extends ArrayAdapter<Sector> {
-
     static class ViewHolder {
         @BindView(R.id.list_item_sector)
         TextView name;
@@ -49,15 +48,14 @@ public class SectorAdapter extends ArrayAdapter<Sector> {
             view = inflater.inflate(R.layout.list_item_sector, parent, false);
 
             holder = new ViewHolder(view);
-
             // Cache the viewHolder object inside the fresh view
             view.setTag(holder);
         } else {
-            // View is being recycled, retrieve the viewHolder object from tag
             holder = (ViewHolder) view.getTag();
+            holder.name.setText("");
+            holder.drivers.setText("");
         }
 
-        // Populate the data into the template view using the data object
         if (sector != null) {
             holder.name.setText(sector.getName());
             int drivers = sector.getDrivers();
