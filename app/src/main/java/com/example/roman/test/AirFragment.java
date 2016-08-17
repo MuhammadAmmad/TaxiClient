@@ -7,17 +7,21 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.example.roman.test.adapters.OrderAdapter;
 import com.example.roman.test.data.Order;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class AirFragment extends Fragment {
-    private List<Order> orders;
+    private List<Order> mOrders;
     private OrderAdapter mOrderAdapter;
+    private RecyclerView mRecyclerView;
+    private int mPosition = ListView.INVALID_POSITION;
 
     static AirFragment newInstance() {
         AirFragment f = new AirFragment();
@@ -31,58 +35,55 @@ public class AirFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        orders = new ArrayList<>(Arrays.asList(new Order[]{
-                new Order("вул. Головка, 8", "вул. Карла Лібкнехта, 10", 22, "1"),
-                new Order("вул. Луценка, 22", "Південний Вокзал", 32, "2"),
-                new Order("вул. Зіньківська, 5", "вул. Сакко, 58", 40, "3"),
-                new Order("Стадіон Ворскла", "пров. Заячий, 1", 10, "4"),
-                new Order("вул. Героїв АТО, 79", "вул. Станіславського, 8", 415, "5"),
-                new Order("вул. Ціолковського, 41 ", "пров. Стешенка, 3", 27, "6"),
-                new Order("вул. Івана Мазепи, 42", "вул. Європейська, 123", 314, "7"),
-        }));
+        mOrders = new ArrayList<>();
+        mOrderAdapter = new OrderAdapter(getActivity(), mOrders, this);
 
-        View v =  inflater.inflate(R.layout.fragment_list_view, container, false);
+        View view =  inflater.inflate(R.layout.fragment_list_view, container, false);
 
-        RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.recyclerview);
-        recyclerView.addItemDecoration(new ItemDecorator(
-                getActivity().getApplicationContext()));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(new OrderAdapter(getActivity(), orders));
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        mRecyclerView.addItemDecoration(new ItemDecorator(getActivity().getApplicationContext()));
 
-        return v;
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setAdapter(mOrderAdapter);
 
-//        View rootView = inflater.inflate(R.layout.fragment_air, container, false);
-//
-//        MainActivity activity = (MainActivity) getActivity();
-//
-//        View v = inflater.inflate(R.layout.fragment_list_view, container, false);
-//        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        recyclerView.setAdapter(new OrderAdapter(ordersArray));
-//
-////        mOrderAdapter = new OrderAdapter(getContext(), ordersArray);
-////
-////        ListView listView = (ListView) rootView.findViewById(R.id.list_view_air);
-////        listView.setAdapter(mOrderAdapter);
-//        return rootView;
+        return view;
     }
 
-//    public void addOrders(Order[] orders) {
-//        for (Order order : orders) {
-//            addOrder(order);
-//        }
-//    }
+    public void addOrders(Order[] orders) {
+        Collections.addAll(mOrders, orders);
+        mOrderAdapter.notifyDataSetChanged();
+    }
 
-//    public void addOrder(Order order) {
-//        mOrderAdapter.add(order);
-//    }
-//
-//    public void removeOrder(String id) {
-//        for (Order order : ordersArray) {
-//            if (order.getOrderId().equals(id)) {
-//                mOrderAdapter.remove(order);
-//                return;
-//            }
-//        }
-//    }
+    public void addOrder(Order order) {
+        mOrders.add(order);
+        mOrderAdapter.notifyItemInserted(mOrders.size() - 1);
+    }
+
+    public void removeOrder(String id) {
+        for (Iterator<Order> iterator = mOrders.iterator(); iterator.hasNext();) {
+            Order order = iterator.next();
+            if (order.getOrderId().equals(id)) {
+                int position = mOrders.indexOf(order);
+                iterator.remove();
+                mOrderAdapter.notifyItemRemoved(position);
+                // TODO check later if workd properly
+                mOrderAdapter.notifyItemRangeChanged(position, mOrders.size());
+                return;
+            }
+        }
+    }
+
+    public interface Callback {
+        void onItemSelected(Order order);
+    }
+
+    public class MyOnClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(final View view) {
+            mPosition = mRecyclerView.getChildLayoutPosition(view);
+            Order order = mOrders.get(mPosition);
+            ((Callback) getActivity()).onItemSelected(order);
+        }
+    }
 }

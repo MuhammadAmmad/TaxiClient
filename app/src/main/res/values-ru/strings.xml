@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/tools">
     <string name="action_sign_in">Вход</string>
     <string name="action_settings">Настройки</string>
     <string name="action_style">Тема</string>
@@ -107,4 +107,13 @@
     <string name="login_error_occupied">Вход выполнить невозможно. Водитель уже на линии!</string>
     <string name="login_error_radio">Водитель работает на рации. Обратитесь к администрации</string>
     <string name="login_error_taken">Неверный логин и пароль, или позывной занят другим </string>
+
+    <string name="format_order_from">Откуда: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_to">Куда: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_price">Цена: <xliff:g>%1$s</xliff:g> \u20B4</string>
+    <string name="format_order_phone">Телефон: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_description">Описание: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_options">Опции: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_sector">Сектор: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_distance">Расстояние: <xliff:g>%1$s</xliff:g> м</string>
 </resources>

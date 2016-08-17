@@ -8,6 +8,17 @@ public class Constants {
     public static final String MY_PREFS_NAME = "MyPrefsFile";
     public static final int DEFAULT = -1;
 
+    public static final String ORDER_STATUS_NEW = "1";
+    public static final String ORDER_STATUS_TAKE = "2";
+    public static final String ORDER_STATUS_NEED_CONF = "3";
+    public static final String ORDER_STATUS_GONE = "4";
+    public static final String ORDER_STATUS_WAITING = "5";
+    public static final String ORDER_STATUS_INFORMED = "6";
+    public static final String ORDER_STATUS_DRIVING = "7";
+    public static final String ORDER_STATUS_DONE = "8";
+    public static final String ORDER_STATUS_CANCELED = "9";
+    public static final String ORDER_STATUS_REJECTED = "10";
+
     public static final String LOGIN_INTENT = "login_intent";
     public static final String AIR_INTENT = "air_intent";
     public static final String MAIN_INTENT = "main_intent";
@@ -78,5 +89,6 @@ public class Constants {
     public static final String REASON_ARRAY = "RJRS";
     public static final String STATUS_ARRAY = "DSMS";
     public static final String STATUS_ID = "SI";
+    public static final String ORDER_ID = "OI";
 
 }

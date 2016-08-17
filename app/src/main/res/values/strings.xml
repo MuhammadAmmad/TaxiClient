@@ -204,10 +204,8 @@
     <string name="main_orders_map">Map</string>
     <string name="main_order_actions">Actions</string>
 
-    <string name="format_balance">Balance: <xliff:g id="condition">%1$s</xliff:g>
-    </string>
-    <string name="format_price" translatable="false"><xliff:g id="condition">%1$s</xliff:g> \u20B4
-    </string>
+    <string name="format_balance">Balance: <xliff:g id="condition">%1$s</xliff:g></string>
+    <string name="format_price" translatable="false"><xliff:g id="condition">%1$s</xliff:g> \u20B4</string>
 
     <string name="main_main">Main</string>
     <string name="main_air">Air</string>
@@ -229,7 +227,17 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
+
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <string name="format_order_from">From: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_to">To: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_price">Price: <xliff:g>%1$s</xliff:g> \u20B4</string>
+    <string name="format_order_phone">Telephone: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_description">Description: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_options">Options: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_sector">Sector: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_order_distance">Distance: <xliff:g>%1$s</xliff:g> m</string>
 </resources>

@@ -26,29 +26,29 @@ public class Order {
     @SerializedName(ORDER_ID)
     private String orderId;
 
-//    @SerializedName(STATUS_ID)
-//    private int statusId;
-//
-//    @SerializedName(DATE_CREATED)
-//    private String dateCreated;
-//
-//    @SerializedName(TIME_CREATED)
-//    private String timeCreated;
-//
-//    @SerializedName(INFO_STATUS_ID)
-//    private int infoStatusId;
-//
-//    @SerializedName(PHONE)
-//    private String phone;
-//
-//    @SerializedName(DESCRIPTION)
-//    private String description;
+    @SerializedName(STATUS_ID)
+    private int statusId;
+
+    @SerializedName(DATE_CREATED)
+    private String dateCreated;
+
+    @SerializedName(TIME_CREATED)
+    private String timeCreated;
+
+    @SerializedName(INFO_STATUS_ID)
+    private int infoStatusId;
+
+    @SerializedName(PHONE)
+    private String phone;
+
+    @SerializedName(DESCRIPTION)
+    private String description;
 
     @SerializedName(PRICE)
-    private int price;
+    private String price;
 
-//    @SerializedName(OPTION)
-//    private String option;
+    @SerializedName(OPTION)
+    private String option;
 
     @SerializedName(FROM)
     private String from;
@@ -56,41 +56,66 @@ public class Order {
     @SerializedName(TO)
     private String to;
 
-//    @SerializedName(CAN_TAKE)
-//    private boolean canTake;
-//
-//    @SerializedName(SECTOR_FROM)
-//    private String sectorFrom;
-//
-//    @SerializedName(TARIFF_ID)
-//    private String tariffId;
-//
-//    @SerializedName(DATE)
-//    private String date;
-//
-//    @SerializedName(TIME)
-//    private String time;
-//
-//    @SerializedName(LENGTH)
-//    private double length;
-//
-//    @SerializedName(IS_PREVIOUS)
-//    private boolean isPrevious;
-//
-//    @SerializedName(CAN_REFUSE)
-//    private boolean canRefuse;
+    @SerializedName(CAN_TAKE)
+    private boolean canTake;
+
+    @SerializedName(SECTOR_FROM)
+    private String sectorFrom;
+
+    @SerializedName(TARIFF_ID)
+    private String tariffId;
+
+    @SerializedName(DATE)
+    private String date;
+
+    @SerializedName(TIME)
+    private String time;
+
+    @SerializedName(LENGTH)
+    private String length;
+
+    @SerializedName(IS_PREVIOUS)
+    private boolean isPrevious;
+
+    @SerializedName(CAN_REFUSE)
+    private boolean canRefuse;
 
     Order() { }
 
-    public Order(String from, String to, int price, String id) {
-        this.orderId = id;
-        this.price = price;
-        this.from = from;
-        this.to = to;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public int getPrice() {
+    public int getStatusId() {
+        return statusId;
+    }
+
+    public String getDateCreated() {
+        return dateCreated;
+    }
+
+    public String getTimeCreated() {
+        return timeCreated;
+    }
+
+    public int getInfoStatusId() {
+        return infoStatusId;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getPrice() {
         return price;
+    }
+
+    public String getOption() {
+        return option;
     }
 
     public String getFrom() {
@@ -101,7 +126,111 @@ public class Order {
         return to;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public boolean isCanTake() {
+        return canTake;
+    }
+
+    public String getSectorFrom() {
+        return sectorFrom;
+    }
+
+    public String getTariffId() {
+        return tariffId;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public String getLength() {
+        return length;
+    }
+
+    public boolean isPrevious() {
+        return isPrevious;
+    }
+
+    public boolean isCanRefuse() {
+        return canRefuse;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public void setStatusId(int statusId) {
+        this.statusId = statusId;
+    }
+
+    public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public void setTimeCreated(String timeCreated) {
+        this.timeCreated = timeCreated;
+    }
+
+    public void setInfoStatusId(int infoStatusId) {
+        this.infoStatusId = infoStatusId;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public void setOption(String option) {
+        this.option = option;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public void setCanTake(boolean canTake) {
+        this.canTake = canTake;
+    }
+
+    public void setSectorFrom(String sectorFrom) {
+        this.sectorFrom = sectorFrom;
+    }
+
+    public void setTariffId(String tariffId) {
+        this.tariffId = tariffId;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public void setLength(String length) {
+        this.length = length;
+    }
+
+    public void setPrevious(boolean previous) {
+        isPrevious = previous;
+    }
+
+    public void setCanRefuse(boolean canRefuse) {
+        this.canRefuse = canRefuse;
     }
 }

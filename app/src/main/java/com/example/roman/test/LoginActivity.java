@@ -41,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @BindView(R.id.login_form)
     View mLoginFormView;
+
     static {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
@@ -64,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    showProgress(true);
                     attemptLogin(LoginActivity.this);
                 } catch (JSONException e) {
                     e.printStackTrace();

@@ -1,4 +1,4 @@
-package com.example.roman.test;
+package com.example.roman.test.utilities;
 
 import android.content.Context;
 import android.database.ContentObserver;

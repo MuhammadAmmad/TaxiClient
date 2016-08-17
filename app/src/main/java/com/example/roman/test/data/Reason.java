@@ -2,7 +2,7 @@ package com.example.roman.test.data;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Item {
+public class Reason {
     private static final String ID = "ID";
     private static final String NAME = "DN";
 
@@ -12,7 +12,7 @@ public class Item {
     @SerializedName(NAME)
     private String name;
 
-    public Item(String name, String id) {
+    public Reason(String name, String id) {
         this.name = name;
         this.id = id;
     }

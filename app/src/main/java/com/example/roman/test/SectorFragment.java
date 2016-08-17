@@ -15,6 +15,8 @@ import com.example.roman.test.data.Sector;
 import com.example.roman.test.data.SectorsTable;
 import com.example.roman.test.services.SocketService;
 
+import org.json.JSONException;
+
 import java.util.List;
 
 public class SectorFragment extends Fragment {
@@ -22,8 +24,6 @@ public class SectorFragment extends Fragment {
 
     static SectorFragment newInstance() {
         SectorFragment f = new SectorFragment();
-        Bundle bd1 = new Bundle(1);
-        f.setArguments(bd1);
         return f;
     }
 
@@ -45,13 +45,18 @@ public class SectorFragment extends Fragment {
                 RadioButton radioButton = (RadioButton) view.findViewById(R.id.sector_radio_button);
                 radioButton.setChecked(!radioButton.isChecked());
 
-                if (positionChecked != ListView.INVALID_POSITION) {
+                if (positionChecked != ListView.INVALID_POSITION && position != positionChecked) {
                     ((RadioButton) mListView.getChildAt(positionChecked)
-                            .findViewById(R.id.sector_radio_button)).setChecked(false);
+                            .findViewById(R.id.sector_radio_button))
+                            .setChecked(false);
                 }
 
                 String sectorId = ((Sector) adapterView.getItemAtPosition(position)).getId();
-                SocketService.getInstance().setSector(sectorId);
+                try {
+                    SocketService.getInstance().setSector(sectorId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 positionChecked = position;
             }
         });

@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -19,6 +20,7 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -34,6 +36,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -43,6 +46,7 @@ import android.widget.Toast;
 
 import com.example.roman.test.data.Message;
 import com.example.roman.test.data.Order;
+import com.example.roman.test.data.Status;
 import com.example.roman.test.services.SocketService;
 import com.example.roman.test.utilities.Constants;
 import com.example.roman.test.utilities.Functions;
@@ -55,13 +59,21 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.ButterKnife;
+
+import static com.example.roman.test.DetailOrderFragment.DETAIL_ORDER;
 import static com.example.roman.test.LoginActivity.attemptLogin;
+import static com.example.roman.test.utilities.Constants.METHOD_GET_NEW_STATUS;
+import static com.example.roman.test.utilities.Constants.RESPONSE;
+import static com.example.roman.test.utilities.Constants.STATUS_ARRAY;
 import static com.example.roman.test.utilities.Functions.getStreetFromLocation;
 import static com.example.roman.test.utilities.Functions.isBetterLocation;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        NetworkChangeReceiver.SnackInterface {
+        NetworkChangeReceiver.SnackInterface,
+        AirFragment.Callback {
+
     private static final int REQUEST_LOCATION = 1;
     private static final int AIR = 1;
 
@@ -76,6 +88,7 @@ public class MainActivity extends AppCompatActivity
 
     @Inject
     Gson gson;
+    private AirFragment mAirFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -146,8 +159,8 @@ public class MainActivity extends AppCompatActivity
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, mLocationListener);
 
-        boolean isOne = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        boolean isTwo = mLocationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER);
+//        boolean isOne = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+//        boolean isTwo = mLocationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER);
 
         Intent intent = new Intent(this, SocketService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -162,6 +175,8 @@ public class MainActivity extends AppCompatActivity
                 R.string.nav_drawer_open,
                 R.string.nav_drawer_close) {
         };
+
+        ButterKnife.bind(this);
 
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
@@ -181,6 +196,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
+                expandToolbar();
             }
 
             @Override
@@ -193,9 +209,23 @@ public class MainActivity extends AppCompatActivity
 
         mViewPager.setAdapter(mPageAdapter);
         mViewPager.setCurrentItem(AIR);
+        mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
+
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(mViewPager);
+
+        try {
+            SocketService.getInstance().getOrders();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            SocketService.getInstance().getDriverStatus();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -207,7 +237,7 @@ public class MainActivity extends AppCompatActivity
 
         if (mReceiver == null) {
             mReceiver = new SocketServiceReceiver();
-            IntentFilter intentFilter = new IntentFilter(Constants.LOGIN_INTENT);
+            IntentFilter intentFilter = new IntentFilter(Constants.MAIN_INTENT);
             registerReceiver(mReceiver, intentFilter);
         }
 
@@ -378,6 +408,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onItemSelected(Order order) {
+        Intent intent = new Intent(this, OrderActivity.class);
+        intent.putExtra(DETAIL_ORDER, gson.toJson(order));
+        startActivity(intent);
+    }
+
     private class SocketServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -388,19 +425,38 @@ public class MainActivity extends AppCompatActivity
                     int method = intent.getIntExtra(Constants.METHOD, Constants.DEFAULT);
                     switch (method) {
                         case Constants.METHOD_GET_ORDERS:
-                            Order[] orders = gson.fromJson(intent.getStringExtra(Constants.RESPONSE), Order[].class);
-//                            mAirFragment.addOrders(orders);
+                            String orderList = intent.getStringExtra(RESPONSE);
+                            Order[] orders = gson.fromJson(orderList, Order[].class);
+                            mAirFragment.addOrders(orders);
                             break;
+
                         case Constants.METHOD_NEW_ORDER:
-                            Order order = gson.fromJson(intent.getStringExtra(Constants.RESPONSE), Order.class);
-//                            mAirFragment.addOrder(order);
+                            Order order = gson.fromJson(intent.getStringExtra(RESPONSE), Order.class);
+                            mAirFragment.addOrder(order);
                             break;
+
+                        case METHOD_GET_NEW_STATUS:
+                            String id = intent.getStringExtra(RESPONSE);
+
+                            SharedPreferences prefs = PreferenceManager
+                                    .getDefaultSharedPreferences(getApplicationContext());
+                            String text = prefs.getString(STATUS_ARRAY, "[]");
+                            Status[] statuses = gson.fromJson(text, Status[].class);
+                            for (Status status : statuses) {
+                                if (status.getId().equals(id)) {
+                                    Toast.makeText(context, status.getName(), Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
+                            }
+                            break;
+
                         case Constants.METHOD_DELETE_ORDER:
-                            String delOrderId = intent.getStringExtra(Constants.RESPONSE);
+                            String delOrderId = intent.getStringExtra(RESPONSE);
 //                            mAirFragment.removeOrder(delOrderId);
                             break;
+
                         case Constants.METHOD_NEW_MESSAGE:
-                            Message msg = gson.fromJson(intent.getStringExtra(Constants.RESPONSE), Message.class);
+                            Message msg = gson.fromJson(intent.getStringExtra(RESPONSE), Message.class);
                             showMessage(msg);
                             break;
                     }
@@ -509,6 +565,7 @@ public class MainActivity extends AppCompatActivity
     public static class MyDialogFragment extends DialogFragment {
         private Message message;
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             return new AlertDialog.Builder(getActivity())

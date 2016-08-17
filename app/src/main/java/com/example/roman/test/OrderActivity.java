@@ -1,18 +1,14 @@
 package com.example.roman.test;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.roman.test.utilities.Functions;
+
+import static com.example.roman.test.DetailOrderFragment.DETAIL_ORDER;
 
 public class OrderActivity extends AppCompatActivity {
 
@@ -26,8 +22,14 @@ public class OrderActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_order);
         if (savedInstanceState == null) {
+            Bundle arguments = new Bundle();
+            arguments.putString(DETAIL_ORDER, getIntent().getStringExtra(DETAIL_ORDER));
+
+            DetailOrderFragment fragment = DetailOrderFragment.newInstance();
+            fragment.setArguments(arguments);
+
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, fragment)
                     .commit();
         }
     }
@@ -41,39 +43,12 @@ public class OrderActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() { }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-
-            Intent intent = getActivity().getIntent();
-            View rootView = inflater.inflate(R.layout.fragment_detail_order, container, false);
-
-            if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-                String forecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);
-                ((TextView) rootView.findViewById(android.R.id.content))
-                        .setText(forecastStr);
-            }
-            return rootView;
-        }
+        return true;
     }
 }

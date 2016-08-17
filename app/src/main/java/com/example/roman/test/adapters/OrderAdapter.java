@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.roman.test.AirFragment;
 import com.example.roman.test.R;
 import com.example.roman.test.data.Order;
 
@@ -18,16 +19,23 @@ import butterknife.ButterKnife;
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
     private List<Order> mOrders;
     private Context context;
+    private AirFragment mAirFragment;
+    private final View.OnClickListener mOnClickListener;
 
-    public OrderAdapter(Context context, List<Order> orders) {
+    public OrderAdapter(Context context, List<Order> orders, AirFragment airFragment) {
         mOrders = orders;
         this.context = context;
+        mAirFragment = airFragment;
+        mOnClickListener = airFragment.new MyOnClickListener();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item_order, viewGroup, false);
-        return new ViewHolder(v);
+        View view = LayoutInflater.from(viewGroup.getContext())
+                .inflate(R.layout.list_item_order, viewGroup, false);
+        view.setOnClickListener(mOnClickListener);
+
+        return new ViewHolder(view);
     }
 
     @Override
@@ -38,8 +46,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         if (order != null) {
             viewHolder.from.setText(order.getFrom());
             viewHolder.to.setText(order.getTo());
+
             viewHolder.price.setText(context.getString(R.string.format_price,
-                    String.valueOf(order.getPrice())));
+                    String.valueOf(order.getPrice().split(",")[0])));
         }
     }
 
