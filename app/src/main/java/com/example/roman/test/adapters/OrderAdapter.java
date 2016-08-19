@@ -10,11 +10,17 @@ import android.widget.TextView;
 import com.example.roman.test.AirFragment;
 import com.example.roman.test.R;
 import com.example.roman.test.data.Order;
+import com.example.roman.test.utilities.Constants;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.example.roman.test.utilities.Constants.NEW_FORMAT;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
     private List<Order> mOrders;
@@ -45,10 +51,20 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         // Populate the data into the template view using the data object
         if (order != null) {
             viewHolder.from.setText(order.getFrom());
-            viewHolder.to.setText(order.getTo());
+            viewHolder.description.setText(order.getDescription());
 
-            viewHolder.price.setText(context.getString(R.string.format_price,
-                    String.valueOf(order.getPrice().split(",")[0])));
+            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.OLD_FORMAT);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(NEW_FORMAT);
+
+            Date time = null;
+            try {
+                time = dateFormat.parse(order.getTime());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            String simpleTime = simpleDateFormat.format(time);
+
+            viewHolder.time.setText(simpleTime);
         }
     }
 
@@ -62,11 +78,11 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         @BindView(R.id.list_item_from)
         TextView from;
 
-        @BindView(R.id.list_item_to)
-        TextView to;
+        @BindView(R.id.list_item_description)
+        TextView description;
 
-        @BindView(R.id.list_item_price)
-        TextView price;
+        @BindView(R.id.list_item_time)
+        TextView time;
 
         ViewHolder(View view) {
             super(view);

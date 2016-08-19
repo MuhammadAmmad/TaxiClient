@@ -1,6 +1,9 @@
 package com.example.roman.test.utilities;
 
 public class Constants {
+    public static final String NEW_FORMAT = " hh:mm";
+    public static final String OLD_FORMAT = "hh:mm:ss";
+
     static final int TEN_SECS = 1000 * 10;
 
     public static int id;
@@ -79,6 +82,8 @@ public class Constants {
     public static final String DAY = "day";
 
     public static final String SECTORS = "SC";
+    public static final String NEW_ORDER_MASK = "NOF";
+    public static final String SECTOR_HASH = "SCH";
 
     public static final String LOGIN = "L";
     public static final String PASSWORD = "P";
@@ -91,4 +96,17 @@ public class Constants {
     public static final String STATUS_ID = "SI";
     public static final String ORDER_ID = "OI";
 
+    public static final int SHOW_PHONE_NUMBER = 1;
+    public static final int SHOW_DATE_START = 1 << 1;
+    public static final int SHOW_TIME_START = 1 << 2;
+    public static final int SHOW_DATE_CREATE = 1 << 3;
+    public static final int SHOW_TIME_CREATE = 1 << 4;
+    public static final int SHOW_ADDRESS_START = 1 << 6;
+    public static final int SHOW_ADDRESS_END = 1 << 7;
+    public static final int SHOW_PRICE = 1 << 8;
+    public static final int SHOW_TARIFF = 1 << 9;
+    public static final int SHOW_OPTIONS = 1 << 10;
+    public static final int SHOW_CAR_TYPE = 1 << 11;
+    public static final int SHOW_DESCRIPTION = 1 << 12;
+    public static final int SHOW_ROUTE_LENGTH = 1 << 13;
 }

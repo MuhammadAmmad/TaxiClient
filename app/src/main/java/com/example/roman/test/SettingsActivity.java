@@ -1,5 +1,6 @@
 package com.example.roman.test;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -11,6 +12,8 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 
 import com.example.roman.test.utilities.Functions;
 
+import javax.inject.Inject;
+
 public class SettingsActivity extends AppCompatActivity {
     private final static String AIR = "com.example.roman.test.AIR";
     private final static String STYLE = "com.example.roman.test.STYLE";
@@ -20,10 +23,14 @@ public class SettingsActivity extends AppCompatActivity {
 
     private final static String ACTION_KEY = "action";
 
+    @Inject
+    SharedPreferences prefs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ((TaxiApp) getApplication()).getNetComponent().inject(this);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Functions.setWholeTheme(this);
+            Functions.setWholeTheme(this, prefs);
         }
 
         super.onCreate(savedInstanceState);

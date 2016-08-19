@@ -55,6 +55,8 @@ public class MessageAdapter extends ArrayAdapter<Message> {
         } else {
             // View is being recycled, retrieve the viewHolder object from tag
             holder = (ViewHolder) view.getTag();
+            holder.date.setText("");
+            holder.message.setText("");
         }
 
         // Populate the data into the template view using the data object

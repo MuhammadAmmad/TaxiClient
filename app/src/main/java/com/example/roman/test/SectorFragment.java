@@ -1,6 +1,5 @@
 package com.example.roman.test;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,8 +11,8 @@ import android.widget.RadioButton;
 
 import com.example.roman.test.adapters.SectorAdapter;
 import com.example.roman.test.data.Sector;
-import com.example.roman.test.data.SectorsTable;
 import com.example.roman.test.services.SocketService;
+import com.example.roman.test.utilities.Functions;
 
 import org.json.JSONException;
 
@@ -31,14 +30,12 @@ public class SectorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_sectors, container, false);
-        Cursor cursor = getActivity().getContentResolver().query(
-                SectorsTable.CONTENT_URI, null, null, null, null);
 
-        List<Sector> mSectors = SectorsTable.getRows(cursor, false);
-        SectorAdapter mSectorAdapter = new SectorAdapter(getContext(), mSectors);
+        List<Sector> sectors = Functions.getSectorList(getContext());
+        SectorAdapter sectorAdapter = new SectorAdapter(getContext(), sectors);
 
         final ListView mListView = (ListView) rootView.findViewById(R.id.list_view_sectors);
-        mListView.setAdapter(mSectorAdapter);
+        mListView.setAdapter(sectorAdapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -57,6 +54,7 @@ public class SectorFragment extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
                 positionChecked = position;
             }
         });

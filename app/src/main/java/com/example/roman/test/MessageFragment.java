@@ -19,10 +19,7 @@ import java.util.List;
 public class MessageFragment extends Fragment {
 
     static MessageFragment newInstance() {
-        MessageFragment f = new MessageFragment();
-        Bundle bd1 = new Bundle(1);
-        f.setArguments(bd1);
-        return f;
+        return new MessageFragment();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.roman.test;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,14 +9,19 @@ import android.view.MenuItem;
 
 import com.example.roman.test.utilities.Functions;
 
+import javax.inject.Inject;
+
 import static com.example.roman.test.DetailOrderFragment.DETAIL_ORDER;
 
 public class OrderActivity extends AppCompatActivity {
+    @Inject
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ((TaxiApp) getApplication()).getNetComponent().inject(this);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Functions.setWholeTheme(this);
+            Functions.setWholeTheme(this, prefs);
         }
 
         super.onCreate(savedInstanceState);

@@ -14,12 +14,7 @@ import dagger.Provides;
 
 @Module
 public class NetModule {
-    String mBaseUrl;
-
-    // Constructor need only one parameter to instantiate
-    public NetModule(String baseUrl) {
-        this.mBaseUrl = baseUrl;
-    }
+    public NetModule(String baseUrl) { }
 
     @Provides
     @Singleton

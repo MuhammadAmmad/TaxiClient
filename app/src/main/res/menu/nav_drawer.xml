@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <group android:checkableBehavior="none">
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_main"
             android:icon="@drawable/ic_home"
@@ -11,6 +10,7 @@
             android:id="@+id/nav_my_orders"
             android:icon="@drawable/ic_local_taxi_black_24dp"
             android:title="@string/nav_drawer_my_orders" />
+
         <item
             android:id="@+id/nav_messages"
             android:icon="@drawable/ic_message"

@@ -1,19 +1,14 @@
 package com.example.roman.test;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
@@ -28,13 +23,13 @@ import com.example.roman.test.utilities.Functions;
 
 import org.json.JSONException;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class LoginActivity extends AppCompatActivity {
     private SocketServiceReceiver receiver;
-    private SocketService mService;
-    private boolean mBound;
 
     @BindView(R.id.login_progress)
     View mProgressView;
@@ -42,17 +37,20 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.login_form)
     View mLoginFormView;
 
+    @Inject
+    SharedPreferences prefs;
+
     static {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Functions.setWholeTheme(this);
-        }
-
         Log.e("Some stuff", "Create");
+        ((TaxiApp) getApplication()).getNetComponent().inject(this);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            Functions.setWholeTheme(this, prefs);
+        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -60,13 +58,12 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         Button mLoginButton = (Button) findViewById(R.id.action_sign_in);
-        assert mLoginButton != null;
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    showProgress(true);
                     attemptLogin(LoginActivity.this);
+//                    showProgress(true);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -82,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                         & Configuration.UI_MODE_NIGHT_MASK;
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    boolean isNight = Functions.isNight(LoginActivity.this);
+                    boolean isNight = Functions.isNight(prefs);
                     String newState;
 
                     if (isNight) {
@@ -91,10 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                         newState = Constants.NIGHT;
                     }
 
-                    getSharedPreferences(Constants.MY_PREFS_NAME, Context.MODE_PRIVATE)
-                            .edit()
-                            .putString(Constants.THEME, newState)
-                            .apply();
+                    Functions.saveToPreferences(newState, Constants.THEME, prefs);
                 } else {
                     switch (currentNightMode) {
                         case Configuration.UI_MODE_NIGHT_NO:
@@ -129,9 +123,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, SocketService.class);
         startService(new Intent(this, SocketService.class));
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         if (receiver == null) {
             receiver = new SocketServiceReceiver();
@@ -143,10 +135,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
 
         if (receiver != null) {
             unregisterReceiver(receiver);
@@ -161,41 +149,35 @@ public class LoginActivity extends AppCompatActivity {
                 context.getString(R.string.pref_login_default));
         String password = prefs.getString(context.getString(R.string.pref_password_key),
                 context.getString(R.string.pref_password_default));
-
         new UserLoginTask(login, password).execute();
     }
 
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }
+//    private void showProgress(final boolean show) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+//            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+//
+//            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+//            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+//                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+//                @Override
+//                public void onAnimationEnd(Animator animation) {
+//                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+//                }
+//            });
+//
+//            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+//            mProgressView.animate().setDuration(shortAnimTime).alpha(
+//                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+//                @Override
+//                public void onAnimationEnd(Animator animation) {
+//                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+//                }
+//            });
+//        } else {
+//            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+//            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+//        }
+//    }
 
     @Override
     public void recreate() {
@@ -210,7 +192,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private class SocketServiceReceiver extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             int error = intent.getIntExtra(Constants.ERROR, Constants.DEFAULT);
@@ -241,23 +222,6 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
         }
     }
-
-    final ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            SocketService.LocalBinder binder = (SocketService.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
 
     public static class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
         private final String mLogin;

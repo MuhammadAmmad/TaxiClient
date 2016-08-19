@@ -16,6 +16,8 @@ public class Status {
     @SerializedName(CAN_SET)
     private boolean canSet;
 
+    public Status() { }
+
     public void setId(String id) {
         this.id = id;
     }

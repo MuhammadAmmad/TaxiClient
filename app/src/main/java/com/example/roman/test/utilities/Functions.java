@@ -4,16 +4,18 @@ import android.app.Activity;
 import android.app.Notification;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.NotificationCompat;
-import android.support.v7.preference.PreferenceManager;
 
 import com.example.roman.test.R;
 import com.example.roman.test.data.Message;
+import com.example.roman.test.data.Sector;
+import com.example.roman.test.data.SectorsTable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import static com.example.roman.test.utilities.Constants.DEFAULT;
 import static com.example.roman.test.utilities.Constants.METHOD;
 
 public class Functions {
@@ -42,10 +45,9 @@ public class Functions {
         return "Unknown";
     }
 
-    public static boolean isNight(Activity activity) {
+    public static boolean isNight(SharedPreferences prefs) {
         boolean isNight = true;
-        String state = activity.getSharedPreferences(Constants.MY_PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(Constants.THEME, null);
+        String state = prefs.getString(Constants.THEME, null);
 
         if (state != null) {
             isNight = state.equals(Constants.NIGHT);
@@ -62,8 +64,8 @@ public class Functions {
         return object.getInt(Constants.ERROR);
     }
 
-    public static void setWholeTheme(Activity activity) {
-        boolean isNight = isNight(activity);
+    public static void setWholeTheme(Activity activity, SharedPreferences prefs) {
+        boolean isNight = isNight(prefs);
 
         if (isNight) {
             activity.setTheme(R.style.AppThemeNight);
@@ -177,10 +179,26 @@ public class Functions {
             this.method = method;
         }
     }
-    public static void saveArray(String array, String arrayName, Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+    public static void saveToPreferences(String item, String itemName, SharedPreferences prefs) {
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(arrayName, array);
+        editor.putString(itemName, item);
         editor.apply();
     }
+
+    public static String getFromPreferences(String itemName, SharedPreferences prefs) {
+        return prefs.getString(itemName, String.valueOf(DEFAULT));
+    }
+
+    public static List<Sector> getSectorList(Context context) {
+        Cursor cursor = context.getContentResolver().query(
+                SectorsTable.CONTENT_URI, null, null, null, null);
+
+        return SectorsTable.getRows(cursor, false);
+    }
+
+    public static boolean showField(int mask, int field) {
+        return (mask & field) == field;
+    }
+
 }

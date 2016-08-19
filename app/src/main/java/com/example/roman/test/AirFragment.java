@@ -22,19 +22,15 @@ public class AirFragment extends Fragment {
     private OrderAdapter mOrderAdapter;
     private RecyclerView mRecyclerView;
     private int mPosition = ListView.INVALID_POSITION;
+    private static final String SELECTED_KEY = "selected_position";
 
     static AirFragment newInstance() {
-        AirFragment f = new AirFragment();
-        Bundle bd1 = new Bundle(1);
-        f.setArguments(bd1);
-        return f;
+        return new AirFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
         mOrders = new ArrayList<>();
         mOrderAdapter = new OrderAdapter(getActivity(), mOrders, this);
 
@@ -45,6 +41,13 @@ public class AirFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mOrderAdapter);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
+            // The ListView probably hasn't even been even populated yet.
+            // Actually perform the swapout in onLoadFinished.
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+            mRecyclerView.smoothScrollToPosition(mPosition);
+        }
 
         return view;
     }
@@ -71,6 +74,18 @@ public class AirFragment extends Fragment {
                 return;
             }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // When tablets rotate, the currently selected list item need to be saved.
+        // When no item is selected, mPosition will be set to ListView.INVALID_POSITION,
+        // so check for that before storing.
+        if (mPosition != ListView.INVALID_POSITION) {
+            outState.putInt(SELECTED_KEY, mPosition);
+        }
+
+        super.onSaveInstanceState(outState);
     }
 
     public interface Callback {
