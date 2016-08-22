@@ -7,14 +7,19 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
+import com.example.roman.test.R;
 import com.example.roman.test.TaxiApp;
+import com.example.roman.test.data.Order;
+import com.example.roman.test.data.OrdersTable;
 import com.example.roman.test.data.Sector;
 import com.example.roman.test.data.SectorsTable;
 import com.example.roman.test.utilities.Constants;
 import com.example.roman.test.utilities.Functions;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
@@ -37,39 +42,39 @@ import static com.example.roman.test.utilities.Constants.METHOD_DELETE_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_BALANCE;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_NEW_STATUS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDERS;
+import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDER_BY_ID;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_SECTORS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_SETTINGS;
 import static com.example.roman.test.utilities.Constants.METHOD_LOGIN;
 import static com.example.roman.test.utilities.Constants.METHOD_NEW_MESSAGE;
 import static com.example.roman.test.utilities.Constants.METHOD_NEW_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_NEW_STATUS;
-import static com.example.roman.test.utilities.Constants.METHOD_SET_STATUS;
+import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER_STATUS;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_TO_SECTOR;
 import static com.example.roman.test.utilities.Constants.NEW_ORDER_MASK;
 import static com.example.roman.test.utilities.Constants.NEW_SECTOR;
 import static com.example.roman.test.utilities.Constants.ORDER_ID;
+import static com.example.roman.test.utilities.Constants.ORDER_STATUS_TAKE;
 import static com.example.roman.test.utilities.Constants.PASSWORD;
 import static com.example.roman.test.utilities.Constants.REASON_ARRAY;
 import static com.example.roman.test.utilities.Constants.RESPONSE;
 import static com.example.roman.test.utilities.Constants.SECTOR_HASH;
 import static com.example.roman.test.utilities.Constants.STATUS_ARRAY;
 import static com.example.roman.test.utilities.Constants.STATUS_ID;
+import static com.example.roman.test.utilities.Constants.WAITING_TIME;
 import static com.example.roman.test.utilities.Functions.saveToPreferences;
 
 public class SocketService extends Service {
     private static final String LOG_TAG = SocketService.class.getSimpleName();
-    private static final String SERVER = "ws://gw.staxi.com.ua:16999/test";
+    private static String serverAddress;
     private static final int TIMEOUT = 5000;
     private static SocketService sService;
 
     private WebSocket webSocket;
     private String id;
 
-    @Inject
-    Gson gson;
-
-    @Inject
-    SharedPreferences prefs;
+    @Inject Gson gson;
+    @Inject SharedPreferences prefs;
 
     @Nullable
     @Override
@@ -82,21 +87,18 @@ public class SocketService extends Service {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        ((TaxiApp) getApplication()).getNetComponent().inject(this);
+        sService = this;
+        serverAddress =  PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.pref_sector_key), getString(R.string.pref_server_default));
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         new ConnectToServer().execute();
-
-        sService = this;
-        ((TaxiApp) getApplication()).getNetComponent().inject(this);
-
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-//        Notification notification = builder
-//                .setContentTitle("New message")
-//                .setContentText("TaxiApp is running")
-//                .setSmallIcon(R.drawable.ic_menu_manage)
-//                .build();
-//
-//        startForeground(1, notification);
 
         return START_STICKY;
     }
@@ -104,7 +106,7 @@ public class SocketService extends Service {
     private WebSocket connect() throws IOException, WebSocketException {
         return new WebSocketFactory()
                 .setConnectionTimeout(TIMEOUT)
-                .createSocket(SERVER)
+                .createSocket(serverAddress)
                 .addListener(new SocketListener())
                 .addExtension(WebSocketExtension.PERMESSAGE_DEFLATE)
                 .connect();
@@ -149,19 +151,34 @@ public class SocketService extends Service {
     }
 
     public void getDriverStatus() throws JSONException {
-        Log.e("Create", "getStatus");
         sendMessage(METHOD_GET_NEW_STATUS, getId());
     }
 
     public void getOrders() throws JSONException {
-        Log.e("Create", "getOrders");
         sendMessage(METHOD_GET_ORDERS, getId());
+    }
+
+    public void takeOrder(String orderId, String waitingTime) throws JSONException {
+        Functions.JSONField newStatus = new Functions.JSONField(STATUS_ID, ORDER_STATUS_TAKE);
+        Functions.JSONField newWaitingTime = new Functions.JSONField(WAITING_TIME, waitingTime);
+        Functions.JSONField newOrder = new Functions.JSONField(ORDER_ID, orderId);
+        sendMessage(METHOD_SET_ORDER_STATUS, newStatus, newOrder, newWaitingTime);
     }
 
     public void setStatus(String orderStatus, String orderId) throws JSONException {
         Functions.JSONField newOrderStatus = new Functions.JSONField(STATUS_ID, orderStatus);
         Functions.JSONField newOrderId = new Functions.JSONField(ORDER_ID, orderId);
-        sendMessage(METHOD_SET_STATUS, newOrderId, newOrderStatus, getId());
+        sendMessage(METHOD_SET_ORDER_STATUS, newOrderId, newOrderStatus, getId());
+    }
+
+    public void getOrderById(String orderId) throws JSONException {
+        Functions.JSONField newOrderId;
+        if (orderId != null) {
+            newOrderId = new Functions.JSONField(ORDER_ID, orderId);
+        } else {
+            newOrderId = new Functions.JSONField(ORDER_ID, "null");
+        }
+        sendMessage(METHOD_GET_ORDER_BY_ID, newOrderId);
     }
 
     private Functions.JSONField getId() {
@@ -284,6 +301,14 @@ public class SocketService extends Service {
                                 broadcastIntent.putExtra(RESPONSE, statusId);
                                 break;
 
+                            case METHOD_SET_ORDER_STATUS:
+
+                                break;
+
+                            case METHOD_GET_ORDER_BY_ID:
+
+                                break;
+
                             case METHOD_NEW_MESSAGE:
                                 String msg = object.getJSONObject(Constants.RESPONSE).toString();
                                 broadcastIntent.setAction(Constants.MAIN_INTENT);
@@ -380,9 +405,17 @@ public class SocketService extends Service {
                                 SectorsTable.FIELD_ID + "= ?",
                                 new String[]{s.getId()});
                     }
-
-                    cursor.close();
                 }
+            }
+        }
+
+        private void addOrder(JsonObject jsonOrder) {
+            Order order = gson.fromJson(jsonOrder, Order.class);
+
+            Cursor cursor = getContentResolver().query(OrdersTable.CONTENT_URI, null, null, null, null);
+            if (cursor != null) {
+                getContentResolver().insert(OrdersTable.CONTENT_URI,
+                        OrdersTable.getContentValues(order, false));
             }
         }
     }

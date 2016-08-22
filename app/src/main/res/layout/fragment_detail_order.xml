@@ -111,7 +111,7 @@
                 android:text="@string/detail_take" />
 
             <Button
-                android:id="@+id/action_style"
+                android:id="@+id/action_waiting_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

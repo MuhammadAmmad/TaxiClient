@@ -5,55 +5,14 @@
 
     <ListPreference
         android:defaultValue="@string/pref_theme_night"
-        android:key="@string/pref_theme_key"
-        android:title="@string/pref_theme_label"
         android:entries="@array/pref_theme_options"
-        android:entryValues="@array/pref_theme_values">
-    </ListPreference>
+        android:entryValues="@array/pref_theme_values"
+        android:key="@string/pref_theme_key"
+        android:title="@string/pref_theme_label" />
 
-    <PreferenceCategory
-        android:title="@string/pref_header_fonts">
-
-        <EditTextPreference
-            android:capitalize="words"
-            android:defaultValue="22"
-            android:inputType="numberDecimal"
-            android:maxLines="1"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:key="@string/pref_text_size_key"
-            android:title="@string/pref_text_size_label" />
-
-        <EditTextPreference
-            android:title="@string/pref_btn_text_size_label"
-            android:key="@string/pref_btn_text_size_key"
-            android:capitalize="words"
-            android:defaultValue="22"
-            android:inputType="numberDecimal"
-            android:maxLines="1"
-            android:selectAllOnFocus="true"
-            android:singleLine="true" />
-
-        <EditTextPreference
-            android:title="@string/pref_tab_text_size_label"
-            android:key="@string/pref_tab_text_size_key"
-            android:capitalize="words"
-            android:defaultValue="22"
-            android:inputType="numberDecimal"
-            android:maxLines="1"
-            android:selectAllOnFocus="true"
-            android:singleLine="true" />
-
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:widgetLayout="@layout/switch_compat"
-            android:key="@string/pref_bold_text_key"
-            android:title="@string/pref_bold_text_label" />
-
-        <CheckBoxPreference
-            android:title="@string/pref_rotation_label"
-            android:key="@string/pref_rotation_key"
-            android:defaultValue="true"
-            android:widgetLayout="@layout/switch_compat" />
-    </PreferenceCategory>
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_rotation_key"
+        android:title="@string/pref_rotation_label"
+        android:widgetLayout="@layout/switch_compat" />
 </PreferenceScreen>

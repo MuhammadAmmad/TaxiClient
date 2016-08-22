@@ -1,5 +1,7 @@
 package com.example.roman.test;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -54,16 +56,16 @@ public class LoginActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        final Context context = this;
 
         ButterKnife.bind(this);
 
-        Button mLoginButton = (Button) findViewById(R.id.action_sign_in);
+        final Button mLoginButton = (Button) findViewById(R.id.action_sign_in);
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
                     attemptLogin(LoginActivity.this);
-//                    showProgress(true);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -110,12 +112,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button mSettingsButton = (Button) findViewById(R.id.action_setting);
+        final Button mSettingsButton = (Button) findViewById(R.id.action_setting);
         assert mSettingsButton != null;
         mSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, LoginSettingsActivity.class));
+                startActivity(new Intent(context, LoginSettingsActivity.class));
             }
         });
     }
@@ -123,13 +125,18 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        startService(new Intent(this, SocketService.class));
 
         if (receiver == null) {
             receiver = new SocketServiceReceiver();
             IntentFilter intentFilter = new IntentFilter(Constants.LOGIN_INTENT);
             registerReceiver(receiver, intentFilter);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startService(new Intent(this, SocketService.class));
     }
 
     @Override
@@ -143,41 +150,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     static void attemptLogin(Context context) throws JSONException {
+        Log.e("Some", "lof");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         String login = prefs.getString(context.getString(R.string.pref_login_key),
                 context.getString(R.string.pref_login_default));
         String password = prefs.getString(context.getString(R.string.pref_password_key),
                 context.getString(R.string.pref_password_default));
+        Log.e("Some", "lof");
         new UserLoginTask(login, password).execute();
     }
-
-//    private void showProgress(final boolean show) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-//            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-//
-//            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-//            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-//                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-//                @Override
-//                public void onAnimationEnd(Animator animation) {
-//                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-//                }
-//            });
-//
-//            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-//            mProgressView.animate().setDuration(shortAnimTime).alpha(
-//                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-//                @Override
-//                public void onAnimationEnd(Animator animation) {
-//                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-//                }
-//            });
-//        } else {
-//            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-//            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-//        }
-//    }
 
     @Override
     public void recreate() {
@@ -200,7 +182,9 @@ public class LoginActivity extends AppCompatActivity {
             switch (error) {
                 case Constants.ERROR_NONE:
                     errorMessage = context.getString(R.string.login_error_success);
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(mainIntent);
+                    finish();
                     break;
                 case Constants.ERROR_LOGIN_INCORRECT:
                     errorMessage = context.getString(R.string.login_error_incorrect);

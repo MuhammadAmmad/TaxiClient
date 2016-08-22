@@ -9,6 +9,10 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.example.roman.test.utilities.Functions;
 
@@ -22,8 +26,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private final static String ACTION_KEY = "action";
 
-    @Inject
-    SharedPreferences prefs;
+    @Inject SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +113,15 @@ public class SettingsActivity extends AppCompatActivity {
                 preference.setSummary(stringValue);
             }
             return true;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View view = super.onCreateView(inflater, container, savedInstanceState);
+            assert view != null;
+            view.setPadding(16, 0, 16, 0);
+
+            return view;
         }
     }
 }

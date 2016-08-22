@@ -14,7 +14,7 @@ public class Message {
     private static final String MESSAGE = "MS";
 
     @SerializedName(ID)
-    @SimpleSQLColumn(value = "col_id", primary = true)
+    @SimpleSQLColumn("col_id")
     private String id;
 
     @SerializedName(MESSAGE)
@@ -25,11 +25,7 @@ public class Message {
     @SimpleSQLColumn("date")
     private String date;
 
-    public Message() {
-        id = "";
-        message = "";
-        date = "";
-    }
+    public Message() { }
 
     public Message(String id, String message, String date) {
         this.id = id;

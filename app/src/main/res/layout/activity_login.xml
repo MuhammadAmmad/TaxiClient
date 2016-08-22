@@ -29,16 +29,16 @@
 
         tools:context="com.example.roman.test.LoginActivity">
 
-        <!--<ImageView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:src="@drawable/logo"-->
-            <!--android:layout_margin="16dp"-->
-            <!--android:layout_gravity="center_vertical"-->
-            <!--android:contentDescription="@string/app_name"-->
-            <!--android:layout_alignParentTop="true"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--/>-->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/screen568x568"
+            android:layout_margin="16dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/app_name"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            />
 
         <Button
             android:layout_width="match_parent"

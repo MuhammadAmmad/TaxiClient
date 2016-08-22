@@ -6,34 +6,24 @@
         <EditTextPreference
             android:title="@string/pref_login_label"
             android:key="@string/pref_login_key"
-            android:selectAllOnFocus="true"
             android:defaultValue="@string/pref_login_default"/>
 
         <EditTextPreference
             android:key="@string/pref_password_key"
             android:title="@string/pref_password_label"
             android:defaultValue="@string/pref_password_default"
-            android:inputType="numberPassword"
-            android:selectAllOnFocus="true"
-            android:password="true" />
+            android:inputType="textPassword"
+            android:gravity="center"
+            android:ellipsize="start" />
     </PreferenceCategory>
 
     <PreferenceCategory
         android:title="@string/pref_header_network">
 
         <EditTextPreference
-            android:key="@string/pref_port_key"
-            android:title="@string/pref_port_label"
-            android:inputType="number"
-            android:defaultValue="@string/pref_port_default">
-        </EditTextPreference>
-
-        <ListPreference
             android:key="@string/pref_server_key"
             android:title="@string/pref_server_label"
-            android:defaultValue="85.90.213.212"
-            android:entries="@array/pref_server_titles"
-            android:entryValues="@array/pref_server_values">
-        </ListPreference>
+            android:defaultValue="ws://gw.staxi.com.ua:16999/test">
+        </EditTextPreference>
     </PreferenceCategory>
 </PreferenceScreen>

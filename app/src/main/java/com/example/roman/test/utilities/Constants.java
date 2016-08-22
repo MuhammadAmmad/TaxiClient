@@ -1,7 +1,7 @@
 package com.example.roman.test.utilities;
 
 public class Constants {
-    public static final String NEW_FORMAT = " hh:mm";
+    public static final String NEW_FORMAT = "hh:mm";
     public static final String OLD_FORMAT = "hh:mm:ss";
 
     static final int TEN_SECS = 1000 * 10;
@@ -51,7 +51,7 @@ public class Constants {
     public static final int METHOD_GET_ORDERS  = 118;
     public static final int METHOD_GET_PREV_ORDERS = 119;
     public static final int METHOD_SET_ORDER = 120;
-    public static final int METHOD_SET_STATUS = 121;
+    public static final int METHOD_SET_ORDER_STATUS = 121;
     public static final int METHOD_SET_LATE_DATA = 122;
     public static final int METHOD_CLOSE_ORDER = 123;
     public static final int METHOD_GET_ORDER_BY_ID = 124;
@@ -95,12 +95,13 @@ public class Constants {
     public static final String STATUS_ARRAY = "DSMS";
     public static final String STATUS_ID = "SI";
     public static final String ORDER_ID = "OI";
+    public static final String WAITING_TIME = "TT";
 
     public static final int SHOW_PHONE_NUMBER = 1;
     public static final int SHOW_DATE_START = 1 << 1;
     public static final int SHOW_TIME_START = 1 << 2;
-    public static final int SHOW_DATE_CREATE = 1 << 3;
-    public static final int SHOW_TIME_CREATE = 1 << 4;
+    public static final int SHOW_DATE_CREATED = 1 << 3;
+    public static final int SHOW_TIME_CREATED = 1 << 4;
     public static final int SHOW_ADDRESS_START = 1 << 6;
     public static final int SHOW_ADDRESS_END = 1 << 7;
     public static final int SHOW_PRICE = 1 << 8;

@@ -16,20 +16,20 @@
             android:icon="@drawable/ic_message"
             android:title="@string/nav_drawer_messages" />
 
-        <item
-            android:id="@+id/nav_gps_map"
-            android:icon="@drawable/ic_gps_map"
-            android:title="@string/nav_drawer_gps_map" />
+        <!--<item-->
+            <!--android:id="@+id/nav_gps_map"-->
+            <!--android:icon="@drawable/ic_gps_map"-->
+            <!--android:title="@string/nav_drawer_gps_map" />-->
 
-        <item
-            android:id="@+id/nav_meter"
-            android:icon="@drawable/ic_meter"
-            android:title="@string/nav_drawer_tax_o_meter" />
+        <!--<item-->
+            <!--android:id="@+id/nav_meter"-->
+            <!--android:icon="@drawable/ic_meter"-->
+            <!--android:title="@string/nav_drawer_tax_o_meter" />-->
 
-        <item
-            android:id="@+id/nav_add_functions"
-            android:icon="@drawable/ic_add_functions"
-            android:title="@string/nav_drawer_extra_functions" />
+        <!--<item-->
+            <!--android:id="@+id/nav_add_functions"-->
+            <!--android:icon="@drawable/ic_add_functions"-->
+            <!--android:title="@string/nav_drawer_extra_functions" />-->
 
         <item
             android:id="@+id/nav_alarm"

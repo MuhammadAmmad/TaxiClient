@@ -1,23 +1,28 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="AppTheme" parent="PreferenceFixTheme.DayNight">
         <item name="@android:windowNoTitle">true</item>
         <item name="@android:windowFullscreen">true</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
     </style>
 
-    <style name="AppThemeDay" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppThemeDay" parent="PreferenceFixTheme.Light">
         <item name="@android:windowNoTitle">true</item>
         <item name="@android:windowFullscreen">true</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
         <item name="colorAccent">@color/teal</item>
         <item name="android:textColorSecondary">@color/teal</item>
     </style>
 
-    <style name="AppThemeNight" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppThemeNight" parent="PreferenceFixTheme">
         <item name="@android:windowNoTitle">true</item>
         <item name="@android:windowFullscreen">true</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="PreferenceFixTheme.NoActionBar">
+        <item name="@android:windowNoTitle">true</item>
+        <item name="@android:windowFullscreen">true</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

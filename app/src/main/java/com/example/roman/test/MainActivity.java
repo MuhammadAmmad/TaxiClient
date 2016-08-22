@@ -18,15 +18,19 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -36,6 +40,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.example.roman.test.data.Message;
@@ -57,6 +62,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static com.example.roman.test.DetailOrderFragment.DETAIL_ORDER;
 import static com.example.roman.test.LoginActivity.attemptLogin;
 import static com.example.roman.test.utilities.Constants.ERROR_NONE;
@@ -76,6 +83,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final int REQUEST_LOCATION = 1;
     private static final int AIR = 1;
+    private static boolean backPressed = false;
 
     private Menu mMenu;
     private Location mCurrentBestLocation;
@@ -90,18 +98,20 @@ public class MainActivity extends AppCompatActivity
 
     private AirFragment mAirFragment;
 
-
     @BindView(R.id.nav_view)
     NavigationView navigationView;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-//    @BindView(R.id.view_pager)
-//    ViewPager mViewPager;
+    @BindView(R.id.view_pager)
+    ViewPager mViewPager;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawer;
+
+    @BindView(R.id.tab_layout)
+    TabLayout tabLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -127,38 +137,38 @@ public class MainActivity extends AppCompatActivity
         mDrawer.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_main);
 
         mAirFragment = AirFragment.newInstance();
 
-        // TODO set true to main nav item
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.flContent, mAirFragment)
-                .commit();
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.flContent, mAirFragment)
+//                .commit();
 
-//        MyPageAdapter mPageAdapter = new MyPageAdapter(getSupportFragmentManager(), getFragments());
-//
-//        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//            }
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//                expandToolbar();
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-//                    expandToolbar();
-//                }
-//            }
-//        });
-//        mViewPager.setAdapter(mPageAdapter);
-//        mViewPager.setCurrentItem(AIR);
-//        mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
-//        tabLayout.setupWithViewPager(mViewPager);
+        MyPageAdapter mPageAdapter = new MyPageAdapter(getSupportFragmentManager(), getFragments());
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageSelected(int position) {
+                expandToolbar();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
+                    expandToolbar();
+                }
+            }
+        });
+
+        mViewPager.setAdapter(mPageAdapter);
+        mViewPager.setCurrentItem(AIR);
+        mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
+        tabLayout.setupWithViewPager(mViewPager);
 
         if (savedInstanceState == null) {
             // Acquire a reference to the system Location Manager
@@ -274,8 +284,22 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+
         } else {
-            super.onBackPressed();
+            if (backPressed) {
+                exit();
+            }
+
+            backPressed = true;
+            Toast.makeText(MainActivity.this,
+                    "To exit the application press \"Back\" one more time", Toast.LENGTH_SHORT)
+                    .show();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    backPressed = false;
+                }}, 2000);
         }
     }
 
@@ -313,51 +337,57 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
+        item.setChecked(true);
+
+        if (id == R.id.nav_main) {
+            tabLayout.setVisibility(VISIBLE);
+            mViewPager.setVisibility(VISIBLE);
+            findViewById(R.id.flContent).setVisibility(GONE);
+        } else if (id != R.id.nav_settings || id != R.id.nav_alarm) {
+            tabLayout.setVisibility(GONE);
+            mViewPager.setVisibility(GONE);
+            findViewById(R.id.flContent).setVisibility(VISIBLE);
+        }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = null;
-        Class fragmentClass = null;
 
         switch(id) {
             case R.id.nav_main:
-                fragmentManager
-                        .beginTransaction()
-                        .replace(R.id.flContent, mAirFragment)
+                new StartUpTask().execute();
+                break;
+            case R.id.nav_my_orders:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.flContent, OrderFragment.newInstance())
                         .commit();
-                return true;
+                break;
             case R.id.nav_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
-                return true;
+                break;
             case R.id.nav_messages:
-                fragmentClass = MessageFragment.class;
+                fragmentManager.beginTransaction()
+                        .replace(R.id.flContent, MessageFragment.newInstance())
+                        .commit();
                 break;
             case R.id.nav_alarm:
+                item.setChecked(false);
                 showAlert();
+                break;
             case R.id.nav_exit:
                 try {
                     SocketService.getInstance().logout();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                System.exit(1);
+                exit();
                 break;
         }
-
-        try {
-            if (fragmentClass != null) {
-                fragment = (Fragment) fragmentClass.newInstance();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-
-        item.setChecked(true);
-//        setTitle(item.getTitle());
 
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
@@ -504,9 +534,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-//    private void expandToolbar() {
-//        ((AppBarLayout) findViewById(R.id.app_bar_layout)).setExpanded(true);
-//    }
+    private void expandToolbar() {
+        ((AppBarLayout) findViewById(R.id.app_bar_layout)).setExpanded(true);
+    }
 
     private void newMessage(Message message) {
         ActivityManager activityManager = (ActivityManager)
@@ -630,5 +660,11 @@ public class MainActivity extends AppCompatActivity
             }
             return null;
         }
+    }
+
+    private void exit() {
+        moveTaskToBack(true);
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(1);
     }
 }

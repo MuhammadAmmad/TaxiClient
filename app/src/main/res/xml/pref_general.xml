@@ -1,71 +1,87 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference
-        android:title="@string/pref_air_label"
-        android:key="@string/pref_air_key">
-        <intent
-            android:targetPackage="com.example.roman.test"
-            android:targetClass="com.example.roman.test.SettingsActivity"
-            android:action="com.example.roman.test.AIR" />
-    </Preference>
+    <PreferenceCategory
+        android:title="General">
 
-    <PreferenceScreen
-        android:title="@string/pref_sound_label"
-        android:key="@string/pref_sound_key"
-        android:enabled="false">
-    </PreferenceScreen>
+        <Preference
+            android:title="@string/pref_air_label"
+            android:key="@string/pref_air_key">
+            <intent
+                android:targetPackage="com.example.roman.test"
+                android:targetClass="com.example.roman.test.SettingsActivity"
+                android:action="com.example.roman.test.AIR" />
+        </Preference>
 
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:title="@string/pref_vibration_label"
-        android:key="@string/pref_vibration_key"
-        android:widgetLayout="@layout/switch_compat" />
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pref_waiting_time_titles"
+            android:entryValues="@array/pref_waiting_time_values"
+            android:key="@string/pref_waiting_time_key"
+            android:title="@string/pref_waiting_time_label" />
+    </PreferenceCategory>
 
-    <Preference
-        android:title="@string/pref_style_label"
-        android:key="@string/pref_style_key">
-        <intent
-            android:targetPackage="com.example.roman.test"
-            android:targetClass="com.example.roman.test.SettingsActivity"
-            android:action="com.example.roman.test.STYLE" />
-    </Preference>
+    <PreferenceCategory
+        android:title="App settings">
 
-    <ListPreference
-        android:defaultValue="-1"
-        android:entries="@array/pref_waiting_time_titles"
-        android:entryValues="@array/pref_waiting_time_values"
-        android:key="@string/pref_waiting_time_key"
-        android:title="@string/pref_waiting_time_label" />
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pref_languages_titles"
+            android:entryValues="@array/pref_languages_values"
+            android:key="@string/pref_languages_key"
+            android:title="@string/pref_languages_label" />
 
-    <ListPreference
-        android:defaultValue="-1"
-        android:entries="@array/pref_languages_titles"
-        android:entryValues="@array/pref_languages_values"
-        android:key="@string/pref_languages_key"
-        android:title="@string/pref_languages_label" />
+        <Preference
+            android:title="@string/pref_updates_label"
+            android:key="@string/pref_updates_key">
+            <intent
+                android:targetPackage="com.example.roman.test"
+                android:targetClass="com.example.roman.test.SettingsActivity"
+                android:action="com.example.roman.test.UPDATE" />
+        </Preference>
+    </PreferenceCategory>
 
-    <Preference
-        android:title="@string/pref_clear_cache_label"
-        android:key="@string/pref_clear_cache_key">
-        <intent
-            android:targetPackage="com.example.roman.test"
-            android:targetClass="com.example.roman.test.SettingsActivity"
-            android:action="com.example.roman.test.CACHE" />
-    </Preference>
+    <!--<Preference-->
+        <!--android:title="@string/pref_style_label"-->
+        <!--android:key="@string/pref_style_key">-->
+        <!--<intent-->
+            <!--android:targetPackage="com.example.roman.test"-->
+            <!--android:targetClass="com.example.roman.test.SettingsActivity"-->
+            <!--android:action="com.example.roman.test.STYLE" />-->
+    <!--</Preference>-->
 
-    <Preference
-        android:title="@string/pref_updates_label"
-        android:key="@string/pref_updates_key">
-        <intent
-            android:targetPackage="com.example.roman.test"
-            android:targetClass="com.example.roman.test.SettingsActivity"
-            android:action="com.example.roman.test.UPDATE" />
-    </Preference>
+    <PreferenceCategory
+        android:title="Notifications">
 
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="@string/pref_gps_key"
-        android:title="@string/pref_gps_label"
-        android:widgetLayout="@layout/switch_compat" />
+        <PreferenceScreen
+            android:title="@string/pref_sound_label"
+            android:key="@string/pref_sound_key"
+            android:enabled="false">
+        </PreferenceScreen>
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="@string/pref_vibration_label"
+            android:key="@string/pref_vibration_key"
+            android:widgetLayout="@layout/switch_compat" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Privacy Settings">
+
+        <Preference
+            android:title="@string/pref_clear_cache_label"
+            android:key="@string/pref_clear_cache_key">
+            <intent
+                android:targetPackage="com.example.roman.test"
+                android:targetClass="com.example.roman.test.SettingsActivity"
+                android:action="com.example.roman.test.CACHE" />
+        </Preference>
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_gps_key"
+            android:title="@string/pref_gps_label"
+            android:widgetLayout="@layout/switch_compat" />
+    </PreferenceCategory>
 </PreferenceScreen>

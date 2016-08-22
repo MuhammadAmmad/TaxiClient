@@ -15,7 +15,9 @@
         android:iconifiedByDefault="true"
         android:title="" />
 
-    <item android:id="@+id/stuff"
+    <item
+        android:id="@+id/some"
         app:showAsAction="always"
-        android:title="" />
+        android:iconifiedByDefault="true"
+        android:title=" "/>
 </menu>

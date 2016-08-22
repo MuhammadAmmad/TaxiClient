@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +19,7 @@ import com.example.roman.test.utilities.Functions;
 import javax.inject.Inject;
 
 public class LoginSettingsActivity extends AppCompatActivity {
-    @Inject
-    SharedPreferences prefs;
+    @Inject SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +35,10 @@ public class LoginSettingsActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public static class LoginSettingFragment extends PreferenceFragmentCompat
-                    implements Preference.OnPreferenceChangeListener {
 
-        /**
-         * Attaches a listener so the summary is always updated with the preference value.
-         * Also fires the listener once, to initialize the summary (so it shows up before the value
-         * is changed.)
-         */
+    public static class LoginSettingFragment extends PreferenceFragmentCompat
+            implements Preference.OnPreferenceChangeListener {
+
         private void bindPreferenceSummaryToValue(Preference preference) {
             // Set the listener to watch for value changes.
             preference.setOnPreferenceChangeListener(this);
@@ -76,11 +72,11 @@ public class LoginSettingsActivity extends AppCompatActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View v = super.onCreateView(inflater, container, savedInstanceState);
-            assert v != null;
-            v.setPadding(0, 32, 0, 32);
+            View view = super.onCreateView(inflater, container, savedInstanceState);
+            assert view != null;
+            view.setPadding(16, 0, 16, 0);
 
-            return v;
+            return view;
         }
 
         @Override
@@ -88,7 +84,6 @@ public class LoginSettingsActivity extends AppCompatActivity {
             addPreferencesFromResource(R.xml.pref_login);
 
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_login_key)));
-            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_port_key)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_password_key)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_server_key)));
         }
