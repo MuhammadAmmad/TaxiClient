@@ -27,7 +27,6 @@ import static com.example.roman.test.utilities.Constants.NEW_ORDER_MASK;
 import static com.example.roman.test.utilities.Constants.ORDER_STATUS_NEW;
 import static com.example.roman.test.utilities.Constants.SHOW_ADDRESS_END;
 import static com.example.roman.test.utilities.Constants.SHOW_ADDRESS_START;
-import static com.example.roman.test.utilities.Constants.SHOW_DATE_CREATE;
 import static com.example.roman.test.utilities.Constants.SHOW_DATE_START;
 import static com.example.roman.test.utilities.Constants.SHOW_DESCRIPTION;
 import static com.example.roman.test.utilities.Constants.SHOW_OPTIONS;
@@ -111,14 +110,10 @@ public class DetailOrderFragment extends Fragment {
                 int mask = Integer.parseInt(Functions
                         .getFromPreferences(NEW_ORDER_MASK, prefs));
 
-                if (showField(mask, SHOW_DATE_CREATE)) {
-                    dateCreated.setVisibility(View.VISIBLE);
-                    dateCreated.setText("some text");
-                }
-
                 if (showField(mask, SHOW_TIME_CREATE)) {
                     timeCreated.setVisibility(View.VISIBLE);
-                    timeCreated.setText("some text");
+                    timeCreated.setText(context.getString(R.string.format_order_time_created,
+                            order.getTimeCreated()));
                 }
 
                 if (showField(mask, SHOW_PHONE_NUMBER)) {
@@ -153,12 +148,12 @@ public class DetailOrderFragment extends Fragment {
 
                 if (showField(mask, SHOW_DATE_START)) {
                     date.setVisibility(View.VISIBLE);
-                    date.setText(context.getString(R.string.format_order_to, order.getTo()));
+                    date.setText(context.getString(R.string.format_order_date, order.getTo()));
                 }
 
                 if (showField(mask, SHOW_TIME_START)) {
                     time.setVisibility(View.VISIBLE);
-                    time.setText(context.getString(R.string.format_order_to, order.getTo()));
+                    time.setText(context.getString(R.string.format_order_time, order.getTo()));
                 }
 
                 if (showField(mask, SHOW_ROUTE_LENGTH)) {
@@ -168,7 +163,7 @@ public class DetailOrderFragment extends Fragment {
 
 //                if (showField(mask, SHOW_TARIFF)) {
                     sector.setVisibility(View.VISIBLE);
-                    sector.setText(context.getString(R.string.format_order_sector, order.getSectorFrom()));
+                    sector.setText(context.getString(R.string.format_order_tariff, order.getSectorFrom()));
 //                }
 
                 take.setOnClickListener(new View.OnClickListener() {

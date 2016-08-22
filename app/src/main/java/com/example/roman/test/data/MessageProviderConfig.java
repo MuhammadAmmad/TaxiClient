@@ -5,8 +5,8 @@ import ckm.simple.sql_provider.annotation.SimpleSQLConfig;
 
 @SimpleSQLConfig(
         name = "MessageProvider",
-        authority = "just.some.message_provider.authority",
-        database = "one.db",
+        authority = "just.some.provider_message.authority",
+        database = "two.db",
         version = 1
 )
 
@@ -16,3 +16,4 @@ public class MessageProviderConfig implements ckm.simple.sql_provider.annotation
         return new UpgradeScript[0];
     }
 }
+

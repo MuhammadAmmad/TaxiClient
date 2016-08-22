@@ -14,6 +14,7 @@ import android.support.v7.app.NotificationCompat;
 
 import com.example.roman.test.R;
 import com.example.roman.test.data.Message;
+import com.example.roman.test.data.MessagesTable;
 import com.example.roman.test.data.Sector;
 import com.example.roman.test.data.SectorsTable;
 
@@ -195,6 +196,13 @@ public class Functions {
                 SectorsTable.CONTENT_URI, null, null, null, null);
 
         return SectorsTable.getRows(cursor, false);
+    }
+
+    public static List<Message> getMessageList(Context context) {
+        Cursor cursor = context.getContentResolver().query(
+                MessagesTable.CONTENT_URI, null, null, null, null);
+
+        return MessagesTable.getRows(cursor, false);
     }
 
     public static boolean showField(int mask, int field) {

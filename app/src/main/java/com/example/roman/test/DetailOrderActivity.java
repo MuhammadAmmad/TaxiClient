@@ -13,7 +13,7 @@ import javax.inject.Inject;
 
 import static com.example.roman.test.DetailOrderFragment.DETAIL_ORDER;
 
-public class OrderActivity extends AppCompatActivity {
+public class DetailOrderActivity extends AppCompatActivity {
     @Inject
     SharedPreferences prefs;
 
@@ -25,8 +25,8 @@ public class OrderActivity extends AppCompatActivity {
         }
 
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_order);
+
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
             arguments.putString(DETAIL_ORDER, getIntent().getStringExtra(DETAIL_ORDER));

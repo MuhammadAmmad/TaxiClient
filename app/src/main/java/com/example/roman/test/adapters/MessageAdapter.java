@@ -31,7 +31,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
     }
 
     public MessageAdapter(Context context, List<Message> messages) {
-        super(context, R.layout.list_item_sector, messages);
+        super(context, R.layout.list_item_message, messages);
     }
 
     @NonNull
@@ -46,7 +46,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
         if (view == null) {
             // If there's no view to re-use, inflate a brand new view for now
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            view = inflater.inflate(R.layout.list_item_sector, parent, false);
+            view = inflater.inflate(R.layout.list_item_message, parent, false);
 
             holder = new ViewHolder(view);
 
@@ -64,6 +64,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             holder.date.setText(message.getDate());
             holder.message.setText(message.getMessage());
         }
+
         return view;
     }
 }

@@ -1,6 +1,5 @@
 package com.example.roman.test.services;
 
-import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,10 +7,8 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
-import com.example.roman.test.R;
 import com.example.roman.test.TaxiApp;
 import com.example.roman.test.data.Sector;
 import com.example.roman.test.data.SectorsTable;
@@ -92,14 +89,14 @@ public class SocketService extends Service {
         sService = this;
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-        Notification notification = builder
-                .setContentTitle("New message")
-                .setContentText("TaxiApp is running")
-                .setSmallIcon(R.drawable.ic_menu_manage)
-                .build();
-
-        startForeground(1, notification);
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+//        Notification notification = builder
+//                .setContentTitle("New message")
+//                .setContentText("TaxiApp is running")
+//                .setSmallIcon(R.drawable.ic_menu_manage)
+//                .build();
+//
+//        startForeground(1, notification);
 
         return START_STICKY;
     }

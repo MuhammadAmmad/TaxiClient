@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,14 +21,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -91,14 +90,15 @@ public class MainActivity extends AppCompatActivity
 
     private AirFragment mAirFragment;
 
-    @BindView(R.id.tabLayout)
-    TabLayout tabLayout;
 
     @BindView(R.id.nav_view)
     NavigationView navigationView;
 
-    @BindView(R.id.view_pager)
-    ViewPager mViewPager;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+//    @BindView(R.id.view_pager)
+//    ViewPager mViewPager;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawer;
@@ -115,44 +115,50 @@ public class MainActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_awesome_toolbar);
-        setSupportActionBar(myToolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mDrawerToggle = new ActionBarDrawerToggle(
-                this, mDrawer, null,
+                this, mDrawer, toolbar,
                 R.string.nav_drawer_open,
                 R.string.nav_drawer_close) {
         };
 
         mDrawer.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
-
         navigationView.setNavigationItemSelectedListener(this);
 
-        MyPageAdapter mPageAdapter = new MyPageAdapter(getSupportFragmentManager(), getFragments());
+        mAirFragment = AirFragment.newInstance();
 
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
+        // TODO set true to main nav item
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.flContent, mAirFragment)
+                .commit();
 
-            @Override
-            public void onPageSelected(int position) {
-                expandToolbar();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-                    expandToolbar();
-                }
-            }
-        });
-        mViewPager.setAdapter(mPageAdapter);
-        mViewPager.setCurrentItem(AIR);
-        mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
-        tabLayout.setupWithViewPager(mViewPager);
+//        MyPageAdapter mPageAdapter = new MyPageAdapter(getSupportFragmentManager(), getFragments());
+//
+//        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//            }
+//
+//            @Override
+//            public void onPageSelected(int position) {
+//                expandToolbar();
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
+//                    expandToolbar();
+//                }
+//            }
+//        });
+//        mViewPager.setAdapter(mPageAdapter);
+//        mViewPager.setCurrentItem(AIR);
+//        mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
+//        tabLayout.setupWithViewPager(mViewPager);
 
         if (savedInstanceState == null) {
             // Acquire a reference to the system Location Manager
@@ -204,6 +210,17 @@ public class MainActivity extends AppCompatActivity
 
             new StartUpTask().execute();
         }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -300,30 +317,47 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_main) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = null;
+        Class fragmentClass = null;
 
-//        } else if (id == R.id.nav_my_orders) {
-//
-        } else if (id == R.id.nav_messages) {
-            startActivity(new Intent(this, MessageActivity.class));
-//        } else if (id == R.id.nav_gps_map) {
-//
-//        } else if (id == R.id.nav_meter) {
-//
-//        } else if (id == R.id.nav_add_functions) {
-
-        } else if (id == R.id.nav_alarm) {
-            showAlert();
-        } else if (id == R.id.nav_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-        } else if (id == R.id.nav_exit) {
-            try {
-                SocketService.getInstance().logout();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            System.exit(1);
+        switch(id) {
+            case R.id.nav_main:
+                fragmentManager
+                        .beginTransaction()
+                        .replace(R.id.flContent, mAirFragment)
+                        .commit();
+                return true;
+            case R.id.nav_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            case R.id.nav_messages:
+                fragmentClass = MessageFragment.class;
+                break;
+            case R.id.nav_alarm:
+                showAlert();
+            case R.id.nav_exit:
+                try {
+                    SocketService.getInstance().logout();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                System.exit(1);
+                break;
         }
+
+        try {
+            if (fragmentClass != null) {
+                fragment = (Fragment) fragmentClass.newInstance();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+
+        item.setChecked(true);
+//        setTitle(item.getTitle());
 
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
@@ -355,8 +389,20 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // The action bar home/up action should open or close the drawer.
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawer.openDrawer(GravityCompat.START);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onItemSelected(Order order) {
-        Intent intent = new Intent(this, OrderActivity.class);
+        Intent intent = new Intent(this, DetailOrderActivity.class);
         intent.putExtra(DETAIL_ORDER, gson.toJson(order));
         startActivity(intent);
     }
@@ -458,9 +504,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void expandToolbar() {
+//    private void expandToolbar() {
 //        ((AppBarLayout) findViewById(R.id.app_bar_layout)).setExpanded(true);
-    }
+//    }
 
     private void newMessage(Message message) {
         ActivityManager activityManager = (ActivityManager)

@@ -20,18 +20,22 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".LoginActivity" />
+
         <activity android:name=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LoginActivity" />
         </activity>
+
         <activity android:name=".LoginSettingsActivity" />
         <activity android:name=".SectorActivity" />
+        <activity android:name=".MessageActivity" />
+
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -40,8 +44,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+
         <activity
-            android:name=".OrderActivity"
+            android:name=".DetailOrderActivity"
             android:label="@string/title_activity_order"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -55,7 +60,12 @@
 
         <provider
             android:name=".data.SectorProvider"
-            android:authorities="just.some.sector_provider.authority"
+            android:authorities="just.some.provider_sector.authority"
+            android:exported="false" />
+
+        <provider
+            android:name=".data.MessageProvider"
+            android:authorities="just.some.provider_message.authority"
             android:exported="false" />
 
     </application>

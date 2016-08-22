@@ -34,7 +34,7 @@ public class AirFragment extends Fragment {
         mOrders = new ArrayList<>();
         mOrderAdapter = new OrderAdapter(getActivity(), mOrders, this);
 
-        View view =  inflater.inflate(R.layout.fragment_list_view, container, false);
+        View view =  inflater.inflate(R.layout.fragment_air, container, false);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         mRecyclerView.addItemDecoration(new ItemDecorator(getActivity().getApplicationContext()));

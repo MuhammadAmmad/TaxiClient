@@ -19,7 +19,6 @@ public class SettingsActivity extends AppCompatActivity {
     private final static String STYLE = "com.example.roman.test.STYLE";
     private final static String UPDATE = "com.example.roman.test.UPDATE";
     private final static String CACHE = "com.example.roman.test.CACHE";
-    private final static String GENERAL = "com.example.roman.test.GENERAL";
 
     private final static String ACTION_KEY = "action";
 

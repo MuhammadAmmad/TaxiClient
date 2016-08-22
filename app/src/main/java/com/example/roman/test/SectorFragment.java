@@ -22,13 +22,18 @@ public class SectorFragment extends Fragment {
     private int positionChecked = ListView.INVALID_POSITION;
 
     static SectorFragment newInstance() {
-        SectorFragment f = new SectorFragment();
-        return f;
+        return new SectorFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        try {
+            SocketService.getInstance().getSectors("0");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         View rootView = inflater.inflate(R.layout.fragment_sectors, container, false);
 
         List<Sector> sectors = Functions.getSectorList(getContext());

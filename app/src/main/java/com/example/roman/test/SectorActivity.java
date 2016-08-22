@@ -25,11 +25,7 @@ public class SectorActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        try {
-            SocketService.getInstance().getSectors("0");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
 
         setContentView(R.layout.activity_sector);
 

@@ -240,7 +240,10 @@
     <string name="format_order_options">Options: <xliff:g>%1$s</xliff:g></string>
     <string name="format_order_sector">Sector: <xliff:g>%1$s</xliff:g></string>
     <string name="format_order_distance">Distance: <xliff:g>%1$s</xliff:g> m</string>
-    <string name="title_activity_some">SomeActivity</string>
+    <string name="format_order_time_created">Time created: <xliff:g>%1$s</xliff:g> m</string>
+    <string name="format_order_date">Date: <xliff:g>%1$s</xliff:g> m</string>
+    <string name="format_order_time">Time: <xliff:g>%1$s</xliff:g> m</string>
+    <string name="format_order_tariff">Tariff: <xliff:g>%1$s</xliff:g> m</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

@@ -116,4 +116,8 @@
     <string name="format_order_options">Опції: <xliff:g>%1$s</xliff:g></string>
     <string name="format_order_sector">Сектор: <xliff:g>%1$s</xliff:g></string>
     <string name="format_order_distance">Відстань: <xliff:g>%1$s</xliff:g> м</string>
+    <string name="format_order_time_created">Час створення: <xliff:g>%1$s</xliff:g> m</string>
+    <string name="format_order_date">Дата: <xliff:g>%1$s</xliff:g> m</string>
+    <string name="format_order_time">Час: <xliff:g>%1$s</xliff:g> m</string>
+    <string name="format_order_tariff">Тариф: <xliff:g>%1$s</xliff:g> m</string>
 </resources>
