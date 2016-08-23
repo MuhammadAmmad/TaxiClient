@@ -40,6 +40,7 @@ import static com.example.roman.test.utilities.Constants.LOGIN;
 import static com.example.roman.test.utilities.Constants.MAIN_INTENT;
 import static com.example.roman.test.utilities.Constants.METHOD_DELETE_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_BALANCE;
+import static com.example.roman.test.utilities.Constants.METHOD_GET_CURRENT_SECTOR;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_NEW_STATUS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDERS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDER_BY_ID;
@@ -158,6 +159,10 @@ public class SocketService extends Service {
         sendMessage(METHOD_GET_ORDERS, getId());
     }
 
+    public void getCurrentSector() throws JSONException {
+        sendMessage(METHOD_GET_CURRENT_SECTOR, getId());
+    }
+
     public void takeOrder(String orderId, String waitingTime) throws JSONException {
         Functions.JSONField newStatus = new Functions.JSONField(STATUS_ID, ORDER_STATUS_TAKE);
         Functions.JSONField newWaitingTime = new Functions.JSONField(WAITING_TIME, waitingTime);
@@ -165,16 +170,10 @@ public class SocketService extends Service {
         sendMessage(METHOD_SET_ORDER_STATUS, newStatus, newOrder, newWaitingTime);
     }
 
-    public void setStatus(String orderStatus, String orderId) throws JSONException {
-        Functions.JSONField newOrderStatus = new Functions.JSONField(STATUS_ID, orderStatus);
-        Functions.JSONField newOrderId = new Functions.JSONField(ORDER_ID, orderId);
-        sendMessage(METHOD_SET_ORDER_STATUS, newOrderId, newOrderStatus, getId());
-    }
-
-    public void getOrderById(String orderId) throws JSONException {
+    public void getOrderById(String ... orderId) throws JSONException {
         Functions.JSONField newOrderId;
-        if (orderId != null) {
-            newOrderId = new Functions.JSONField(ORDER_ID, orderId);
+        if (orderId.length > 0) {
+            newOrderId = new Functions.JSONField(ORDER_ID, orderId[0]);
         } else {
             newOrderId = new Functions.JSONField(ORDER_ID, "null");
         }
@@ -230,7 +229,7 @@ public class SocketService extends Service {
     public class HandleRequestTask extends AsyncTask<Void, Void, Void> {
         private final String mMessage;
 
-        HandleRequestTask(String message) throws JSONException {
+        HandleRequestTask(String message) {
             mMessage = message;
         }
 
@@ -293,6 +292,13 @@ public class SocketService extends Service {
                                 String sectorId = object.getString(RESPONSE);
                                 broadcastIntent.setAction(MAIN_INTENT);
                                 broadcastIntent.putExtra(RESPONSE, sectorId);
+                                getCurrentSector();
+                                break;
+
+                            case METHOD_GET_CURRENT_SECTOR:
+                                String currentSector = object.getString(RESPONSE);
+                                broadcastIntent.setAction(MAIN_INTENT);
+                                broadcastIntent.putExtra(RESPONSE, currentSector);
                                 break;
 
                             case METHOD_GET_NEW_STATUS:
@@ -302,11 +308,17 @@ public class SocketService extends Service {
                                 break;
 
                             case METHOD_SET_ORDER_STATUS:
-
+                                String orderId = object.getJSONObject(RESPONSE).getString(ORDER_ID);
+                                broadcastIntent.putExtra(ORDER_ID, orderId);
+                                broadcastIntent.setAction(MAIN_INTENT);
                                 break;
 
                             case METHOD_GET_ORDER_BY_ID:
-
+                                String newOrder = object.getString(RESPONSE);
+                                broadcastIntent.putExtra(RESPONSE, newOrder);
+                                broadcastIntent.setAction(MAIN_INTENT);
+//                                getContentResolver().insert(OrdersTable.CONTENT_URI,
+//                                        OrdersTable.getContentValues(gson.fromJson(newOrder, Order.class), false));
                                 break;
 
                             case METHOD_NEW_MESSAGE:

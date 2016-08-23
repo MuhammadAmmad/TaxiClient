@@ -119,4 +119,11 @@
     <string name="format_order_date">Дата: <xliff:g>%1$s</xliff:g> m</string>
     <string name="format_order_time">Время: <xliff:g>%1$s</xliff:g> m</string>
     <string name="format_order_tariff">Тариф: <xliff:g>%1$s</xliff:g> m</string>
+
+    <string name="exit_toast">Чтобы выйти из приложения, нажмите "Назад" ещё раз</string>
+    <string name="internet_gone">Нет соединения</string>
+    <string name="internet_came_back">Соединение установлено</string>
+    <string name="internet_online">В онлайн-режим</string>
+
+    <string name="format_callsign">Позывной: <xliff:g>%1$s</xliff:g></string>
 </resources>

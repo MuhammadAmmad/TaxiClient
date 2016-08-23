@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
@@ -36,13 +37,15 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.roman.test.data.ChatMessage;
 import com.example.roman.test.data.Message;
 import com.example.roman.test.data.MessagesTable;
 import com.example.roman.test.data.Order;
@@ -53,8 +56,11 @@ import com.example.roman.test.utilities.Functions;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -67,12 +73,23 @@ import static android.view.View.VISIBLE;
 import static com.example.roman.test.DetailOrderFragment.DETAIL_ORDER;
 import static com.example.roman.test.LoginActivity.attemptLogin;
 import static com.example.roman.test.utilities.Constants.ERROR_NONE;
+import static com.example.roman.test.utilities.Constants.ERROR_NOT_CONFIRMED;
+import static com.example.roman.test.utilities.Constants.ERROR_ORDER_NOT_FOUND;
+import static com.example.roman.test.utilities.Constants.ERROR_ORDER_TAKEN;
+import static com.example.roman.test.utilities.Constants.METHOD_GET_CURRENT_SECTOR;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_NEW_STATUS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDERS;
+import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDER_BY_ID;
 import static com.example.roman.test.utilities.Constants.METHOD_NEW_ORDER;
+import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER_STATUS;
+import static com.example.roman.test.utilities.Constants.ORDER_ID;
+import static com.example.roman.test.utilities.Constants.QUEUE_POSITION;
 import static com.example.roman.test.utilities.Constants.RESPONSE;
+import static com.example.roman.test.utilities.Constants.SECTOR_ID;
 import static com.example.roman.test.utilities.Constants.STATUS_ARRAY;
+import static com.example.roman.test.utilities.Functions.getFromPreferences;
 import static com.example.roman.test.utilities.Functions.getSectorList;
+import static com.example.roman.test.utilities.Functions.getSectorNameById;
 import static com.example.roman.test.utilities.Functions.getStreetFromLocation;
 import static com.example.roman.test.utilities.Functions.isBetterLocation;
 
@@ -82,7 +99,9 @@ public class MainActivity extends AppCompatActivity
         AirFragment.Callback {
 
     private static final int REQUEST_LOCATION = 1;
+    private static final int MAIN = 0;
     private static final int AIR = 1;
+    private static final int ORDER = 2;
     private static boolean backPressed = false;
 
     private Menu mMenu;
@@ -141,10 +160,6 @@ public class MainActivity extends AppCompatActivity
 
         mAirFragment = AirFragment.newInstance();
 
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.flContent, mAirFragment)
-//                .commit();
 
         MyPageAdapter mPageAdapter = new MyPageAdapter(getSupportFragmentManager(), getFragments());
 
@@ -170,56 +185,64 @@ public class MainActivity extends AppCompatActivity
         mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
         tabLayout.setupWithViewPager(mViewPager);
 
-        if (savedInstanceState == null) {
-            // Acquire a reference to the system Location Manager
-            mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        tabLayout.getTabAt(AIR).setIcon(R.drawable.air_icon);
+        tabLayout.getTabAt(ORDER).setIcon(R.drawable.order_icon);
+        tabLayout.getTabAt(MAIN).setIcon(R.drawable.main_icon);
 
-            // Define a listener that responds to location updates
-            mLocationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    if (isBetterLocation(location, mCurrentBestLocation)) {
-                        mCurrentBestLocation = location;
-                        String address = getStreetFromLocation(MainActivity.this, location);
-                        if (mMenu != null) {
-                            mMenu.findItem(R.id.address).setTitle(address);
-                        }
+        String login = getFromPreferences("LOGIN", prefs);
+        View header = navigationView.getHeaderView(0);
+        TextView callsign = (TextView) header.findViewById(R.id.call_sign);
+        callsign.setText(getString(R.string.format_callsign, login));
+
+
+        // Acquire a reference to the system Location Manager
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        mLocationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                if (isBetterLocation(location, mCurrentBestLocation)) {
+                    mCurrentBestLocation = location;
+                    String address = getStreetFromLocation(MainActivity.this, location);
+                    if (mMenu != null) {
+                        mMenu.findItem(R.id.address).setTitle(address);
                     }
                 }
-
-                @Override
-                public void onStatusChanged(String s, int i, Bundle bundle) {
-                }
-
-                @Override
-                public void onProviderEnabled(String s) {
-                    Toast.makeText(MainActivity.this,
-                            "Provider enabled: " + s, Toast.LENGTH_SHORT)
-                            .show();
-                }
-
-                @Override
-                public void onProviderDisabled(String s) {
-                    Toast.makeText(MainActivity.this,
-                            "Provider disabled: " + s, Toast.LENGTH_SHORT)
-                            .show();
-                }
-            };
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                    PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                            PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
             }
 
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
-            mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, mLocationListener);
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+            }
 
-            new StartUpTask().execute();
+            @Override
+            public void onProviderEnabled(String s) {
+                Toast.makeText(MainActivity.this,
+                        "Provider enabled: " + s, Toast.LENGTH_SHORT)
+                        .show();
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+                Toast.makeText(MainActivity.this,
+                        "Provider disabled: " + s, Toast.LENGTH_SHORT)
+                        .show();
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         }
+
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, mLocationListener);
+
+        new StartUpTask().execute();
     }
 
     @Override
@@ -292,7 +315,7 @@ public class MainActivity extends AppCompatActivity
 
             backPressed = true;
             Toast.makeText(MainActivity.this,
-                    "To exit the application press \"Back\" one more time", Toast.LENGTH_SHORT)
+                    getString(R.string.exit_toast), Toast.LENGTH_SHORT)
                     .show();
 
             new Handler().postDelayed(new Runnable() {
@@ -330,7 +353,9 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (location != null) {
-            mMenu.findItem(R.id.address).setTitle(getStreetFromLocation(this, location));
+            String street = getStreetFromLocation(this, location);
+            mMenu.findItem(R.id.address).setTitle(street);
+            mMenu.findItem(R.id.address).setTitleCondensed(street.split(",")[0]);
         }
 
         return true;
@@ -344,7 +369,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        item.setChecked(true);
 
         if (id == R.id.nav_main) {
             tabLayout.setVisibility(VISIBLE);
@@ -360,7 +384,6 @@ public class MainActivity extends AppCompatActivity
 
         switch(id) {
             case R.id.nav_main:
-                new StartUpTask().execute();
                 break;
             case R.id.nav_my_orders:
                 fragmentManager.beginTransaction()
@@ -398,28 +421,25 @@ public class MainActivity extends AppCompatActivity
         View view = findViewById(android.R.id.content);
 
         if (isConnected) {
-            final Snackbar snackBar = Snackbar.make(view, "Connection established", Snackbar.LENGTH_INDEFINITE);
-            snackBar.setAction("GO ONLINE", new View.OnClickListener() {
+            final Snackbar snackBar = Snackbar.make(view,
+                    getString(R.string.internet_came_back),
+                    Snackbar.LENGTH_INDEFINITE);
+            snackBar.setAction(getString(R.string.internet_online), new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-                        attemptLogin(MainActivity.this);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
+                    attemptLogin(MainActivity.this);
                     snackBar.dismiss();
                     recreate();
                 }
             });
             snackBar.show();
         } else {
-            Snackbar.make(view, "No internet connection", Snackbar.LENGTH_INDEFINITE).show();
+            Snackbar.make(view, getString(R.string.internet_gone), Snackbar.LENGTH_INDEFINITE).show();
         }
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)     {
         // The action bar home/up action should open or close the drawer.
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -457,16 +477,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return getString(R.string.main_main);
-                case 1:
-                    return getString(R.string.main_air);
-                case 2:
-                    return getString(R.string.main_order);
-                default:
-                    return "";
-            }
+            return "";
         }
 
         Fragment getRegisteredFragment(int position) {
@@ -543,8 +554,9 @@ public class MainActivity extends AppCompatActivity
                 getApplication().getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> services = activityManager.getRunningTasks(1);
         boolean isActivityFound = false;
+
         getContentResolver().insert(MessagesTable.CONTENT_URI,
-                MessagesTable.getContentValues(message, false));
+                MessagesTable.getContentValues(new ChatMessage(message, false), false));
 
         if (services.get(0).topActivity.getPackageName()
                 .equalsIgnoreCase(getApplicationContext().getPackageName())) {
@@ -618,6 +630,16 @@ public class MainActivity extends AppCompatActivity
                 case ERROR_NONE:
                     int method = intent.getIntExtra(Constants.METHOD, Constants.DEFAULT);
                     switch (method) {
+                        case METHOD_SET_ORDER_STATUS:
+                            final String orderId = intent.getStringExtra(ORDER_ID);
+                            showToast("You have have successfully taken order #" + orderId);
+                            try {
+                                SocketService.getInstance().getOrderById();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+
                         case METHOD_GET_ORDERS:
                             String orderList = intent.getStringExtra(RESPONSE);
                             final Order[] orders = gson.fromJson(orderList, Order[].class);
@@ -627,6 +649,39 @@ public class MainActivity extends AppCompatActivity
                                     mAirFragment.addOrders(orders);
                                 }
                             });
+                            break;
+
+                        case METHOD_GET_ORDER_BY_ID:
+                            String jsonOrder = intent.getStringExtra(RESPONSE);
+                            Order newOrder = gson.fromJson(jsonOrder, Order.class);
+                            SimpleDateFormat sdf = new SimpleDateFormat("MMM/dd HH:mm");
+                            String currentTime = sdf.format(new Date());
+                            final Message message = new Message(newOrder.getOrderId(),
+                                    "You have accepted order from air", currentTime);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    newMessage(message);
+                                }
+                            });
+                            break;
+
+                        case METHOD_GET_CURRENT_SECTOR:
+                            JSONObject currentSector = null;
+                            try {
+                                currentSector = new JSONObject(intent.getStringExtra(RESPONSE));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            if (currentSector != null) {
+                                try {
+                                    String sectorId = currentSector.getString(SECTOR_ID);
+                                    String name = getSectorNameById(MainActivity.this, sectorId);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                             break;
 
                         case METHOD_NEW_ORDER:
@@ -657,8 +712,33 @@ public class MainActivity extends AppCompatActivity
                             showMessage(msg);
                             break;
                     }
+                    break;
+
+                case ERROR_ORDER_NOT_FOUND:
+                    showToast("Order not found");
+                    break;
+
+                case ERROR_ORDER_TAKEN:
+                    showToast("Order taken by other driver");
+                    break;
+
+                case ERROR_NOT_CONFIRMED:
+                    showToast("You haven't confirmed order completion");
+                    break;
             }
             return null;
+        }
+
+        private void showToast(final String text) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast toast = Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT);
+                    TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+                    if( v != null) v.setGravity(Gravity.CENTER);
+                    toast.show();
+                }
+            });
         }
     }
 

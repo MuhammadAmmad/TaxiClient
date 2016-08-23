@@ -5,10 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.example.roman.test.services.SocketService;
 import com.example.roman.test.utilities.Functions;
-
-import org.json.JSONException;
 
 import javax.inject.Inject;
 
@@ -24,8 +21,6 @@ public class SectorActivity extends AppCompatActivity {
         }
 
         super.onCreate(savedInstanceState);
-
-
 
         setContentView(R.layout.activity_sector);
 

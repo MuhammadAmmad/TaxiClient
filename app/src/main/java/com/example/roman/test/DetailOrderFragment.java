@@ -1,15 +1,18 @@
 package com.example.roman.test;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.roman.test.data.Order;
@@ -25,7 +28,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.roman.test.utilities.Constants.NEW_ORDER_MASK;
-import static com.example.roman.test.utilities.Constants.ORDER_STATUS_NEW;
 import static com.example.roman.test.utilities.Constants.SHOW_ADDRESS_END;
 import static com.example.roman.test.utilities.Constants.SHOW_ADDRESS_START;
 import static com.example.roman.test.utilities.Constants.SHOW_DATE_START;
@@ -37,7 +39,7 @@ import static com.example.roman.test.utilities.Constants.SHOW_ROUTE_LENGTH;
 import static com.example.roman.test.utilities.Constants.SHOW_TARIFF;
 import static com.example.roman.test.utilities.Constants.SHOW_TIME_CREATED;
 import static com.example.roman.test.utilities.Constants.SHOW_TIME_START;
-import static com.example.roman.test.utilities.Functions.getFromPreferences;
+import static com.example.roman.test.utilities.Functions.getDialog;
 import static com.example.roman.test.utilities.Functions.showField;
 
 public class DetailOrderFragment extends Fragment {
@@ -84,6 +86,9 @@ public class DetailOrderFragment extends Fragment {
 
     @BindView(R.id.action_take)
     Button take;
+
+    @BindView(R.id.action_waiting_time)
+    Button timeWait;
 
     @Inject
     SharedPreferences prefs;
@@ -180,10 +185,53 @@ public class DetailOrderFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        getActivity().finish();
+                    }
+                });
+
+                timeWait.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showTimeDialog(order);
                     }
                 });
             }
         }
         return view;
+    }
+
+    private void showTimeDialog(final Order order) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle(R.string.detail_waiting_time)
+                .setSingleChoiceItems(R.array.pref_waiting_time_titles, 0,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                })
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        ListView lw = ((AlertDialog)dialog).getListView();
+                        final String waitingTime = ((String) lw.getAdapter()
+                                .getItem(lw.getCheckedItemPosition())).replaceAll("[^0-9]", "");
+
+                        try {
+                            SocketService.getInstance().takeOrder(order.getOrderId(), waitingTime);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        getActivity().finish();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+
+        builder.create().show();
     }
 }

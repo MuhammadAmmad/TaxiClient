@@ -61,6 +61,7 @@ public class SectorFragment extends Fragment {
                 }
 
                 positionChecked = position;
+                getActivity().finish();
             }
         });
 

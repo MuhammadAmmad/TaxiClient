@@ -52,19 +52,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         if (order != null) {
             viewHolder.from.setText(order.getFrom());
             viewHolder.description.setText(order.getDescription());
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.OLD_FORMAT);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(NEW_FORMAT);
-
-            Date time = null;
-            try {
-                time = dateFormat.parse(order.getTime());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            String simpleTime = simpleDateFormat.format(time);
-
-            viewHolder.time.setText(simpleTime);
+            viewHolder.time.setText(order.getTime());
         }
     }
 

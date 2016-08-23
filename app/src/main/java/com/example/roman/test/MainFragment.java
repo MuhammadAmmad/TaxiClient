@@ -47,11 +47,7 @@ public class MainFragment extends PreferenceFragmentCompat {
         mStatuses = gson.fromJson(text, Status[].class);
 
         final ListPreference statusPreference = (ListPreference) findPreference(getString(R.string.pref_status_key));
-        try {
-            setStatusData(statusPreference);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        setStatusData(statusPreference);
 
         statusPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -69,7 +65,7 @@ public class MainFragment extends PreferenceFragmentCompat {
         });
     }
 
-    private void setStatusData(ListPreference lp) throws JSONException {
+    private void setStatusData(ListPreference lp) {
         List<CharSequence> entries = new ArrayList<>();
         List<CharSequence> entryValues = new ArrayList<>();
 

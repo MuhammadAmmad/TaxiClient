@@ -43,8 +43,6 @@ public class AirFragment extends Fragment {
         mRecyclerView.setAdapter(mOrderAdapter);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
-            // The ListView probably hasn't even been even populated yet.
-            // Actually perform the swapout in onLoadFinished.
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
             mRecyclerView.smoothScrollToPosition(mPosition);
         }
@@ -69,7 +67,6 @@ public class AirFragment extends Fragment {
                 int position = mOrders.indexOf(order);
                 iterator.remove();
                 mOrderAdapter.notifyItemRemoved(position);
-                // TODO check later if workd properly
                 mOrderAdapter.notifyItemRangeChanged(position, mOrders.size());
                 return;
             }

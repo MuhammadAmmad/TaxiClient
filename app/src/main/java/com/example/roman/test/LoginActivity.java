@@ -1,7 +1,5 @@
 package com.example.roman.test;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -64,11 +62,9 @@ public class LoginActivity extends AppCompatActivity {
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    attemptLogin(LoginActivity.this);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
+                attemptLogin(getApplication());
             }
         });
 
@@ -149,15 +145,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    static void attemptLogin(Context context) throws JSONException {
-        Log.e("Some", "lof");
+    static void attemptLogin(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String login = prefs.getString(context.getString(R.string.pref_login_key),
-                context.getString(R.string.pref_login_default));
-        String password = prefs.getString(context.getString(R.string.pref_password_key),
-                context.getString(R.string.pref_password_default));
-        Log.e("Some", "lof");
+        String login = prefs.getString(context.getString(R.string.pref_login_key), context.getString(R.string.pref_login_default));
+        Functions.saveToPreferences(login, "LOGIN", prefs);
+        String password = prefs.getString(context.getString(R.string.pref_password_key), context.getString(R.string.pref_password_default));
+        Functions.saveToPreferences(login, "PASSWORD", prefs);
         new UserLoginTask(login, password).execute();
     }
 
@@ -182,9 +176,6 @@ public class LoginActivity extends AppCompatActivity {
             switch (error) {
                 case Constants.ERROR_NONE:
                     errorMessage = context.getString(R.string.login_error_success);
-                    Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(mainIntent);
-                    finish();
                     break;
                 case Constants.ERROR_LOGIN_INCORRECT:
                     errorMessage = context.getString(R.string.login_error_incorrect);

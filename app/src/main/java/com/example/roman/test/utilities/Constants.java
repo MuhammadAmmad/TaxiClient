@@ -71,11 +71,28 @@ public class Constants {
     public static final int ERROR_LOGIN_TAKEN = 5;
     public static final int ERROR_FULL_QUEUE = 6;
     public static final int ERROR_SECTOR_FAILED = 7;
+    public static final int ERROR_TARIFF_NOT_FOUND = 8;
+    public static final int ERROR_CANT_CHANGE_STATUS = 9;
     public static final int ERROR_ORDER_NOT_FOUND = 10;
     public static final int ERROR_ORDER_TAKEN = 11;
+    public static final int ERROR_NOT_CONFIRMED = 12;
+    public static final int ERROR_DRIVER_REMOVED = 13;
+    public static final int ERROR_ORDER_CLOSED = 14;
     public static final int ERROR_LOW_BALANCE = 15;
+    public static final int ERROR_NO_TIME = 16;
+    public static final int ERROR_OTHER_ORDER = 17;
+    public static final int ERROR_CARD_NOT_FOUND = 18;
+    public static final int ERROR_CARD_BLACK_LIST = 19;
+    public static final int ERROR_ORDER_CANT_CREATE = 20;
+    public static final int ERROR_MULTIPLE_ORDERS = 21;
+    public static final int ERROR_NOT_ON_MY_WAY = 22;
+    public static final int ERROR_FIRST_IN_QUEUE = 23;
+    public static final int ERROR_OPERATOR_DECLINED = 24;
+    public static final int ERROR_MAX_REST = 25;
+    public static final int ERROR_DRIVER_NOT_FOUND = 26;
+
     public static final int ERROR_SHIFT_CLOSED = 100;
-    public static final int ERROR_USER_BLOCKED = 106;
+    public static final int ERROR_DRIVER_BLOCKED = 106;
 
     public static final String THEME = "theme";
     public static final String NIGHT = "night";
@@ -96,6 +113,10 @@ public class Constants {
     public static final String STATUS_ID = "SI";
     public static final String ORDER_ID = "OI";
     public static final String WAITING_TIME = "TT";
+
+    public static final String QUEUE_POSITION = "CQI";
+    public static final String SECTOR_ID = "CSI";
+    public static final String DRIVERS_ARRAY = "SCT";
 
     public static final int SHOW_PHONE_NUMBER = 1;
     public static final int SHOW_DATE_START = 1 << 1;

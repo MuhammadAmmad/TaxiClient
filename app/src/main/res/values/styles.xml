@@ -3,21 +3,24 @@
     <style name="AppTheme" parent="PreferenceFixTheme.DayNight">
         <item name="@android:windowNoTitle">true</item>
         <item name="@android:windowFullscreen">true</item>
-        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
     </style>
 
     <style name="AppThemeDay" parent="PreferenceFixTheme.Light">
         <item name="@android:windowNoTitle">true</item>
         <item name="@android:windowFullscreen">true</item>
-        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
         <item name="colorAccent">@color/teal</item>
+        <item name="home_icon">@drawable/ic_home_white_24dp</item>
+        <item name="order_icon">@drawable/ic_description_white_24dp</item>
+        <item name="air_icon">@drawable/ic_radio_white_24dp</item>
         <item name="android:textColorSecondary">@color/teal</item>
     </style>
 
     <style name="AppThemeNight" parent="PreferenceFixTheme">
         <item name="@android:windowNoTitle">true</item>
         <item name="@android:windowFullscreen">true</item>
-        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
+        <item name="home_icon">@drawable/ic_home</item>
+        <item name="order_icon">@drawable/ic_description_black_24dp</item>
+        <item name="air_icon">@drawable/ic_radio_black_24dp</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="PreferenceFixTheme.NoActionBar">
@@ -65,4 +68,8 @@
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
+
+    <attr name="home_icon" format="reference"/>
+    <attr name="air_icon" format="reference"/>
+    <attr name="order_icon" format="reference"/>
 </resources>

@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.NotificationCompat;
 
 import com.example.roman.test.R;
+import com.example.roman.test.data.ChatMessage;
 import com.example.roman.test.data.Message;
 import com.example.roman.test.data.MessagesTable;
 import com.example.roman.test.data.Sector;
@@ -198,11 +199,28 @@ public class Functions {
         return SectorsTable.getRows(cursor, false);
     }
 
-    public static List<Message> getMessageList(Context context) {
+    public static List<ChatMessage> getMessageList(Context context) {
         Cursor cursor = context.getContentResolver().query(
                 MessagesTable.CONTENT_URI, null, null, null, null);
 
         return MessagesTable.getRows(cursor, false);
+    }
+
+    public static String getSectorNameById(Context context, String id) {
+        String sectorName = null;
+
+        Cursor cursor = context.getContentResolver().query(
+                SectorsTable.CONTENT_URI,
+                null,
+                SectorsTable.FIELD_NAME + " = ?",
+                new String[]{id},
+                null);
+
+        if (cursor != null) {
+            sectorName = SectorsTable.getRow(cursor, true).getName();
+        }
+
+        return sectorName;
     }
 
     public static boolean showField(int mask, int field) {

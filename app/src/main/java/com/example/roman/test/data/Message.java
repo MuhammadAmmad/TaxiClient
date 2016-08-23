@@ -5,24 +5,18 @@ import com.google.gson.annotations.SerializedName;
 import ckm.simple.sql_provider.annotation.SimpleSQLColumn;
 import ckm.simple.sql_provider.annotation.SimpleSQLTable;
 
-@SimpleSQLTable(
-        table = "messages",
-        provider = "MessageProvider")
 public class Message {
     private static final String ID = "I";
     private static final String DATE = "D";
     private static final String MESSAGE = "MS";
 
     @SerializedName(ID)
-    @SimpleSQLColumn("col_id")
     private String id;
 
     @SerializedName(MESSAGE)
-    @SimpleSQLColumn("message")
     private String message;
 
     @SerializedName(DATE)
-    @SimpleSQLColumn("date")
     private String date;
 
     public Message() { }

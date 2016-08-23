@@ -16,11 +16,11 @@
 
     <string name="pref_login_label">Callsign</string>
     <string name="pref_login_key" translatable="false">login</string>
-    <string name="pref_login_default" translatable="false">712</string>
+    <string name="pref_login_default" translatable="false">713</string>
 
     <string name="pref_password_label">Password</string>
     <string name="pref_password_key" translatable="false">password</string>
-    <string name="pref_password_default" translatable="false">712</string>
+    <string name="pref_password_default" translatable="false">713</string>
 
     <string name="pref_server_label">Server address</string>
     <string name="pref_server_key" translatable="false">server</string>
@@ -236,4 +236,18 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_check_navigation">CheckNavigation</string>
+
+    <string name="exit_toast">To exit the application press "Back" one more time</string>
+    <string name="internet_gone">No internet connection</string>
+    <string name="internet_came_back">Connection established</string>
+    <string name="internet_online">Go online</string>
+
+    <string name="title">(Android WebSockets Chat App)</string>
+    <string name="author_name">By Ravi Tamada</string>
+    <string name="author_url">www.androidhive.info</string>
+    <string name="enter_name">Enter your name</string>
+    <string name="btn_join">JOIN</string>
+    <string name="btn_send">Send</string>
+
+    <string name="format_callsign">Call: <xliff:g>%1$s</xliff:g></string>
 </resources>
