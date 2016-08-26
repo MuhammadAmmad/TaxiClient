@@ -1,5 +1,6 @@
 package com.example.roman.test.dagger;
 
+import com.example.roman.test.AirFragment;
 import com.example.roman.test.DetailOrderActivity;
 import com.example.roman.test.DetailOrderFragment;
 import com.example.roman.test.LoginActivity;
@@ -22,6 +23,7 @@ public interface NetComponent {
     void inject(LoginActivity activity);
     void inject(LoginSettingsActivity activity);
     void inject(DetailOrderFragment fragment);
+    void inject(AirFragment fragment);
     void inject(DetailOrderActivity activity);
     void inject(MessageActivity activity);
     void inject(SectorActivity activity);

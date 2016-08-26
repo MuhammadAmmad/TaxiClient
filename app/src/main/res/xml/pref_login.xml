@@ -12,7 +12,6 @@
             android:key="@string/pref_password_key"
             android:title="@string/pref_password_label"
             android:defaultValue="@string/pref_password_default"
-            android:inputType="textPassword"
             android:gravity="center"
             android:ellipsize="start" />
     </PreferenceCategory>
@@ -23,7 +22,13 @@
         <EditTextPreference
             android:key="@string/pref_server_key"
             android:title="@string/pref_server_label"
-            android:defaultValue="ws://gw.staxi.com.ua:16999/test">
+            android:defaultValue="@string/pref_server_default">
+        </EditTextPreference>
+
+        <EditTextPreference
+            android:key="@string/pref_port_key"
+            android:title="@string/pref_port_label"
+            android:defaultValue="@string/pref_port_default">
         </EditTextPreference>
     </PreferenceCategory>
 </PreferenceScreen>

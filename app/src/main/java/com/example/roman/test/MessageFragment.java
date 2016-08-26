@@ -7,14 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.roman.test.adapters.MessageAdapter;
 import com.example.roman.test.adapters.MessagesListAdapter;
 import com.example.roman.test.data.ChatMessage;
-import com.example.roman.test.data.Message;
-import com.example.roman.test.data.MessagesTable;
 import com.example.roman.test.utilities.Functions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

@@ -9,12 +9,15 @@
 
     <!-- Login settings -->
     <string name="pref_header_general">General</string>
+    <string name="pref_header_notifications">Notifications</string>
+    <string name="pref_header_privacy">Privacy settings</string>
+    <string name="pref_header_app">App settings</string>
 
     <string name="pref_header_login">Login settings</string>
     <string name="pref_header_network">Network settings</string>
     <string name="pref_header_fonts">Fonts</string>
 
-    <string name="pref_login_label">Callsign</string>
+    <string name="pref_login_label">Call sign</string>
     <string name="pref_login_key" translatable="false">login</string>
     <string name="pref_login_default" translatable="false">713</string>
 
@@ -24,7 +27,10 @@
 
     <string name="pref_server_label">Server address</string>
     <string name="pref_server_key" translatable="false">server</string>
-    <string name="pref_server_default" translatable="false">ws://gw.staxi.com.ua:16999/test</string>
+    <string name="pref_server_default" translatable="false">gw.staxi.com.ua</string>
+
+    <string name="pref_port_key" translatable="false">port</string>
+    <string name="pref_port_default" translatable="false">16999</string>
 
     <string name="pref_theme_label">Theme</string>
     <string name="pref_theme_key" translatable="false">theme</string>
@@ -75,15 +81,12 @@
         <item>English</item>
     </string-array>
     <string-array name="pref_languages_values" translatable="false">
-        <item>3</item>
-        <item>5</item>
-        <item>7</item>
-        <item>10</item>
-        <item>12</item>
+        <item>ru</item>
+        <item>uk</item>
+        <item>en</item>
     </string-array>
 
     <string name="pref_clear_cache_label">Clear cache</string>
-    <string name="pref_clear_cache_key" translatable="false">cache</string>
 
     <string name="pref_updates_label">Updates</string>
     <string name="pref_updates_key" translatable="false">updates</string>
@@ -149,7 +152,7 @@
     <string name="pref_rotation_label">Allow screen rotation</string>
     <string name="pref_rotation_key" translatable="false">rotation</string>
 
-    <string name="pref_update_remind_label">Do not remind about updates</string>
+    <string name="pref_update_remind_label">Do not remind</string>
     <string name="pref_update_remind_key" translatable="false">update_remind</string>
 
     <string name="pref_update_label">Update</string>
@@ -171,7 +174,6 @@
     <string name="nav_drawer_open">Open</string>
 
     <string name="nav_drawer_alert">Alert</string>
-
     <string name="alert_message">If you are being attacked press ALERT!!!</string>
     <string name="alert_fire">ALERT!!!</string>
     <string name="alert_cancel">Cancel</string>
@@ -204,7 +206,12 @@
     <string name="login_error_blocked">Driver is blocked</string>
     <string name="login_error_occupied">Can\u0027t login. Driver\u0027s already online</string>
     <string name="login_error_radio">Driver is working on radio. Please, contact administration</string>
-    <string name="login_error_taken">Incorrect login or password, or callsign is taken</string>
+    <string name="login_error_taken">Incorrect login or password, or call sign is taken</string>
+
+    <string name="order_error_not_complete">You haven\'t confirmed order completion</string>
+    <string name="order_error_taken">Order taken by other driver</string>
+    <string name="order_error_not_found">Order not found</string>
+
     <string name="title_activity_login2">Sign in</string>
 
     <!-- Strings related to login -->
@@ -249,5 +256,13 @@
     <string name="btn_join">JOIN</string>
     <string name="btn_send">Send</string>
 
+    <string name="format_sector">You have stood in sector <xliff:g>%1$s</xliff:g></string>
+    <string name="format_status">Your status is <xliff:g>%1$s</xliff:g></string>
     <string name="format_callsign">Call: <xliff:g>%1$s</xliff:g></string>
+
+    <string name="exit_message">Do you really want to exit application?</string>
+    <string name="exit_exit">Exit</string>
+    <string name="exit_change_user">Change user</string>
+
+
 </resources>

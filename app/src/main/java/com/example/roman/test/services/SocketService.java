@@ -70,6 +70,8 @@ public class SocketService extends Service {
     private static String serverAddress;
     private static final int TIMEOUT = 5000;
     private static SocketService sService;
+    private static String AUTHORITY = "ws://";
+    private final static String PATH = "/test";
 
     private WebSocket webSocket;
     private String id;
@@ -92,15 +94,19 @@ public class SocketService extends Service {
         super.onCreate();
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
         sService = this;
-        serverAddress =  PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.pref_sector_key), getString(R.string.pref_server_default));
+        String server = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.pref_server_key),
+                        getString(R.string.pref_server_default));
+        String port = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.pref_port_key),
+                        getString(R.string.pref_port_default));
+        serverAddress = AUTHORITY + server + ":" + port + PATH;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         new ConnectToServer().execute();
-
         return START_STICKY;
     }
 
@@ -261,29 +267,29 @@ public class SocketService extends Service {
                                 break;
 
                             case METHOD_DELETE_ORDER:
-                                int deleteOrderId = object.getInt(Constants.RESPONSE);
+                                String deleteOrderId = object.getJSONObject(RESPONSE).getString(ORDER_ID);
                                 broadcastIntent.setAction(Constants.MAIN_INTENT);
                                 broadcastIntent.putExtra(Constants.RESPONSE, deleteOrderId);
                                 break;
 
                             case METHOD_GET_SETTINGS:
-                                JSONObject sectorsArray = object.getJSONObject(Constants.RESPONSE);
+                                JSONObject sectorsArray = object.getJSONObject(RESPONSE);
                                 setSettings(sectorsArray);
                                 break;
 
                             case METHOD_GET_SECTORS:
-                                JSONObject sectors = object.getJSONObject(Constants.RESPONSE);
+                                JSONObject sectors = object.getJSONObject(RESPONSE);
                                 updateSectors(sectors);
                                 break;
 
                             case METHOD_GET_ORDERS:
-                                String orders = object.getJSONArray(Constants.RESPONSE).toString();
+                                String orders = object.getJSONArray(RESPONSE).toString();
                                 broadcastIntent.setAction(MAIN_INTENT);
                                 broadcastIntent.putExtra(RESPONSE, orders);
                                 break;
 
                             case METHOD_NEW_ORDER:
-                                String order = object.getString(Constants.RESPONSE);
+                                String order = object.getString(RESPONSE);
                                 broadcastIntent.setAction(MAIN_INTENT);
                                 broadcastIntent.putExtra(Constants.RESPONSE, order);
                                 break;
@@ -305,6 +311,10 @@ public class SocketService extends Service {
                                 String statusId = object.getString(RESPONSE);
                                 broadcastIntent.setAction(MAIN_INTENT);
                                 broadcastIntent.putExtra(RESPONSE, statusId);
+                                break;
+
+                            case METHOD_SET_NEW_STATUS:
+                                getDriverStatus();
                                 break;
 
                             case METHOD_SET_ORDER_STATUS:
@@ -418,7 +428,9 @@ public class SocketService extends Service {
                                 new String[]{s.getId()});
                     }
                 }
+                cursor.close();
             }
+
         }
 
         private void addOrder(JsonObject jsonOrder) {
@@ -428,6 +440,7 @@ public class SocketService extends Service {
             if (cursor != null) {
                 getContentResolver().insert(OrdersTable.CONTENT_URI,
                         OrdersTable.getContentValues(order, false));
+                cursor.close();
             }
         }
     }

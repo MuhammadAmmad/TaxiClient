@@ -2,16 +2,31 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="General">
+        android:title="@string/pref_header_general">
 
-        <Preference
-            android:title="@string/pref_air_label"
-            android:key="@string/pref_air_key">
-            <intent
-                android:targetPackage="com.example.roman.test"
-                android:targetClass="com.example.roman.test.SettingsActivity"
-                android:action="com.example.roman.test.AIR" />
-        </Preference>
+        <PreferenceScreen
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="@string/pref_header_general">
+
+            <PreferenceCategory
+                android:title="@string/pref_cat_orders">
+
+                <ListPreference
+                    android:defaultValue="@string/pref_order_of_orders_default"
+                    android:entries="@array/pref_order_of_orders_titles"
+                    android:entryValues="@array/pref_order_of_orders_values"
+                    android:key="@string/pref_order_of_orders_key"
+                    android:title="@string/pref_order_of_orders_label" />
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:singleLine="false"
+                    android:summary="@string/pref_show_pre_summary"
+                    android:key="@string/pref_show_pre_key"
+                    android:widgetLayout="@layout/switch_compat"
+                    android:title="@string/pref_show_pre_label" />
+            </PreferenceCategory>
+        </PreferenceScreen>
 
         <ListPreference
             android:defaultValue="-1"
@@ -22,7 +37,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="App settings">
+        android:title="@string/pref_header_app">
 
         <ListPreference
             android:defaultValue="-1"
@@ -31,33 +46,52 @@
             android:key="@string/pref_languages_key"
             android:title="@string/pref_languages_label" />
 
-        <Preference
-            android:title="@string/pref_updates_label"
-            android:key="@string/pref_updates_key">
-            <intent
-                android:targetPackage="com.example.roman.test"
-                android:targetClass="com.example.roman.test.SettingsActivity"
-                android:action="com.example.roman.test.UPDATE" />
-        </Preference>
+        <PreferenceScreen
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="@string/pref_updates_label">
+
+            <CheckBoxPreference
+                android:title="@string/pref_update_remind_label"
+                android:key="@string/pref_update_remind_key"
+                android:defaultValue="false"
+                android:widgetLayout="@layout/switch_compat" />
+
+            <Preference
+                android:title="@string/pref_updates_label"
+                android:key="@string/pref_updates_key" />
+
+            <Preference
+                android:title="@string/pref_rollback_label"
+                android:key="@string/pref_rollback_key" />
+        </PreferenceScreen>
     </PreferenceCategory>
 
-    <!--<Preference-->
-        <!--android:title="@string/pref_style_label"-->
-        <!--android:key="@string/pref_style_key">-->
-        <!--<intent-->
-            <!--android:targetPackage="com.example.roman.test"-->
-            <!--android:targetClass="com.example.roman.test.SettingsActivity"-->
-            <!--android:action="com.example.roman.test.STYLE" />-->
-    <!--</Preference>-->
+    <!--<PreferenceScreen-->
+        <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--android:title="Style settings">-->
+
+        <!--<ListPreference-->
+            <!--android:defaultValue="@string/pref_theme_night"-->
+            <!--android:entries="@array/pref_theme_options"-->
+            <!--android:entryValues="@array/pref_theme_values"-->
+            <!--android:key="@string/pref_theme_key"-->
+            <!--android:title="@string/pref_theme_label" />-->
+
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="true"-->
+            <!--android:key="@string/pref_rotation_key"-->
+            <!--android:title="@string/pref_rotation_label"-->
+            <!--android:widgetLayout="@layout/switch_compat" />-->
+    <!--</PreferenceScreen>-->
 
     <PreferenceCategory
-        android:title="Notifications">
+        android:title="@string/pref_header_notifications">
 
-        <PreferenceScreen
-            android:title="@string/pref_sound_label"
-            android:key="@string/pref_sound_key"
-            android:enabled="false">
-        </PreferenceScreen>
+        <!--<PreferenceScreen-->
+            <!--android:title="@string/pref_sound_label"-->
+            <!--android:key="@string/pref_sound_key"-->
+            <!--android:enabled="false">-->
+        <!--</PreferenceScreen>-->
 
         <CheckBoxPreference
             android:defaultValue="true"
@@ -67,16 +101,24 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Privacy Settings">
+        android:title="@string/pref_header_privacy">
 
-        <Preference
-            android:title="@string/pref_clear_cache_label"
-            android:key="@string/pref_clear_cache_key">
-            <intent
-                android:targetPackage="com.example.roman.test"
-                android:targetClass="com.example.roman.test.SettingsActivity"
-                android:action="com.example.roman.test.CACHE" />
-        </Preference>
+        <PreferenceScreen
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="@string/pref_clear_cache_label">
+
+            <Preference
+                android:title="@string/pref_del_orders_msg_label"
+                android:key="@string/pref_del_orders_msg_key" />
+
+            <Preference
+                android:title="@string/pref_del_orders_label"
+                android:key="@string/pref_del_orders_key" />
+
+            <Preference
+                android:title="@string/pref_del_msg_label"
+                android:key="@string/pref_del_msg_key" />
+        </PreferenceScreen>
 
         <CheckBoxPreference
             android:defaultValue="true"

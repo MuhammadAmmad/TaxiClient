@@ -2,7 +2,6 @@ package com.example.roman.test.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 
 import com.example.roman.test.R;
 import com.example.roman.test.data.ChatMessage;
-import com.example.roman.test.data.Message;
 
 import java.util.List;
 

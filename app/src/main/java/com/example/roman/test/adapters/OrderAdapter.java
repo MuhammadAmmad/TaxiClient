@@ -10,17 +10,11 @@ import android.widget.TextView;
 import com.example.roman.test.AirFragment;
 import com.example.roman.test.R;
 import com.example.roman.test.data.Order;
-import com.example.roman.test.utilities.Constants;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.example.roman.test.utilities.Constants.NEW_FORMAT;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
     private List<Order> mOrders;

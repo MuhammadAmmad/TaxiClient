@@ -2,9 +2,6 @@ package com.example.roman.test.data;
 
 import com.google.gson.annotations.SerializedName;
 
-import ckm.simple.sql_provider.annotation.SimpleSQLColumn;
-import ckm.simple.sql_provider.annotation.SimpleSQLTable;
-
 public class Message {
     private static final String ID = "I";
     private static final String DATE = "D";

@@ -63,7 +63,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                finish();
                 attemptLogin(getApplication());
             }
         });
@@ -104,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
 
-                recreate();
+                Functions.recreate(LoginActivity.this);
             }
         });
 
@@ -153,18 +152,6 @@ public class LoginActivity extends AppCompatActivity {
         String password = prefs.getString(context.getString(R.string.pref_password_key), context.getString(R.string.pref_password_default));
         Functions.saveToPreferences(login, "PASSWORD", prefs);
         new UserLoginTask(login, password).execute();
-    }
-
-    @Override
-    public void recreate() {
-        if (Build.VERSION.SDK_INT >= 11) {
-            super.recreate();
-        } else {
-            Intent intent = getIntent();
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            finish();
-            startActivity(intent);
-        }
     }
 
     private class SocketServiceReceiver extends BroadcastReceiver {

@@ -19,7 +19,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
@@ -70,8 +69,9 @@ import butterknife.ButterKnife;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.example.roman.test.DetailOrderFragment.DETAIL_ORDER;
 import static com.example.roman.test.LoginActivity.attemptLogin;
+import static com.example.roman.test.utilities.Constants.DEFAULT;
+import static com.example.roman.test.utilities.Constants.ERROR;
 import static com.example.roman.test.utilities.Constants.ERROR_NONE;
 import static com.example.roman.test.utilities.Constants.ERROR_NOT_CONFIRMED;
 import static com.example.roman.test.utilities.Constants.ERROR_ORDER_NOT_FOUND;
@@ -83,7 +83,6 @@ import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDER_BY_ID;
 import static com.example.roman.test.utilities.Constants.METHOD_NEW_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER_STATUS;
 import static com.example.roman.test.utilities.Constants.ORDER_ID;
-import static com.example.roman.test.utilities.Constants.QUEUE_POSITION;
 import static com.example.roman.test.utilities.Constants.RESPONSE;
 import static com.example.roman.test.utilities.Constants.SECTOR_ID;
 import static com.example.roman.test.utilities.Constants.STATUS_ARRAY;
@@ -96,13 +95,14 @@ import static com.example.roman.test.utilities.Functions.isBetterLocation;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         NetworkChangeReceiver.SnackInterface,
-        AirFragment.Callback {
+        DetailOrderFragment.OnOrderListener {
 
     private static final int REQUEST_LOCATION = 1;
     private static final int MAIN = 0;
     private static final int AIR = 1;
     private static final int ORDER = 2;
     private static boolean backPressed = false;
+    private static boolean mainFragment = true;
 
     private Menu mMenu;
     private Location mCurrentBestLocation;
@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity
     @Inject SharedPreferences prefs;
 
     private AirFragment mAirFragment;
+    private MainFragment mMainFragment;
 
     @BindView(R.id.nav_view)
     NavigationView navigationView;
@@ -183,6 +184,7 @@ public class MainActivity extends AppCompatActivity
         mViewPager.setAdapter(mPageAdapter);
         mViewPager.setCurrentItem(AIR);
         mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
+        mMainFragment = (MainFragment) mPageAdapter.getRegisteredFragment(MAIN);
         tabLayout.setupWithViewPager(mViewPager);
 
         tabLayout.getTabAt(AIR).setIcon(R.drawable.air_icon);
@@ -242,6 +244,18 @@ public class MainActivity extends AppCompatActivity
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, mLocationListener);
 
+        if (mReceiver == null) {
+            mReceiver = new SocketServiceReceiver();
+            IntentFilter intentFilter = new IntentFilter(Constants.MAIN_INTENT);
+            registerReceiver(mReceiver, intentFilter);
+        }
+
+        if (mNetworkReceiver == null) {
+            mNetworkReceiver = new NetworkChangeReceiver();
+            IntentFilter intentNetworkFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(mNetworkReceiver, intentNetworkFilter);
+        }
+
         new StartUpTask().execute();
     }
 
@@ -257,37 +271,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (mReceiver == null) {
-            mReceiver = new SocketServiceReceiver();
-            IntentFilter intentFilter = new IntentFilter(Constants.MAIN_INTENT);
-            registerReceiver(mReceiver, intentFilter);
-        }
-
-        if (mNetworkReceiver == null) {
-            mNetworkReceiver = new NetworkChangeReceiver();
-            IntentFilter intentNetworkFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-            registerReceiver(mNetworkReceiver, intentNetworkFilter);
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mReceiver != null) {
-            unregisterReceiver(mReceiver);
-            mReceiver = null;
-        }
-
-        if (mNetworkReceiver != null) {
-            unregisterReceiver(mNetworkReceiver);
-            mNetworkReceiver = null;
-        }
-    }
-
-    @Override
     protected void onDestroy() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED &&
@@ -299,6 +282,16 @@ public class MainActivity extends AppCompatActivity
             mLocationManager.removeUpdates(mLocationListener);
         }
 
+        if (mReceiver != null) {
+            unregisterReceiver(mReceiver);
+            mReceiver = null;
+        }
+
+        if (mNetworkReceiver != null) {
+            unregisterReceiver(mNetworkReceiver);
+            mNetworkReceiver = null;
+        }
+
         super.onDestroy();
     }
 
@@ -307,7 +300,8 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-
+        } else if (!mainFragment) {
+            onNavigationItemSelected(navigationView.getMenu().getItem(0));
         } else {
             if (backPressed) {
                 exit();
@@ -362,28 +356,24 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_main) {
-            tabLayout.setVisibility(VISIBLE);
-            mViewPager.setVisibility(VISIBLE);
-            findViewById(R.id.flContent).setVisibility(GONE);
-        } else if (id != R.id.nav_settings || id != R.id.nav_alarm) {
+        if (id != R.id.nav_main) {
             tabLayout.setVisibility(GONE);
             mViewPager.setVisibility(GONE);
             findViewById(R.id.flContent).setVisibility(VISIBLE);
+            mainFragment = false;
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         switch(id) {
             case R.id.nav_main:
+                tabLayout.setVisibility(VISIBLE);
+                mViewPager.setVisibility(VISIBLE);
+                findViewById(R.id.flContent).setVisibility(GONE);
+                mainFragment = true;
                 break;
             case R.id.nav_my_orders:
                 fragmentManager.beginTransaction()
@@ -408,7 +398,7 @@ public class MainActivity extends AppCompatActivity
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                exit();
+                showExitDialog();
                 break;
         }
 
@@ -451,10 +441,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemSelected(Order order) {
-        Intent intent = new Intent(this, DetailOrderActivity.class);
-        intent.putExtra(DETAIL_ORDER, gson.toJson(order));
-        startActivity(intent);
+    public void onOrderTaken(String orderId) {
+        mAirFragment.removeOrder(orderId);
     }
 
     private class MyPageAdapter extends FragmentStatePagerAdapter {
@@ -545,10 +533,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void expandToolbar() {
-        ((AppBarLayout) findViewById(R.id.app_bar_layout)).setExpanded(true);
-    }
-
     private void newMessage(Message message) {
         ActivityManager activityManager = (ActivityManager)
                 getApplication().getSystemService(Context.ACTIVITY_SERVICE);
@@ -624,15 +608,15 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected Void doInBackground(Intent... intents) {
             Intent intent = intents[0];
-            int error = intent.getIntExtra(Constants.ERROR, Constants.DEFAULT);
+            int error = intent.getIntExtra(ERROR, DEFAULT);
 
             switch (error) {
                 case ERROR_NONE:
-                    int method = intent.getIntExtra(Constants.METHOD, Constants.DEFAULT);
+                    int method = intent.getIntExtra(Constants.METHOD, DEFAULT);
                     switch (method) {
                         case METHOD_SET_ORDER_STATUS:
                             final String orderId = intent.getStringExtra(ORDER_ID);
-                            showToast("You have have successfully taken order #" + orderId);
+                            showToast("You have successfully taken order #" + orderId);
                             try {
                                 SocketService.getInstance().getOrderById();
                             } catch (JSONException e) {
@@ -658,12 +642,12 @@ public class MainActivity extends AppCompatActivity
                             String currentTime = sdf.format(new Date());
                             final Message message = new Message(newOrder.getOrderId(),
                                     "You have accepted order from air", currentTime);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    newMessage(message);
-                                }
-                            });
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    newMessage(message);
+//                                }
+//                            });
                             break;
 
                         case METHOD_GET_CURRENT_SECTOR:
@@ -678,6 +662,7 @@ public class MainActivity extends AppCompatActivity
                                 try {
                                     String sectorId = currentSector.getString(SECTOR_ID);
                                     String name = getSectorNameById(MainActivity.this, sectorId);
+                                    showToast(getString(R.string.format_sector, name));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -685,26 +670,44 @@ public class MainActivity extends AppCompatActivity
                             break;
 
                         case METHOD_NEW_ORDER:
-                            Order order = gson.fromJson(intent.getStringExtra(RESPONSE), Order.class);
-                            mAirFragment.addOrder(order);
+                            final Order order = gson.fromJson(intent.getStringExtra(RESPONSE), Order.class);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mAirFragment.addOrder(order);
+                                }
+                            });
                             break;
 
                         case METHOD_GET_NEW_STATUS:
                             String id = intent.getStringExtra(RESPONSE);
-
                             String text = prefs.getString(STATUS_ARRAY, "[]");
                             com.example.roman.test.data.Status[] statuses =
                                     gson.fromJson(text, com.example.roman.test.data.Status[].class);
-                            for (com.example.roman.test.data.Status status : statuses) {
+                            for (final com.example.roman.test.data.Status status : statuses) {
                                 if (status.getId().equals(id)) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mMainFragment.findPreference(getString(R.string.pref_status_key))
+                                                    .setSummary(status.getName());
+                                        }
+                                    });
+
+                                    showToast(getString(R.string.format_status, status.getName()));
                                     break;
                                 }
                             }
                             break;
 
                         case Constants.METHOD_DELETE_ORDER:
-                            String delOrderId = intent.getStringExtra(RESPONSE);
-                            mAirFragment.removeOrder(delOrderId);
+                            final String delOrderId = intent.getStringExtra(RESPONSE);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mAirFragment.removeOrder(delOrderId);
+                                }
+                            });
                             break;
 
                         case Constants.METHOD_NEW_MESSAGE:
@@ -715,15 +718,15 @@ public class MainActivity extends AppCompatActivity
                     break;
 
                 case ERROR_ORDER_NOT_FOUND:
-                    showToast("Order not found");
+                    showToast(getString(R.string.order_error_not_found));
                     break;
 
                 case ERROR_ORDER_TAKEN:
-                    showToast("Order taken by other driver");
+                    showToast(getString(R.string.order_error_taken));
                     break;
 
                 case ERROR_NOT_CONFIRMED:
-                    showToast("You haven't confirmed order completion");
+                    showToast(getString(R.string.order_error_not_complete));
                     break;
             }
             return null;
@@ -746,5 +749,33 @@ public class MainActivity extends AppCompatActivity
         moveTaskToBack(true);
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(1);
+    }
+
+    private void expandToolbar() {
+        ((AppBarLayout) findViewById(R.id.app_bar_layout)).setExpanded(true);
+    }
+
+    private void showExitDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
+                .setMessage(getString(R.string.exit_message))
+                .setPositiveButton(getString(R.string.exit_exit), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        exit();
+                    }
+                }).setNeutralButton(getString(R.string.exit_change_user), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        TextView messageView = (TextView)dialog.findViewById(android.R.id.message);
+        if (messageView != null) {
+            messageView.setGravity(Gravity.CENTER);
+        }
     }
 }

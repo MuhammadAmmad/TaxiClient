@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.util.Log;
 
 import com.example.roman.test.data.Status;
 import com.example.roman.test.services.SocketService;
@@ -42,7 +41,6 @@ public class MainFragment extends PreferenceFragmentCompat {
         Preference preference = findPreference("balance");
         preference.setTitle(getActivity().getString(R.string.format_balance, balance));
 
-        Log.e("Create", "MainFragment");
         String text = prefs.getString(STATUS_ARRAY, "[]");
         mStatuses = gson.fromJson(text, Status[].class);
 
@@ -51,11 +49,8 @@ public class MainFragment extends PreferenceFragmentCompat {
 
         statusPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String status = statusPreference.getValue();
-
                 try {
-                    SocketService.getInstance().setDriverStatus(status);
-                    SocketService.getInstance().getDriverStatus();
+                    SocketService.getInstance().setDriverStatus((String) newValue);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -78,6 +73,10 @@ public class MainFragment extends PreferenceFragmentCompat {
 
         lp.setEntries(entries.toArray(new CharSequence[0]));
         lp.setEntryValues(entryValues.toArray(new CharSequence[0]));
-        lp.setDefaultValue(entryValues.get(0));
+        try {
+            SocketService.getInstance().getDriverStatus();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

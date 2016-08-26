@@ -3,11 +3,13 @@ package com.example.roman.test.utilities;
 import android.app.Activity;
 import android.app.Notification;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.NotificationCompat;
@@ -212,7 +214,7 @@ public class Functions {
         Cursor cursor = context.getContentResolver().query(
                 SectorsTable.CONTENT_URI,
                 null,
-                SectorsTable.FIELD_NAME + " = ?",
+                SectorsTable.FIELD_ID + " = ?",
                 new String[]{id},
                 null);
 
@@ -227,4 +229,14 @@ public class Functions {
         return (mask & field) == field;
     }
 
+    public static void recreate(Activity activity) {
+        if (Build.VERSION.SDK_INT >= 11) {
+            activity.recreate();
+        } else {
+            Intent intent = activity.getIntent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            activity.finish();
+            activity.startActivity(intent);
+        }
+    }
 }

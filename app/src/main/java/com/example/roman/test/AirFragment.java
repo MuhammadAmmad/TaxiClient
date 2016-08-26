@@ -1,5 +1,6 @@
 package com.example.roman.test;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,13 +12,20 @@ import android.widget.ListView;
 
 import com.example.roman.test.adapters.OrderAdapter;
 import com.example.roman.test.data.Order;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import butterknife.ButterKnife;
+
+import static com.example.roman.test.DetailOrderFragment.DETAIL_ORDER;
+
 public class AirFragment extends Fragment {
+    @Inject Gson gson;
     private List<Order> mOrders;
     private OrderAdapter mOrderAdapter;
     private RecyclerView mRecyclerView;
@@ -35,6 +43,9 @@ public class AirFragment extends Fragment {
         mOrderAdapter = new OrderAdapter(getActivity(), mOrders, this);
 
         View view =  inflater.inflate(R.layout.fragment_air, container, false);
+
+        ButterKnife.bind(this, view);
+        ((TaxiApp) getActivity().getApplication()).getNetComponent().inject(this);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         mRecyclerView.addItemDecoration(new ItemDecorator(getActivity().getApplicationContext()));
@@ -61,13 +72,9 @@ public class AirFragment extends Fragment {
     }
 
     public void removeOrder(String id) {
-        for (Iterator<Order> iterator = mOrders.iterator(); iterator.hasNext();) {
-            Order order = iterator.next();
-            if (order.getOrderId().equals(id)) {
-                int position = mOrders.indexOf(order);
-                iterator.remove();
-                mOrderAdapter.notifyItemRemoved(position);
-                mOrderAdapter.notifyItemRangeChanged(position, mOrders.size());
+        for (int i = 0; i < mOrders.size(); i++) {
+            if (mOrders.get(i).getOrderId().equals(id)) {
+                removeAt(i);
                 return;
             }
         }
@@ -75,9 +82,6 @@ public class AirFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // When tablets rotate, the currently selected list item need to be saved.
-        // When no item is selected, mPosition will be set to ListView.INVALID_POSITION,
-        // so check for that before storing.
         if (mPosition != ListView.INVALID_POSITION) {
             outState.putInt(SELECTED_KEY, mPosition);
         }
@@ -85,17 +89,20 @@ public class AirFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    public interface Callback {
-        void onItemSelected(Order order);
-    }
-
     public class MyOnClickListener implements View.OnClickListener {
-
         @Override
         public void onClick(final View view) {
             mPosition = mRecyclerView.getChildLayoutPosition(view);
             Order order = mOrders.get(mPosition);
-            ((Callback) getActivity()).onItemSelected(order);
+            Intent intent = new Intent(getActivity(), DetailOrderActivity.class);
+            intent.putExtra(DETAIL_ORDER, gson.toJson(order));
+            startActivity(intent);
         }
+    }
+
+    private void removeAt(int position) {
+        mOrders.remove(position);
+        mOrderAdapter.notifyItemRemoved(position);
+        mOrderAdapter.notifyItemRangeChanged(position, mOrders.size());
     }
 }

@@ -26,7 +26,6 @@ public class LoginSettingsActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             Functions.setWholeTheme(this, prefs);
         }
-
         super.onCreate(savedInstanceState);
 
         getSupportFragmentManager().beginTransaction()
@@ -85,6 +84,7 @@ public class LoginSettingsActivity extends AppCompatActivity {
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_login_key)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_password_key)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_server_key)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_port_key)));
         }
     }
 }

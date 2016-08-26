@@ -1,126 +1,306 @@
 package com.example.roman.test;
 
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceFragmentCompat;
+import android.preference.PreferenceScreen;
+import android.support.design.widget.AppBarLayout;
+import android.support.v7.widget.AppCompatCheckBox;
+import android.support.v7.widget.AppCompatCheckedTextView;
+import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatRadioButton;
+import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 
-import com.example.roman.test.utilities.Functions;
+import com.example.roman.test.services.SocketService;
+import com.example.roman.test.utilities.LocaleHelper;
+
+import org.json.JSONException;
 
 import javax.inject.Inject;
 
-public class SettingsActivity extends AppCompatActivity {
-    private final static String AIR = "com.example.roman.test.AIR";
-    private final static String STYLE = "com.example.roman.test.STYLE";
-    private final static String UPDATE = "com.example.roman.test.UPDATE";
-    private final static String CACHE = "com.example.roman.test.CACHE";
+public class SettingsActivity extends PreferenceActivity {
+    @Inject
+    SharedPreferences prefs;
+    private static String appVersion;
 
-    private final static String ACTION_KEY = "action";
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
-    @Inject SharedPreferences prefs;
+        AppBarLayout bar;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        ((TaxiApp) getApplication()).getNetComponent().inject(this);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Functions.setWholeTheme(this, prefs);
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
+            bar = (AppBarLayout) LayoutInflater.from(this).inflate(R.layout.toolbar_settings, root, false);
+            root.addView(bar, 0);
+        } else {
+            ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+            ListView content = (ListView) root.getChildAt(0);
+            root.removeAllViews();
+            bar = (AppBarLayout) LayoutInflater.from(this).inflate(R.layout.toolbar_settings, root, false);
 
-        super.onCreate(savedInstanceState);
-
-        Bundle bundle = new Bundle();
-        String action = getIntent().getAction();
-        bundle.putString(ACTION_KEY, action);
-
-        Fragment settingFragment = new SettingsFragment();
-        settingFragment.setArguments(bundle);
-
-        // Display the fragment as the main content.
-        getSupportFragmentManager().beginTransaction()
-                .replace(android.R.id.content, settingFragment)
-                .commit();
-    }
-
-    public static class SettingsFragment extends PreferenceFragmentCompat
-            implements Preference.OnPreferenceChangeListener {
-
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            String type = getArguments().getString(ACTION_KEY);
-            int action = R.xml.pref_general;
-
-            if (type != null) {
-                switch (type) {
-                    case AIR:
-                        action = R.xml.pref_air_fragment;
-                        break;
-                    case STYLE:
-                        action = R.xml.pref_style_fragment;
-                        break;
-                    case UPDATE:
-                        action = R.xml.pref_update_fragment;
-                        break;
-                    case CACHE:
-                        action = R.xml.pref_clear_cache_fragment;
-                        break;
-                }
+            int height;
+            TypedValue tv = new TypedValue();
+            if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+                height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+            } else {
+                height = bar.getHeight();
             }
 
-            addPreferencesFromResource(action);
+            content.setPadding(0, height, 0, 0);
+
+            root.addView(content);
+            root.addView(bar);
         }
 
-        /**
-         * Attaches a listener so the summary is always updated with the preference value.
-         * Also fires the listener once, to initialize the summary (so it shows up before the value
-         * is changed.)
-         */
-        private void bindPreferenceSummaryToValue(Preference preference) {
-            // Set the listener to watch for value changes.
-            preference.setOnPreferenceChangeListener(this);
+        Toolbar Tbar = (Toolbar) bar.getChildAt(0);
 
-            // Trigger the listener immediately with the preference's
-            // current value.
-            onPreferenceChange(preference,
-                    PreferenceManager
-                            .getDefaultSharedPreferences(preference.getContext())
-                            .getString(preference.getKey(), ""));
+        Tbar.setNavigationOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            appVersion = pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            appVersion = "unknown";
         }
 
+        setupSimplePreferencesScreen();
+    }
 
+    @SuppressWarnings("deprecation")
+    private void setupSimplePreferencesScreen() {
+        addPreferencesFromResource(R.xml.pref_general);
+
+        CheckBoxPreference vibrateSwitch = (CheckBoxPreference) findPreference(getString(R.string.pref_vibration_key));
+        if (vibrateSwitch != null) {
+            vibrateSwitch.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference arg0, Object isVibrateOnObject) {
+                    boolean isVibrateOn = (Boolean) isVibrateOnObject;
+                    if (isVibrateOn) {
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        v.vibrate(400);
+                    }
+                    return true;
+                }
+            });
+        }
+
+        final ListPreference list = (ListPreference) findPreference(getString(R.string.pref_languages_key));
+        list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                LocaleHelper.setLocale(getApplicationContext(), (String) newValue);
+                Intent i = getBaseContext().getPackageManager()
+                        .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                try {
+                    SocketService.getInstance().logout();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                startActivity(i);
+                return true;
+            }
+        });
+
+//        bindPreferenceSummaryToValue(findPreference("notifications_ringtone"));
+//        Preference app_version = findPreference("application_version");
+//        setPreferenceSummary(app_version, appVersion);
+    }
+
+    private static Preference.OnPreferenceChangeListener
+            sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
 
             if (preference instanceof ListPreference) {
                 // For list preferences, look up the correct display value in
-                // the preference's 'entries' list (since they have separate labels/values).
+                // the preference's 'entries' list.
                 ListPreference listPreference = (ListPreference) preference;
-                int prefIndex = listPreference.findIndexOfValue(stringValue);
-                if (prefIndex >= 0) {
-                    preference.setSummary(listPreference.getEntries()[prefIndex]);
-                }
+                int index = listPreference.findIndexOfValue(stringValue);
+
+                // Set the summary to reflect the new value.
+                preference.setSummary(
+                        index >= 0
+                                ? listPreference.getEntries()[index]
+                                : null);
+
+//            } else if (preference instanceof RingtonePreference) {
+//                // For ringtone preferences, look up the correct display value
+//                // using RingtoneManager.
+//                if (TextUtils.isEmpty(stringValue)) {
+//                    // Empty values correspond to 'silent' (no ringtone).
+//                    preference.setSummary("Silent");
+//
+//                } else {
+//                    Ringtone ringtone = RingtoneManager.getRingtone(
+//                            preference.getContext(), Uri.parse(stringValue));
+//
+//                    if (ringtone == null) {
+//                        // Clear the summary if there was a lookup error.
+//                        preference.setSummary(null);
+//                    } else {
+//                        // Set the summary to reflect the new ringtone display
+//                        // name.
+//                        String name = ringtone.getTitle(preference.getContext());
+//                        preference.setSummary(name);
+//                    }
+//                }
+
             } else {
-                // For other preferences, set the summary to the value's simple string representation.
+                // For all other preferences, set the summary to the value's
+                // simple string representation.
                 preference.setSummary(stringValue);
             }
             return true;
         }
+    };
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = super.onCreateView(inflater, container, savedInstanceState);
-            assert view != null;
-            view.setPadding(16, 0, 16, 0);
+    private static void bindPreferenceSummaryToValue(Preference preference) {
+        // Set the listener to watch for value changes.
+        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 
-            return view;
+        // Trigger the listener immediately with the preference's
+        // current value.
+        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+                PreferenceManager
+                        .getDefaultSharedPreferences(preference.getContext())
+                        .getString(preference.getKey(), ""));
+    }
+
+    private static void setPreferenceSummary(Preference preference, String value) {
+        preference.setSummary(value);
+    }
+
+    @Override
+    public View onCreateView(String name, Context context, AttributeSet attrs) {
+        // Allow super to try and create a view first
+        final View result = super.onCreateView(name, context, attrs);
+
+        if (result != null) {
+            return result;
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            // If we're running pre-L, we need to 'inject' our tint aware Views in place of the
+            // standard framework versions
+            switch (name) {
+                case "EditText":
+                    return new AppCompatEditText(this, attrs);
+                case "Spinner":
+                    return new AppCompatSpinner(this, attrs);
+                case "CheckBox":
+                    return new AppCompatCheckBox(this, attrs);
+                case "RadioButton":
+                    return new AppCompatRadioButton(this, attrs);
+                case "CheckedTextView":
+                    return new AppCompatCheckedTextView(this, attrs);
+            }
+        }
+
+        return null;
+    }
+
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, android.preference.Preference preference) {
+        super.onPreferenceTreeClick(preferenceScreen, preference);
+
+        if (preference != null) {
+            if (preference instanceof PreferenceScreen) {
+                if (((PreferenceScreen) preference).getDialog() != null) {
+                    ((PreferenceScreen) preference).getDialog().getWindow().getDecorView()
+                            .setBackgroundDrawable(this.getWindow()
+                                    .getDecorView().getBackground().getConstantState().newDrawable());
+                    setUpNestedScreen((PreferenceScreen) preference);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public void setUpNestedScreen(PreferenceScreen preferenceScreen) {
+        final Dialog dialog = preferenceScreen.getDialog();
+
+        AppBarLayout appBar;
+        View listRoot = dialog.findViewById(android.R.id.list);
+        ViewGroup mRootView = (ViewGroup) dialog.findViewById(android.R.id.content);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            LinearLayout root = (LinearLayout) dialog.findViewById(android.R.id.list).getParent();
+            appBar = (AppBarLayout) LayoutInflater.from(this).inflate(R.layout.toolbar_settings, root, false);
+            root.addView(appBar, 0);
+        } else {
+            ListView content = (ListView) mRootView.getChildAt(0);
+            mRootView.removeAllViews();
+
+            LinearLayout LL = new LinearLayout(this);
+            LL.setOrientation(LinearLayout.VERTICAL);
+
+            ViewGroup.LayoutParams LLParams = new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            LL.setLayoutParams(LLParams);
+
+            appBar = (AppBarLayout) LayoutInflater.from(this).inflate(R.layout.toolbar_settings, mRootView, false);
+
+            LL.addView(appBar);
+            LL.addView(content);
+
+            mRootView.addView(LL);
+        }
+
+        if (listRoot != null) {
+            listRoot.setPadding(0, listRoot.getPaddingTop(), 0, listRoot.getPaddingBottom());
+        }
+
+        Toolbar toolbar = (Toolbar) appBar.getChildAt(0);
+        toolbar.setTitle(preferenceScreen.getTitle());
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    @Override
+    public void recreate() {
+        if (Build.VERSION.SDK_INT >= 11) {
+            super.recreate();
+        } else {
+            Intent intent = getIntent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            finish();
+            startActivity(intent);
         }
     }
 }

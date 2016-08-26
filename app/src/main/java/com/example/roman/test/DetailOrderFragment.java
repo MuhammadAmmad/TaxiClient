@@ -2,6 +2,7 @@ package com.example.roman.test;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,7 +28,13 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.roman.test.utilities.Constants.ERROR;
+import static com.example.roman.test.utilities.Constants.ERROR_NONE;
+import static com.example.roman.test.utilities.Constants.MAIN_INTENT;
+import static com.example.roman.test.utilities.Constants.METHOD;
+import static com.example.roman.test.utilities.Constants.METHOD_DELETE_ORDER;
 import static com.example.roman.test.utilities.Constants.NEW_ORDER_MASK;
+import static com.example.roman.test.utilities.Constants.RESPONSE;
 import static com.example.roman.test.utilities.Constants.SHOW_ADDRESS_END;
 import static com.example.roman.test.utilities.Constants.SHOW_ADDRESS_START;
 import static com.example.roman.test.utilities.Constants.SHOW_DATE_START;
@@ -39,7 +46,6 @@ import static com.example.roman.test.utilities.Constants.SHOW_ROUTE_LENGTH;
 import static com.example.roman.test.utilities.Constants.SHOW_TARIFF;
 import static com.example.roman.test.utilities.Constants.SHOW_TIME_CREATED;
 import static com.example.roman.test.utilities.Constants.SHOW_TIME_START;
-import static com.example.roman.test.utilities.Functions.getDialog;
 import static com.example.roman.test.utilities.Functions.showField;
 
 public class DetailOrderFragment extends Fragment {
@@ -92,6 +98,10 @@ public class DetailOrderFragment extends Fragment {
 
     @Inject
     SharedPreferences prefs;
+
+    public interface OnOrderListener {
+        void onOrderTaken(String orderId);
+    }
 
     static DetailOrderFragment newInstance() {
         return new DetailOrderFragment();
@@ -185,6 +195,7 @@ public class DetailOrderFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        removeOrder(order.getOrderId());
                         getActivity().finish();
                     }
                 });
@@ -192,7 +203,7 @@ public class DetailOrderFragment extends Fragment {
                 timeWait.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        showTimeDialog(order);
+                        showTimeDialog(order).show();
                     }
                 });
             }
@@ -200,19 +211,14 @@ public class DetailOrderFragment extends Fragment {
         return view;
     }
 
-    private void showTimeDialog(final Order order) {
+    private AlertDialog showTimeDialog(final Order order) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         builder.setTitle(R.string.detail_waiting_time)
                 .setSingleChoiceItems(R.array.pref_waiting_time_titles, 0,
                 new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
+                    public void onClick(DialogInterface dialog, int i) {
                         ListView lw = ((AlertDialog)dialog).getListView();
                         final String waitingTime = ((String) lw.getAdapter()
                                 .getItem(lw.getCheckedItemPosition())).replaceAll("[^0-9]", "");
@@ -222,16 +228,26 @@ public class DetailOrderFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
+                        removeOrder(order.getOrderId());
                         getActivity().finish();
                     }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
                     }
                 });
 
-        builder.create().show();
+        return builder.create();
+    }
+
+    private void removeOrder(String orderId) {
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.putExtra(ERROR, ERROR_NONE);
+        broadcastIntent.putExtra(METHOD, METHOD_DELETE_ORDER);
+        broadcastIntent.putExtra(RESPONSE, orderId);
+        broadcastIntent.setAction(MAIN_INTENT);
+        SocketService.getInstance().sendBroadcast(broadcastIntent);
     }
 }

@@ -8,15 +8,18 @@
     <string name="title_activity_settings">Настройки</string>
 
     <!--Login settings-->
-
     <string name="pref_header_login">Настройки входа</string>
     <string name="pref_header_network">Настройки сети</string>
     <string name="pref_header_fonts">Шрифты</string>
-    <string name="pref_header_general">Общие настройки</string>
+    <string name="pref_header_general">Общие</string>
+    <string name="pref_header_notifications">Оповещения</string>
+    <string name="pref_header_privacy">Конфиденциальность</string>
+    <string name="pref_header_app">Приложение</string>
 
     <string name="pref_login_label">Позывной</string>
     <string name="pref_password_label">Пароль</string>
     <string name="pref_server_label">Адрес сервера</string>
+    <string name="pref_port_label">Порт</string>
 
     <string name="pref_waiting_time_label">Время подачи по умолчанию</string>
     <string-array name="pref_waiting_time_titles">
@@ -36,7 +39,7 @@
     </string-array>
 
     <string name="pref_show_pre_label">Предзаказы</string>
-    <string name="pref_show_pre_summary">Показывать заказы и презаказы вместе</string>
+    <string name="pref_show_pre_summary">Показывать заказы и предзаказы вместе</string>
 
     <string name="pref_del_orders_msg_label">Заказы + сообщения</string>
     <string name="pref_del_orders_label">Заказы</string>
@@ -48,7 +51,7 @@
     <string name="pref_vibration_label">Вибрация</string>
     <string name="pref_clear_cache_label">Очистить кэш</string>
     <string name="pref_updates_label">Обновления</string>
-    <string name="pref_gps_label">Передача Gps</string>
+    <string name="pref_gps_label">Передача GPS</string>
     <string name="pref_sector_label">Встать в сектор</string>
     <string name="pref_filter_label">Фильтр</string>
     <string name="pref_ex_filter_label">Расширенный фильтр</string>
@@ -61,7 +64,7 @@
     <string name="pref_bold_text_label">Жирный текст</string>
     <string name="pref_rotation_label">Разрешить переворачивание экрана</string>
 
-    <string name="pref_update_remind_label">Не напоминать об обновлениях</string>
+    <string name="pref_update_remind_label">Не напоминать</string>
     <string name="pref_update_label">Обновить</string>
     <string name="pref_rollback_label">Откатить</string>
 
@@ -107,6 +110,10 @@
     <string name="login_error_radio">Водитель работает на рации. Обратитесь к администрации</string>
     <string name="login_error_taken">Неверный логин и пароль, или позывной занят другим </string>
 
+    <string name="order_error_not_complete">Вы не подтвердили выполнение заказа</string>
+    <string name="order_error_taken">Заказ был взят другим водителем</string>
+    <string name="order_error_not_found">Заказ не найден</string>
+
     <string name="format_order_from">Откуда: <xliff:g>%1$s</xliff:g></string>
     <string name="format_order_to">Куда: <xliff:g>%1$s</xliff:g></string>
     <string name="format_order_price">Цена: <xliff:g>%1$s</xliff:g> \u20B4</string>
@@ -125,5 +132,12 @@
     <string name="internet_came_back">Соединение установлено</string>
     <string name="internet_online">В онлайн-режим</string>
 
+    <string name="format_sector">Вы стали в сектор <xliff:g>%1$s</xliff:g></string>
+    <string name="format_status">Ваш статус: <xliff:g>%1$s</xliff:g></string>
     <string name="format_callsign">Позывной: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_balance">Баланс: <xliff:g id="condition">%1$s</xliff:g></string>
+
+    <string name="exit_message">Вы уверены, что хотите выйти из приложения?</string>
+    <string name="exit_exit">Выход</string>
+    <string name="exit_change_user">Сменить</string>
 </resources>
