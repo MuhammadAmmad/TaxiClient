@@ -1,5 +1,8 @@
 package com.example.roman.test.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import ckm.simple.sql_provider.annotation.SimpleSQLColumn;
@@ -8,7 +11,7 @@ import ckm.simple.sql_provider.annotation.SimpleSQLTable;
 @SimpleSQLTable(
         table = "orders",
         provider = "OrderProvider")
-public class Order {
+public class Order implements Parcelable {
     private static final String ORDER_ID = "OI";
     private static final String STATUS_ID = "SI";
     private static final String DATE_CREATED = "DC";
@@ -257,5 +260,34 @@ public class Order {
 
     public void setCanRefuse(boolean canRefuse) {
         this.canRefuse = canRefuse;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(orderId);
+        parcel.writeInt(statusId);
+        parcel.writeString(dateCreated);
+        parcel.writeString(timeCreated);
+        parcel.writeInt(infoStatusId);
+        parcel.writeString(phone);
+        parcel.writeString(description);
+        parcel.writeString(price);
+        parcel.writeString(option);
+        parcel.writeString(from);
+        parcel.writeString(to);
+        parcel.writeBooleanArray(new boolean[]{canTake});
+        parcel.writeString(sectorFrom);
+        parcel.writeString(tariffId);
+        parcel.writeString(date);
+        parcel.writeString(time);
+        parcel.writeString(length);
+        parcel.writeBooleanArray(new boolean[]{isPrevious});
+        parcel.writeBooleanArray(new boolean[]{canRefuse});
+
     }
 }

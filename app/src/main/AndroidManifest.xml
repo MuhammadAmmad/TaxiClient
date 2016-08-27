@@ -31,7 +31,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:configChanges="locale">
         </activity>
 
         <activity
@@ -52,7 +52,6 @@
 
         <activity
             android:name=".SettingsActivity"
-            android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale"
             android:label="@string/title_activity_settings">
             <meta-data

@@ -1,5 +1,7 @@
 package com.example.roman.test.dagger;
 
+import android.app.Application;
+
 import com.example.roman.test.AirFragment;
 import com.example.roman.test.DetailOrderActivity;
 import com.example.roman.test.DetailOrderFragment;
@@ -19,6 +21,7 @@ import dagger.Component;
 @Singleton
 @Component(modules = {AppModule.class, NetModule.class})
 public interface NetComponent {
+    void inject(Application application);
     void inject(SocketService service);
     void inject(LoginActivity activity);
     void inject(LoginSettingsActivity activity);

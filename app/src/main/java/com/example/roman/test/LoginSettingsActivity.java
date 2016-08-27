@@ -2,7 +2,6 @@ package com.example.roman.test;
 
 
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,15 +16,16 @@ import com.example.roman.test.utilities.Functions;
 
 import javax.inject.Inject;
 
+import static com.example.roman.test.utilities.Functions.setLanguage;
+
 public class LoginSettingsActivity extends AppCompatActivity {
     @Inject SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Functions.setWholeTheme(this, prefs);
-        }
+        Functions.setWholeTheme(this, prefs);
+
         super.onCreate(savedInstanceState);
 
         getSupportFragmentManager().beginTransaction()
@@ -33,6 +33,11 @@ public class LoginSettingsActivity extends AppCompatActivity {
                 .commit();
     }
 
+    @Override
+    protected void onStart() {
+        setLanguage(this, prefs);
+        super.onStart();
+    }
 
     public static class LoginSettingFragment extends PreferenceFragmentCompat
             implements Preference.OnPreferenceChangeListener {

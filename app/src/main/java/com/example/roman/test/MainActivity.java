@@ -41,6 +41,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -97,6 +98,8 @@ public class MainActivity extends AppCompatActivity
         NetworkChangeReceiver.SnackInterface,
         DetailOrderFragment.OnOrderListener {
 
+    public static final int REQUEST_LANGUAGE = 2;
+    public static final int RESULT_SUCCESS = 1;
     private static final int REQUEST_LOCATION = 1;
     private static final int MAIN = 0;
     private static final int AIR = 1;
@@ -110,13 +113,16 @@ public class MainActivity extends AppCompatActivity
     private SocketServiceReceiver mReceiver;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
-    ActionBarDrawerToggle mDrawerToggle;
+    private ActionBarDrawerToggle mDrawerToggle;
+
+    private int mTabPosition = ListView.INVALID_POSITION;
 
     @Inject Gson gson;
     @Inject SharedPreferences prefs;
 
     private AirFragment mAirFragment;
     private MainFragment mMainFragment;
+    private OrderFragment mOrderFragment;
 
     @BindView(R.id.nav_view)
     NavigationView navigationView;
@@ -136,9 +142,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Functions.setWholeTheme(this, prefs);
-        }
+        Functions.setWholeTheme(this, prefs);
+        Functions.setLanguage(this, prefs);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -157,19 +162,20 @@ public class MainActivity extends AppCompatActivity
         mDrawer.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+        // TODO save checked item
         navigationView.setCheckedItem(R.id.nav_main);
-
-        mAirFragment = AirFragment.newInstance();
-
 
         MyPageAdapter mPageAdapter = new MyPageAdapter(getSupportFragmentManager(), getFragments());
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                mTabPosition = position;
+            }
 
             @Override
             public void onPageSelected(int position) {
+                mTabPosition = position;
                 expandToolbar();
             }
 
@@ -181,8 +187,12 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        if (mTabPosition == ListView.INVALID_POSITION) {
+            mTabPosition = AIR;
+        }
+
         mViewPager.setAdapter(mPageAdapter);
-        mViewPager.setCurrentItem(AIR);
+        mViewPager.setCurrentItem(mTabPosition);
         mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
         mMainFragment = (MainFragment) mPageAdapter.getRegisteredFragment(MAIN);
         tabLayout.setupWithViewPager(mViewPager);
@@ -195,7 +205,6 @@ public class MainActivity extends AppCompatActivity
         View header = navigationView.getHeaderView(0);
         TextView callsign = (TextView) header.findViewById(R.id.call_sign);
         callsign.setText(getString(R.string.format_callsign, login));
-
 
         // Acquire a reference to the system Location Manager
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -214,22 +223,13 @@ public class MainActivity extends AppCompatActivity
             }
 
             @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-            }
+            public void onStatusChanged(String s, int i, Bundle bundle) { }
 
             @Override
-            public void onProviderEnabled(String s) {
-                Toast.makeText(MainActivity.this,
-                        "Provider enabled: " + s, Toast.LENGTH_SHORT)
-                        .show();
-            }
+            public void onProviderEnabled(String s) { }
 
             @Override
-            public void onProviderDisabled(String s) {
-                Toast.makeText(MainActivity.this,
-                        "Provider disabled: " + s, Toast.LENGTH_SHORT)
-                        .show();
-            }
+            public void onProviderDisabled(String s) { }
         };
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -256,7 +256,9 @@ public class MainActivity extends AppCompatActivity
             registerReceiver(mNetworkReceiver, intentNetworkFilter);
         }
 
-        new StartUpTask().execute();
+        if (savedInstanceState == null) {
+            new StartUpTask().execute();
+        }
     }
 
     @Override
@@ -265,9 +267,26 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_LANGUAGE) {
+            finish();
+            startActivity(getIntent());
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        }
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+        getBaseContext().getResources().updateConfiguration(newConfig, getBaseContext().getResources().getDisplayMetrics());
+        setContentView(R.layout.activity_main);
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this, mDrawer, toolbar,
+                R.string.nav_drawer_open,
+                R.string.nav_drawer_close) {
+        };
     }
 
     @Override
@@ -302,6 +321,8 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else if (!mainFragment) {
             onNavigationItemSelected(navigationView.getMenu().getItem(0));
+        } else if (mTabPosition != AIR) {
+            mViewPager.setCurrentItem(AIR);
         } else {
             if (backPressed) {
                 exit();
@@ -373,6 +394,7 @@ public class MainActivity extends AppCompatActivity
                 tabLayout.setVisibility(VISIBLE);
                 mViewPager.setVisibility(VISIBLE);
                 findViewById(R.id.flContent).setVisibility(GONE);
+                mViewPager.setCurrentItem(mTabPosition);
                 mainFragment = true;
                 break;
             case R.id.nav_my_orders:
@@ -381,7 +403,8 @@ public class MainActivity extends AppCompatActivity
                         .commit();
                 break;
             case R.id.nav_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
+                startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_LANGUAGE);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 break;
             case R.id.nav_messages:
                 fragmentManager.beginTransaction()
@@ -476,9 +499,13 @@ public class MainActivity extends AppCompatActivity
     private List<Fragment> getFragments() {
         List<Fragment> fList = new ArrayList<>();
 
-        fList.add(MainFragment.newInstance());
-        fList.add(AirFragment.newInstance());
-        fList.add(OrderFragment.newInstance());
+        mAirFragment = AirFragment.newInstance();
+        mMainFragment = MainFragment.newInstance();
+        mOrderFragment = OrderFragment.newInstance();
+
+        fList.add(mMainFragment);
+        fList.add(mAirFragment);
+        fList.add(mOrderFragment);
 
         return fList;
     }
@@ -593,9 +620,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                SocketService socketService = SocketService.getInstance();
-                socketService.getOrders();
-                socketService.getDriverStatus();
+                SocketService.getInstance().getDriverStatus();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -686,13 +711,13 @@ public class MainActivity extends AppCompatActivity
                                     gson.fromJson(text, com.example.roman.test.data.Status[].class);
                             for (final com.example.roman.test.data.Status status : statuses) {
                                 if (status.getId().equals(id)) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            mMainFragment.findPreference(getString(R.string.pref_status_key))
-                                                    .setSummary(status.getName());
-                                        }
-                                    });
+//                                    runOnUiThread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            mMainFragment.findPreference(getString(R.string.pref_status_key))
+//                                                    .setSummary(status.getName());
+//                                        }
+//                                    });
 
                                     showToast(getString(R.string.format_status, status.getName()));
                                     break;

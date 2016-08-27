@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:background="?colorPrimary"
         android:minHeight="?actionBarSize"
-        app:theme="@style/AppTheme.NoActionBar"
         app:navigationIcon="?homeAsUpIndicator"
         app:title="@string/action_settings" />
 </android.support.design.widget.AppBarLayout>

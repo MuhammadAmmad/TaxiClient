@@ -1,0 +1,107 @@
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_header_general">
+
+        <PreferenceScreen
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="@string/pref_header_general">
+
+            <PreferenceCategory
+                android:title="@string/pref_cat_orders">
+
+                <ListPreference
+                    android:defaultValue="@string/pref_order_of_orders_default"
+                    android:entries="@array/pref_order_of_orders_titles"
+                    android:entryValues="@array/pref_order_of_orders_values"
+                    android:key="@string/pref_order_of_orders_key"
+                    android:title="@string/pref_order_of_orders_label" />
+
+                <SwitchPreference
+                    android:defaultValue="true"
+                    android:singleLine="false"
+                    android:summary="@string/pref_show_pre_summary"
+                    android:key="@string/pref_show_pre_key"
+                    android:title="@string/pref_show_pre_label" />
+            </PreferenceCategory>
+        </PreferenceScreen>
+
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pref_waiting_time_titles"
+            android:entryValues="@array/pref_waiting_time_values"
+            android:key="@string/pref_waiting_time_key"
+            android:title="@string/pref_waiting_time_label" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_app">
+
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pref_languages_titles"
+            android:entryValues="@array/pref_languages_values"
+            android:key="@string/pref_languages_key"
+            android:title="@string/pref_languages_label" />
+
+        <PreferenceScreen
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="@string/pref_updates_label">
+
+            <SwitchPreference
+                android:title="@string/pref_update_remind_label"
+                android:key="@string/pref_update_remind_key"
+                android:defaultValue="false" />
+
+            <Preference
+                android:title="@string/pref_updates_label"
+                android:key="@string/pref_updates_key" />
+
+            <Preference
+                android:title="@string/pref_rollback_label"
+                android:key="@string/pref_rollback_key" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_notifications">
+
+        <!--<PreferenceScreen-->
+            <!--android:title="@string/pref_sound_label"-->
+            <!--android:key="@string/pref_sound_key"-->
+            <!--android:enabled="false">-->
+        <!--</PreferenceScreen>-->
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:title="@string/pref_vibration_label"
+            android:key="@string/pref_vibration_key" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_privacy">
+
+        <PreferenceScreen
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="@string/pref_clear_cache_label">
+
+            <Preference
+                android:title="@string/pref_del_orders_msg_label"
+                android:key="@string/pref_del_orders_msg_key" />
+
+            <Preference
+                android:title="@string/pref_del_orders_label"
+                android:key="@string/pref_del_orders_key" />
+
+            <Preference
+                android:title="@string/pref_del_msg_label"
+                android:key="@string/pref_del_msg_key" />
+        </PreferenceScreen>
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_gps_key"
+            android:title="@string/pref_gps_label" />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -10,12 +10,12 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.preference.TwoStatePreference;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.AppCompatCheckedTextView;
@@ -31,12 +31,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import com.example.roman.test.services.SocketService;
+import com.example.roman.test.utilities.Functions;
 import com.example.roman.test.utilities.LocaleHelper;
 
-import org.json.JSONException;
-
 import javax.inject.Inject;
+
+import static com.example.roman.test.utilities.Functions.setLanguage;
 
 public class SettingsActivity extends PreferenceActivity {
     @Inject
@@ -72,9 +72,9 @@ public class SettingsActivity extends PreferenceActivity {
             root.addView(bar);
         }
 
-        Toolbar Tbar = (Toolbar) bar.getChildAt(0);
+        Toolbar toolbar = (Toolbar) bar.getChildAt(0);
 
-        Tbar.setNavigationOnClickListener(new View.OnClickListener() {
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 finish();
             }
@@ -90,11 +90,18 @@ public class SettingsActivity extends PreferenceActivity {
         setupSimplePreferencesScreen();
     }
 
+    @Override
+    protected void onResume() {
+        ((TaxiApp) getApplication()).getNetComponent().inject(this);
+        setLanguage(this, prefs);
+        super.onResume();
+    }
+
     @SuppressWarnings("deprecation")
     private void setupSimplePreferencesScreen() {
         addPreferencesFromResource(R.xml.pref_general);
 
-        CheckBoxPreference vibrateSwitch = (CheckBoxPreference) findPreference(getString(R.string.pref_vibration_key));
+        TwoStatePreference vibrateSwitch = (TwoStatePreference) findPreference(getString(R.string.pref_vibration_key));
         if (vibrateSwitch != null) {
             vibrateSwitch.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -112,16 +119,10 @@ public class SettingsActivity extends PreferenceActivity {
         final ListPreference list = (ListPreference) findPreference(getString(R.string.pref_languages_key));
         list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                LocaleHelper.setLocale(getApplicationContext(), (String) newValue);
-                Intent i = getBaseContext().getPackageManager()
-                        .getLaunchIntentForPackage( getBaseContext().getPackageName() );
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                try {
-                    SocketService.getInstance().logout();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                startActivity(i);
+                LocaleHelper.setLocale(SettingsActivity.this, (String) newValue);
+                Functions.saveToPreferences((String) newValue, getString(R.string.pref_languages_key), prefs);
+                Functions.recreate(SettingsActivity.this);
+                setResult(MainActivity.RESULT_SUCCESS);
                 return true;
             }
         });

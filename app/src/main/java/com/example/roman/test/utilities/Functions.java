@@ -14,7 +14,9 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.NotificationCompat;
 
+import com.example.roman.test.MainActivity;
 import com.example.roman.test.R;
+import com.example.roman.test.SettingsActivity;
 import com.example.roman.test.data.ChatMessage;
 import com.example.roman.test.data.Message;
 import com.example.roman.test.data.MessagesTable;
@@ -30,6 +32,7 @@ import java.util.Locale;
 
 import static com.example.roman.test.utilities.Constants.DEFAULT;
 import static com.example.roman.test.utilities.Constants.METHOD;
+import static com.example.roman.test.utilities.Constants.THEME;
 
 public class Functions {
 
@@ -51,7 +54,7 @@ public class Functions {
 
     public static boolean isNight(SharedPreferences prefs) {
         boolean isNight = true;
-        String state = prefs.getString(Constants.THEME, null);
+        String state = prefs.getString(THEME, null);
 
         if (state != null) {
             isNight = state.equals(Constants.NIGHT);
@@ -69,12 +72,20 @@ public class Functions {
     }
 
     public static void setWholeTheme(Activity activity, SharedPreferences prefs) {
-        boolean isNight = isNight(prefs);
-
-        if (isNight) {
-            activity.setTheme(R.style.AppThemeNight);
+        if (isNight(prefs)) {
+            if (activity instanceof MainActivity ||
+                    activity instanceof SettingsActivity) {
+                activity.setTheme(R.style.AppTheme_NoActionBar_Night);
+            } else {
+                activity.setTheme(R.style.AppTheme_Night);
+            }
         } else {
-            activity.setTheme(R.style.AppThemeDay);
+            if (activity instanceof MainActivity ||
+                    activity instanceof SettingsActivity) {
+                activity.setTheme(R.style.AppTheme_NoActionBar_Day);
+            } else {
+                activity.setTheme(R.style.AppTheme_Day);
+            }
         }
     }
 
@@ -238,5 +249,14 @@ public class Functions {
             activity.finish();
             activity.startActivity(intent);
         }
+    }
+
+    public static void setLanguage(Activity activity, SharedPreferences prefs) {
+        String language = Functions.getFromPreferences(activity.getString(R.string.pref_languages_key), prefs);
+        String globalLocale = LocaleHelper.getLanguage(activity.getApplicationContext());
+        String currentLocale = LocaleHelper.getLanguage(activity);
+
+
+        LocaleHelper.setLocale(activity, globalLocale);
     }
 }

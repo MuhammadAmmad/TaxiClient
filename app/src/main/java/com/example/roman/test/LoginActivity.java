@@ -5,14 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -28,6 +24,11 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.roman.test.utilities.Constants.LOGIN_INTENT;
+import static com.example.roman.test.utilities.Constants.THEME;
+import static com.example.roman.test.utilities.Functions.saveToPreferences;
+import static com.example.roman.test.utilities.Functions.setLanguage;
+
 public class LoginActivity extends AppCompatActivity {
     private SocketServiceReceiver receiver;
 
@@ -40,17 +41,11 @@ public class LoginActivity extends AppCompatActivity {
     @Inject
     SharedPreferences prefs;
 
-    static {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e("Some stuff", "Create");
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Functions.setWholeTheme(this, prefs);
-        }
+        Functions.setWholeTheme(this, prefs);
+        setLanguage(this, prefs);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -72,37 +67,16 @@ public class LoginActivity extends AppCompatActivity {
         mStyleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int currentNightMode = getResources().getConfiguration().uiMode
-                        & Configuration.UI_MODE_NIGHT_MASK;
+                boolean isNight = Functions.isNight(prefs);
+                String newState;
 
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    boolean isNight = Functions.isNight(prefs);
-                    String newState;
-
-                    if (isNight) {
-                        newState = Constants.DAY;
-                    } else {
-                        newState = Constants.NIGHT;
-                    }
-
-                    Functions.saveToPreferences(newState, Constants.THEME, prefs);
+                if (isNight) {
+                    newState = Constants.DAY;
                 } else {
-                    switch (currentNightMode) {
-                        case Configuration.UI_MODE_NIGHT_NO:
-                            getDelegate().setLocalNightMode(
-                                    AppCompatDelegate.MODE_NIGHT_YES);
-                            break;
-                        case Configuration.UI_MODE_NIGHT_YES:
-                            getDelegate().setLocalNightMode(
-                                    AppCompatDelegate.MODE_NIGHT_NO);
-                            break;
-                        case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                            getDelegate().setLocalNightMode(
-                                    AppCompatDelegate.MODE_NIGHT_YES);
-                            break;
-                    }
+                    newState = Constants.NIGHT;
                 }
 
+                saveToPreferences(newState, THEME, prefs);
                 Functions.recreate(LoginActivity.this);
             }
         });
@@ -123,15 +97,15 @@ public class LoginActivity extends AppCompatActivity {
 
         if (receiver == null) {
             receiver = new SocketServiceReceiver();
-            IntentFilter intentFilter = new IntentFilter(Constants.LOGIN_INTENT);
+            IntentFilter intentFilter = new IntentFilter(LOGIN_INTENT);
             registerReceiver(receiver, intentFilter);
         }
     }
 
     @Override
     protected void onResume() {
-        super.onResume();
         startService(new Intent(this, SocketService.class));
+        super.onResume();
     }
 
     @Override
@@ -144,13 +118,14 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    static void attemptLogin(Context context) {
+    public static void attemptLogin(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         String login = prefs.getString(context.getString(R.string.pref_login_key), context.getString(R.string.pref_login_default));
-        Functions.saveToPreferences(login, "LOGIN", prefs);
+        saveToPreferences(login, "login", prefs);
         String password = prefs.getString(context.getString(R.string.pref_password_key), context.getString(R.string.pref_password_default));
-        Functions.saveToPreferences(login, "PASSWORD", prefs);
+        saveToPreferences(password, "password", prefs);
+
         new UserLoginTask(login, password).execute();
     }
 

@@ -430,7 +430,6 @@ public class SocketService extends Service {
                 }
                 cursor.close();
             }
-
         }
 
         private void addOrder(JsonObject jsonOrder) {
