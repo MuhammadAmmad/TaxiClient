@@ -229,7 +229,7 @@ public class Functions {
                 new String[]{id},
                 null);
 
-        if (cursor != null) {
+        if (cursor != null && cursor.getCount() != 0) {
             sectorName = SectorsTable.getRow(cursor, true).getName();
         }
 
@@ -245,18 +245,13 @@ public class Functions {
             activity.recreate();
         } else {
             Intent intent = activity.getIntent();
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             activity.finish();
             activity.startActivity(intent);
         }
     }
 
     public static void setLanguage(Activity activity, SharedPreferences prefs) {
-        String language = Functions.getFromPreferences(activity.getString(R.string.pref_languages_key), prefs);
         String globalLocale = LocaleHelper.getLanguage(activity.getApplicationContext());
-        String currentLocale = LocaleHelper.getLanguage(activity);
-
-
-        LocaleHelper.setLocale(activity, globalLocale);
+        LocaleHelper.setLocale(activity.getApplicationContext(), globalLocale);
     }
 }

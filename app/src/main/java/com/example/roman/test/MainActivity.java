@@ -11,6 +11,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -85,11 +87,9 @@ import static com.example.roman.test.utilities.Constants.METHOD_NEW_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER_STATUS;
 import static com.example.roman.test.utilities.Constants.ORDER_ID;
 import static com.example.roman.test.utilities.Constants.RESPONSE;
-import static com.example.roman.test.utilities.Constants.SECTOR_ID;
 import static com.example.roman.test.utilities.Constants.STATUS_ARRAY;
 import static com.example.roman.test.utilities.Functions.getFromPreferences;
 import static com.example.roman.test.utilities.Functions.getSectorList;
-import static com.example.roman.test.utilities.Functions.getSectorNameById;
 import static com.example.roman.test.utilities.Functions.getStreetFromLocation;
 import static com.example.roman.test.utilities.Functions.isBetterLocation;
 
@@ -148,6 +148,13 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        TypedArray a = getTheme().obtainStyledAttributes(R.style.AppTheme,
+                new int[] {R.attr.home_icon, R.attr.air_icon, R.attr.order_icon});
+        int attributeResourceId = a.getResourceId(0, 0);
+        Drawable[] drawable = new Drawable[]{getResources().getDrawable(a.getResourceId(0, 0)),
+                getResources().getDrawable(a.getResourceId(1, 0)),
+                        getResources().getDrawable(a.getResourceId(2, 0))};
+
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
@@ -197,9 +204,9 @@ public class MainActivity extends AppCompatActivity
         mMainFragment = (MainFragment) mPageAdapter.getRegisteredFragment(MAIN);
         tabLayout.setupWithViewPager(mViewPager);
 
-        tabLayout.getTabAt(AIR).setIcon(R.drawable.air_icon);
-        tabLayout.getTabAt(ORDER).setIcon(R.drawable.order_icon);
-        tabLayout.getTabAt(MAIN).setIcon(R.drawable.main_icon);
+        tabLayout.getTabAt(MAIN).setIcon(drawable[0]);
+        tabLayout.getTabAt(AIR).setIcon(drawable[1]);
+        tabLayout.getTabAt(ORDER).setIcon(drawable[2]);
 
         String login = getFromPreferences("LOGIN", prefs);
         View header = navigationView.getHeaderView(0);
@@ -262,17 +269,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_LANGUAGE) {
-            finish();
-            startActivity(getIntent());
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            Functions.recreate(this);
         }
     }
 
@@ -536,7 +536,7 @@ public class MainActivity extends AppCompatActivity
 
     public void showMessage(final Message message) {
         Bundle bundle = new Bundle();
-        bundle.putString("MSG", message.toString());
+        bundle.putString("MSG", message.getMessage());
         MyDialogFragment dialogFragment = new MyDialogFragment();
         dialogFragment.setArguments(bundle);
         dialogFragment.show(getSupportFragmentManager(), "tag");
@@ -684,13 +684,13 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             if (currentSector != null) {
-                                try {
-                                    String sectorId = currentSector.getString(SECTOR_ID);
-                                    String name = getSectorNameById(MainActivity.this, sectorId);
-                                    showToast(getString(R.string.format_sector, name));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+//                                try {
+////                                    String sectorId = currentSector.getString(SECTOR_ID);
+////                                    String name = getSectorNameById(MainActivity.this, sectorId);
+////                                    showToast(getString(R.string.format_sector, name));
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
                             }
                             break;
 
@@ -718,7 +718,6 @@ public class MainActivity extends AppCompatActivity
 //                                                    .setSummary(status.getName());
 //                                        }
 //                                    });
-
                                     showToast(getString(R.string.format_status, status.getName()));
                                     break;
                                 }

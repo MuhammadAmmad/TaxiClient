@@ -95,8 +95,8 @@ public class Constants {
     public static final int ERROR_DRIVER_BLOCKED = 106;
 
     public static final String THEME = "theme";
-    public static final String NIGHT = "night";
-    public static final String DAY = "day";
+    public static final String NIGHT = "Night";
+    public static final String DAY = "Day";
 
     public static final String SECTORS = "SC";
     public static final String NEW_ORDER_MASK = "NOF";

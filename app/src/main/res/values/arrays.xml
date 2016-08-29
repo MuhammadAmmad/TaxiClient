@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="pref_theme_options">
+    <string-array name="pref_theme_titles">
         <item>@string/pref_theme_label_day</item>
         <item>@string/pref_theme_label_night</item>
     </string-array>

@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
     android:layout_height="match_parent"
     android:paddingBottom="?attr/actionBarSize"
     android:orientation="vertical">
@@ -11,9 +12,8 @@
         android:layout_weight="1"
         android:background="@null"
         android:divider="@null"
-        android:transcriptMode="alwaysScroll"
-        android:stackFromBottom="true">
-    </ListView>
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"/>
 
     <LinearLayout
         android:id="@+id/llMsgCompose"
@@ -25,21 +25,22 @@
         <EditText
             android:id="@+id/inputMsg"
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="12"
-            android:hint="Message"
             android:background="@color/bg_msg_input"
-            android:textColorHint="@color/title_gray"
-            android:textColor="@color/server_status_bar"
+            android:hint="Message"
+            android:imeOptions="flagNoFullscreen"
             android:paddingLeft="6dp"
-            android:paddingRight="6dp"/>
+            android:paddingRight="6dp"
+            android:textColor="@color/server_status_bar"
+            android:textColorHint="@color/title_gray" />
 
         <ImageButton
             android:id="@+id/btnSend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_send"
+            android:background="@color/bg_btn_join"
             android:padding="10dp"
-            android:background="@color/bg_btn_join" />
+            android:src="@android:drawable/ic_menu_send" />
     </LinearLayout>
 </LinearLayout>

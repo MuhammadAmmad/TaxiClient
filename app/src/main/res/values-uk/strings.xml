@@ -22,6 +22,10 @@
     <string name="pref_server_label">Адреса сервера</string>
     <string name="pref_port_label">Порт</string>
 
+    <string name="pref_theme_label">Тема</string>
+    <string name="pref_theme_label_day">День</string>
+    <string name="pref_theme_label_night">Ніч</string>
+
     <string name="pref_waiting_time_label">Час подачі за замовчуванням</string>
     <string-array name="pref_waiting_time_titles">
         <item>3 хвилин</item>

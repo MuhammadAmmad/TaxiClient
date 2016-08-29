@@ -1,7 +1,6 @@
 package com.example.roman.test;
 
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -21,9 +20,7 @@ public class DetailOrderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Functions.setWholeTheme(this, prefs);
-        }
+        Functions.setWholeTheme(this, prefs);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);

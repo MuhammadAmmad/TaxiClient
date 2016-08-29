@@ -64,7 +64,6 @@ public class SectorFragment extends Fragment {
                 getActivity().finish();
             }
         });
-
         return rootView;
     }
 }

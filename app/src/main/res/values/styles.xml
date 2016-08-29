@@ -18,7 +18,7 @@
     <style name="AppTheme.Night" parent="PreferenceFixTheme">
         <item name="@android:windowNoTitle">true</item>
         <item name="@android:windowFullscreen">true</item>
-        <item name="colorAccent">@color/teal</item>
+        <item name="colorAccent">#00BCD4</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
         <item name="home_icon">@drawable/ic_home_white_24dp</item>
         <item name="order_icon">@drawable/ic_description_white_24dp</item>

@@ -2,7 +2,6 @@ package com.example.roman.test;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -15,7 +14,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.preference.TwoStatePreference;
+import android.preference.SwitchPreference;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.AppCompatCheckedTextView;
@@ -36,12 +35,26 @@ import com.example.roman.test.utilities.LocaleHelper;
 
 import javax.inject.Inject;
 
+import static com.example.roman.test.utilities.Constants.DAY;
+import static com.example.roman.test.utilities.Constants.NIGHT;
+import static com.example.roman.test.utilities.Constants.THEME;
+import static com.example.roman.test.utilities.Functions.getFromPreferences;
+import static com.example.roman.test.utilities.Functions.saveToPreferences;
 import static com.example.roman.test.utilities.Functions.setLanguage;
+import static com.example.roman.test.utilities.Functions.setWholeTheme;
 
 public class SettingsActivity extends PreferenceActivity {
     @Inject
     SharedPreferences prefs;
     private static String appVersion;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ((TaxiApp) getApplication()).getNetComponent().inject(this);
+        setLanguage(this, prefs);
+        setWholeTheme(this, prefs);
+        super.onCreate(savedInstanceState);
+    }
 
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -90,18 +103,11 @@ public class SettingsActivity extends PreferenceActivity {
         setupSimplePreferencesScreen();
     }
 
-    @Override
-    protected void onResume() {
-        ((TaxiApp) getApplication()).getNetComponent().inject(this);
-        setLanguage(this, prefs);
-        super.onResume();
-    }
-
     @SuppressWarnings("deprecation")
     private void setupSimplePreferencesScreen() {
         addPreferencesFromResource(R.xml.pref_general);
 
-        TwoStatePreference vibrateSwitch = (TwoStatePreference) findPreference(getString(R.string.pref_vibration_key));
+        SwitchPreference vibrateSwitch = (SwitchPreference) findPreference(getString(R.string.pref_vibration_key));
         if (vibrateSwitch != null) {
             vibrateSwitch.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -120,9 +126,31 @@ public class SettingsActivity extends PreferenceActivity {
         list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 LocaleHelper.setLocale(SettingsActivity.this, (String) newValue);
-                Functions.saveToPreferences((String) newValue, getString(R.string.pref_languages_key), prefs);
+                saveToPreferences((String) newValue, getString(R.string.pref_languages_key), prefs);
                 Functions.recreate(SettingsActivity.this);
                 setResult(MainActivity.RESULT_SUCCESS);
+                return true;
+            }
+        });
+
+        final ListPreference theme = (ListPreference) findPreference(getString(R.string.pref_theme_key));
+        theme.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                String oldValue = getFromPreferences(THEME, prefs);
+                if (oldValue.equals(newValue)) {
+                    return false;
+                }
+
+                String newState = NIGHT;
+
+                if (newValue.equals(DAY)) {
+                    newState = DAY;
+                } else if (newValue.equals(NIGHT)) {
+                    newState = NIGHT;
+                }
+
+                saveToPreferences(newState, THEME, prefs);
+                Functions.recreate(SettingsActivity.this);
                 return true;
             }
         });
@@ -293,15 +321,4 @@ public class SettingsActivity extends PreferenceActivity {
         });
     }
 
-    @Override
-    public void recreate() {
-        if (Build.VERSION.SDK_INT >= 11) {
-            super.recreate();
-        } else {
-            Intent intent = getIntent();
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            finish();
-            startActivity(intent);
-        }
-    }
 }
