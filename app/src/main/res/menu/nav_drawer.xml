@@ -3,61 +3,47 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_main"
-            android:icon="@drawable/ic_home"
+            android:icon="@drawable/ic_sidebar_home"
             android:title="@string/nav_drawer_main" />
 
         <item
             android:id="@+id/nav_my_orders"
-            android:icon="@drawable/ic_local_taxi_black_24dp"
+            android:icon="@drawable/ic_sidebar_orders"
             android:title="@string/nav_drawer_my_orders" />
 
         <item
             android:id="@+id/nav_messages"
-            android:icon="@drawable/ic_message"
+            android:icon="@drawable/ic_sidebar_massages"
             android:title="@string/nav_drawer_messages" />
 
-        <!--<item-->
-            <!--android:id="@+id/nav_gps_map"-->
-            <!--android:icon="@drawable/ic_gps_map"-->
-            <!--android:title="@string/nav_drawer_gps_map" />-->
+        <item
+            android:id="@+id/nav_gps_map"
+            android:icon="@drawable/ic_sidebar_map"
+            android:title="@string/nav_drawer_gps_map" />
 
-        <!--<item-->
-            <!--android:id="@+id/nav_meter"-->
-            <!--android:icon="@drawable/ic_meter"-->
-            <!--android:title="@string/nav_drawer_tax_o_meter" />-->
+        <item
+            android:id="@+id/nav_meter"
+            android:icon="@drawable/ic_sidebar_taximeter"
+            android:title="@string/nav_drawer_tax_o_meter" />
 
-        <!--<item-->
-            <!--android:id="@+id/nav_add_functions"-->
-            <!--android:icon="@drawable/ic_add_functions"-->
-            <!--android:title="@string/nav_drawer_extra_functions" />-->
+        <item
+            android:id="@+id/nav_add_functions"
+            android:icon="@drawable/ic_sidebar_extras"
+            android:title="@string/nav_drawer_extra_functions" />
 
         <item
             android:id="@+id/nav_alarm"
-            android:icon="@drawable/ic_alarm"
+            android:icon="@drawable/ic_sidebar_baykal"
             android:title="@string/nav_drawer_alert" />
 
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_settings"
+            android:icon="@drawable/ic_sidebar_settings"
             android:title="@string/nav_drawer_settings" />
 
         <item
             android:id="@+id/nav_exit"
-            android:icon="@drawable/ic_exit"
+            android:icon="@drawable/ic_sidebar_exit"
             android:title="@string/nav_drawer_exit" />
     </group>
-
-    <!--<item android:title="Communicate">-->
-        <!--<menu>-->
-            <!--<item-->
-                <!--android:id="@+id/nav_share"-->
-                <!--android:icon="@drawable/ic_menu_share"-->
-                <!--android:title="Share" />-->
-            <!--<item-->
-                <!--android:id="@+id/nav_send"-->
-                <!--android:icon="@drawable/ic_menu_send"-->
-                <!--android:title="Send" />-->
-        <!--</menu>-->
-    <!--</item>-->
-
 </menu>

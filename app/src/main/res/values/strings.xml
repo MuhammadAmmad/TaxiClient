@@ -8,6 +8,9 @@
     <string name="title_activity_settings">Settings</string>
 
     <!-- Login settings -->
+    <string name="format_version">Version: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_call_sign">Callsign: <xliff:g>%1$s</xliff:g></string>
+
     <string name="pref_header_general">General</string>
     <string name="pref_header_notifications">Notifications</string>
     <string name="pref_header_privacy">Privacy settings</string>
@@ -190,7 +193,6 @@
 
     <string name="detail_cancel">Сancel</string>
     <string name="detail_waiting_time">Waiting time</string>
-    <string name="detail_take">Take</string>
 
     <string name="main_orders_map">Map</string>
     <string name="main_order_actions">Actions</string>
@@ -240,6 +242,8 @@
     <string name="format_order_date">Date: <xliff:g>%1$s</xliff:g></string>
     <string name="format_order_time">Time: <xliff:g>%1$s</xliff:g></string>
     <string name="format_order_tariff">Tariff: <xliff:g>%1$s</xliff:g></string>
+
+    <string name="format_take_order">Take (<xliff:g>%1$s</xliff:g>)</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

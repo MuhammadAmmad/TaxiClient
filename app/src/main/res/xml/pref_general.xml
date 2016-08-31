@@ -29,7 +29,7 @@
         </PreferenceScreen>
 
         <ListPreference
-            android:defaultValue="-1"
+            android:defaultValue="@string/pref_waiting_time_default"
             android:entries="@array/pref_waiting_time_titles"
             android:entryValues="@array/pref_waiting_time_values"
             android:key="@string/pref_waiting_time_key"

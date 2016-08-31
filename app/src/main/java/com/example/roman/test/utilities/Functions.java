@@ -14,6 +14,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.NotificationCompat;
 
+import com.example.roman.test.LoginActivity;
 import com.example.roman.test.MainActivity;
 import com.example.roman.test.R;
 import com.example.roman.test.SettingsActivity;
@@ -74,14 +75,16 @@ public class Functions {
     public static void setWholeTheme(Activity activity, SharedPreferences prefs) {
         if (isNight(prefs)) {
             if (activity instanceof MainActivity ||
-                    activity instanceof SettingsActivity) {
+                    activity instanceof SettingsActivity ||
+                    activity instanceof LoginActivity) {
                 activity.setTheme(R.style.AppTheme_NoActionBar_Night);
             } else {
                 activity.setTheme(R.style.AppTheme_Night);
             }
         } else {
             if (activity instanceof MainActivity ||
-                    activity instanceof SettingsActivity) {
+                    activity instanceof SettingsActivity ||
+                    activity instanceof LoginActivity) {
                 activity.setTheme(R.style.AppTheme_NoActionBar_Day);
             } else {
                 activity.setTheme(R.style.AppTheme_Day);
@@ -110,7 +113,7 @@ public class Functions {
         Notification notification = builder
                 .setContentTitle("New message")
                 .setContentText(message.getMessage())
-                .setSmallIcon(R.drawable.ic_email_black_24dp)
+                .setSmallIcon(R.drawable.ic_new_message)
                 .build();
 
         showNotification(context, notification);

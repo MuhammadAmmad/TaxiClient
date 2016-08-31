@@ -11,8 +11,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -88,7 +86,6 @@ import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER_STATUS
 import static com.example.roman.test.utilities.Constants.ORDER_ID;
 import static com.example.roman.test.utilities.Constants.RESPONSE;
 import static com.example.roman.test.utilities.Constants.STATUS_ARRAY;
-import static com.example.roman.test.utilities.Functions.getFromPreferences;
 import static com.example.roman.test.utilities.Functions.getSectorList;
 import static com.example.roman.test.utilities.Functions.getStreetFromLocation;
 import static com.example.roman.test.utilities.Functions.isBetterLocation;
@@ -148,13 +145,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TypedArray a = getTheme().obtainStyledAttributes(R.style.AppTheme,
-                new int[] {R.attr.home_icon, R.attr.air_icon, R.attr.order_icon});
-        int attributeResourceId = a.getResourceId(0, 0);
-        Drawable[] drawable = new Drawable[]{getResources().getDrawable(a.getResourceId(0, 0)),
-                getResources().getDrawable(a.getResourceId(1, 0)),
-                        getResources().getDrawable(a.getResourceId(2, 0))};
-
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
@@ -203,15 +193,6 @@ public class MainActivity extends AppCompatActivity
         mAirFragment = (AirFragment) mPageAdapter.getRegisteredFragment(AIR);
         mMainFragment = (MainFragment) mPageAdapter.getRegisteredFragment(MAIN);
         tabLayout.setupWithViewPager(mViewPager);
-
-        tabLayout.getTabAt(MAIN).setIcon(drawable[0]);
-        tabLayout.getTabAt(AIR).setIcon(drawable[1]);
-        tabLayout.getTabAt(ORDER).setIcon(drawable[2]);
-
-        String login = getFromPreferences("LOGIN", prefs);
-        View header = navigationView.getHeaderView(0);
-        TextView callsign = (TextView) header.findViewById(R.id.call_sign);
-        callsign.setText(getString(R.string.format_callsign, login));
 
         // Acquire a reference to the system Location Manager
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -469,6 +450,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private class MyPageAdapter extends FragmentStatePagerAdapter {
+        private String tabTitles[] = new String[] { getString(R.string.main_main),
+                getString(R.string.main_air),
+                getString(R.string.main_order)};
         private final List<Fragment> fragments;
 
         MyPageAdapter(FragmentManager fm, List<Fragment> fragments) {
@@ -488,7 +472,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "";
+            return tabTitles[position];
         }
 
         Fragment getRegisteredFragment(int position) {
@@ -786,11 +770,6 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         exit();
-                    }
-                }).setNeutralButton(getString(R.string.exit_change_user), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        finish();
                     }
                 });
 

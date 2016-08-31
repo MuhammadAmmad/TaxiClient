@@ -9,21 +9,8 @@
             android:targetClass="com.example.roman.test.SectorActivity" />
     </Preference>
 
-    <!--<Preference-->
-        <!--android:key="@string/pref_filter_key"-->
-        <!--android:title="@string/pref_filter_label">-->
-    <!--</Preference>-->
-
-    <!--<Preference-->
-        <!--android:key="@string/pref_ex_filter_key"-->
-        <!--android:title="@string/pref_ex_filter_label" />-->
-
     <Preference
         android:key="@string/pref_balance_key"/>
-
-    <!--<Preference-->
-        <!--android:key="@string/pref_rating_key"-->
-        <!--android:title="@string/pref_rating_label" />-->
 
     <ListPreference
         android:title="@string/pref_status_label"

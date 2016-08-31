@@ -8,6 +8,8 @@
     <string name="title_activity_settings">@string/action_settings</string>
 
     <!-- Login settings -->
+    <string name="format_version">Версія програми: <xliff:g>%1$s</xliff:g></string>
+    <string name="format_call_sign">Позивний: <xliff:g>%1$s</xliff:g></string>
 
     <string name="pref_header_login">Налаштування входу</string>
     <string name="pref_header_general">Загальні налаштування</string>
@@ -90,8 +92,8 @@
     <string name="alert_cancel">Скасувати</string>
 
     <string name="nav_drawer_exit">Вихід</string>
-    <string name="nav_drawer_extra_functions">Додаткові функції</string>
-    <string name="nav_drawer_gps_map">GPS карта</string>
+    <string name="nav_drawer_extra_functions">Дод. функції</string>
+    <string name="nav_drawer_gps_map">GPS Карта</string>
     <string name="nav_drawer_tax_o_meter">Таксометр</string>
     <string name="nav_drawer_messages">Повідомлення</string>
     <string name="nav_drawer_my_orders">Мої замовлення</string>
@@ -99,7 +101,6 @@
 
     <string name="detail_cancel">Скасувати</string>
     <string name="detail_waiting_time">Час подачі</string>
-    <string name="detail_take">Узяти</string>
 
     <string name="main_orders_map">Карта</string>
     <string name="main_order_actions">Дії</string>
@@ -131,6 +132,8 @@
     <string name="format_order_date">Дата: <xliff:g>%1$s</xliff:g> m</string>
     <string name="format_order_time">Час: <xliff:g>%1$s</xliff:g> m</string>
     <string name="format_order_tariff">Тариф: <xliff:g>%1$s</xliff:g> m</string>
+
+    <string name="format_take_order">Узяти (<xliff:g>%1$s</xliff:g>)</string>
 
     <string name="exit_toast">Щоб вийти з додатку, натисність "Назад" ще раз</string>
     <string name="internet_gone">Немає з\'єднання</string>

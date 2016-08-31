@@ -7,6 +7,7 @@
     <color name="teal">#009688</color>
     <color name="dark_gray">#a9a9a9</color>
     <color name="grey_800">#212121</color>
+    <color name="light_green">#8BC34A</color>
 
     <color name="actionbar">#3cb879</color>
     <color name="body_background">#e8e8e8</color>

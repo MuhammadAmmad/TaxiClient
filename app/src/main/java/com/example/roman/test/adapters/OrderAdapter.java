@@ -46,7 +46,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         if (order != null) {
             viewHolder.from.setText(order.getFrom());
             viewHolder.description.setText(order.getDescription());
-            viewHolder.time.setText(order.getTime());
         }
     }
 
@@ -63,8 +62,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         @BindView(R.id.list_item_description)
         TextView description;
 
-        @BindView(R.id.list_item_time)
-        TextView time;
 
         ViewHolder(View view) {
             super(view);

@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.roman.test.services.SocketService;
@@ -32,11 +34,17 @@ import static com.example.roman.test.utilities.Functions.setLanguage;
 public class LoginActivity extends AppCompatActivity {
     private SocketServiceReceiver receiver;
 
-    @BindView(R.id.login_progress)
-    View mProgressView;
+//    @BindView(R.id.login_progress)
+//    View mProgressView;
 
     @BindView(R.id.login_form)
     View mLoginFormView;
+
+    @BindView(R.id.login_version)
+    TextView mVersionTextView;
+
+    @BindView(R.id.login_call_sign)
+    TextView mCallSignTextView;
 
     @Inject
     SharedPreferences prefs;
@@ -89,6 +97,18 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(context, LoginSettingsActivity.class));
             }
         });
+
+        try {
+            mVersionTextView.setText(getString(R.string.format_version,
+                    getPackageManager().getPackageInfo(getPackageName(), 0).versionName));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mCallSignTextView.setText(getString(R.string.format_call_sign,
+                preferences.getString(getString(R.string.pref_login_key),
+                        getString(R.string.pref_login_default))));
     }
 
     @Override

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,11 +89,14 @@ public class DetailOrderFragment extends Fragment {
     @BindView(R.id.order_sector)
     TextView sector;
 
-    @BindView(R.id.action_take)
+    @BindView(R.id.detail_action_take)
     Button take;
 
-    @BindView(R.id.action_waiting_time)
+    @BindView(R.id.detail_action_waiting_time)
     Button timeWait;
+
+    @BindView(R.id.detail_action_cancel)
+    Button cancel;
 
     @Inject
     SharedPreferences prefs;
@@ -119,14 +121,19 @@ public class DetailOrderFragment extends Fragment {
 
         Context context = getContext();
         View view = inflater.inflate(R.layout.fragment_detail_order, container, false);
+
         ButterKnife.bind(this, view);
 
         Bundle args = getArguments();
         if (args != null) {
+
+            SharedPreferences preferences = android.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
+
             final Order order = new Gson().fromJson(args.getString(DETAIL_ORDER), Order.class);
-            final String waitingTime = PreferenceManager.getDefaultSharedPreferences(getActivity())
+            final String waitingTime = preferences
                     .getString(getString(R.string.pref_waiting_time_key),
                             getString(R.string.pref_waiting_time_default));
+
             if (order != null) {
                 int mask = Integer.parseInt(Functions
                         .getFromPreferences(NEW_ORDER_MASK, prefs));
@@ -187,6 +194,7 @@ public class DetailOrderFragment extends Fragment {
                     tariffId.setText(context.getString(R.string.format_order_tariff, order.getTariffId()));
                 }
 
+                take.setText(getString(R.string.format_take_order, waitingTime));
                 take.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -204,6 +212,13 @@ public class DetailOrderFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         showTimeDialog(order).show();
+                    }
+                });
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        getActivity().finish();
                     }
                 });
             }
