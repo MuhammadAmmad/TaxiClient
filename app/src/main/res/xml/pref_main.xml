@@ -3,16 +3,37 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
     <Preference
         android:key="@string/pref_sector_key"
-        android:title="@string/pref_sector_label">
+        android:title="@string/pref_sector_label"
+        android:layout="@layout/menu_preference"
+        android:icon="@drawable/ic_main_sektor">
         <intent
             android:targetPackage="com.example.roman.test"
             android:targetClass="com.example.roman.test.SectorActivity" />
     </Preference>
 
     <Preference
-        android:key="@string/pref_balance_key"/>
+        android:layout="@layout/menu_preference"
+        android:icon="@drawable/ic_main_filter"
+        android:title="@string/pref_filter_label"/>
+
+    <Preference
+        android:layout="@layout/menu_preference"
+        android:icon="@drawable/ic_big_filter"
+        android:title="@string/pref_ex_filter_label"/>
+
+    <Preference
+        android:layout="@layout/menu_preference"
+        android:key="@string/pref_balance_key"
+        android:icon="@drawable/ic_main_money"/>
+
+    <Preference
+        android:layout="@layout/menu_preference"
+        android:key="@string/pref_balance_key"
+        android:icon="@drawable/rating_star"
+        android:title="@string/pref_rating_label"/>
 
     <ListPreference
+        android:layout="@layout/menu_preference"
         android:title="@string/pref_status_label"
         android:key="@string/pref_status_key"/>
 </PreferenceScreen>

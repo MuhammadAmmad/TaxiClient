@@ -53,6 +53,7 @@ public class SettingsActivity extends PreferenceActivity {
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
         setLanguage(this, prefs);
         setWholeTheme(this, prefs);
+//        PreferenceManager.setDefaultValues(getBaseContext(), R.xml.pref_general, false);
         super.onCreate(savedInstanceState);
     }
 
@@ -122,8 +123,8 @@ public class SettingsActivity extends PreferenceActivity {
             });
         }
 
-        final ListPreference list = (ListPreference) findPreference(getString(R.string.pref_languages_key));
-        list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        final ListPreference languagesList = (ListPreference) findPreference(getString(R.string.pref_languages_key));
+        languagesList.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 LocaleHelper.setLocale(SettingsActivity.this, (String) newValue);
                 saveToPreferences((String) newValue, getString(R.string.pref_languages_key), prefs);
@@ -154,6 +155,11 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+
+        ListPreference waitingTimeList = (ListPreference) findPreference(getString(R.string.pref_waiting_time_key));
+        if (waitingTimeList.getValue() == null) {
+            waitingTimeList.setValue(getString(R.string.pref_waiting_time_default));
+        }
 
 //        bindPreferenceSummaryToValue(findPreference("notifications_ringtone"));
 //        Preference app_version = findPreference("application_version");

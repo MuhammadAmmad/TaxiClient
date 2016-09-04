@@ -9,6 +9,7 @@ import com.example.roman.test.LoginActivity;
 import com.example.roman.test.LoginSettingsActivity;
 import com.example.roman.test.MainActivity;
 import com.example.roman.test.MainFragment;
+import com.example.roman.test.OrderFragment;
 import com.example.roman.test.SectorActivity;
 import com.example.roman.test.SettingsActivity;
 import com.example.roman.test.services.SocketService;
@@ -26,6 +27,7 @@ public interface NetComponent {
     void inject(LoginSettingsActivity activity);
     void inject(DetailOrderFragment fragment);
     void inject(AirFragment fragment);
+    void inject(OrderFragment fragment);
     void inject(DetailOrderActivity activity);
     void inject(SectorActivity activity);
     void inject(SettingsActivity activity);

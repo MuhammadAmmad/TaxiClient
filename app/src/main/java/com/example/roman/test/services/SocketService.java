@@ -183,6 +183,7 @@ public class SocketService extends Service {
         } else {
             newOrderId = new Functions.JSONField(ORDER_ID, "null");
         }
+
         sendMessage(METHOD_GET_ORDER_BY_ID, newOrderId);
     }
 
@@ -283,9 +284,12 @@ public class SocketService extends Service {
                                 break;
 
                             case METHOD_GET_ORDERS:
-                                String orders = object.getJSONArray(RESPONSE).toString();
-                                broadcastIntent.setAction(MAIN_INTENT);
-                                broadcastIntent.putExtra(RESPONSE, orders);
+                                JSONArray orderArray = object.getJSONArray(RESPONSE);
+                                if (orderArray.length() > 0) {
+                                    String orders = orderArray.toString();
+                                    broadcastIntent.setAction(MAIN_INTENT);
+                                    broadcastIntent.putExtra(RESPONSE, orders);
+                                }
                                 break;
 
                             case METHOD_NEW_ORDER:
@@ -319,7 +323,9 @@ public class SocketService extends Service {
 
                             case METHOD_SET_ORDER_STATUS:
                                 String orderId = object.getJSONObject(RESPONSE).getString(ORDER_ID);
+                                String orderStatus = object.getJSONObject(RESPONSE).getString(STATUS_ID);
                                 broadcastIntent.putExtra(ORDER_ID, orderId);
+                                broadcastIntent.putExtra(STATUS_ID, orderStatus);
                                 broadcastIntent.setAction(MAIN_INTENT);
                                 break;
 
@@ -327,8 +333,6 @@ public class SocketService extends Service {
                                 String newOrder = object.getString(RESPONSE);
                                 broadcastIntent.putExtra(RESPONSE, newOrder);
                                 broadcastIntent.setAction(MAIN_INTENT);
-//                                getContentResolver().insert(OrdersTable.CONTENT_URI,
-//                                        OrdersTable.getContentValues(gson.fromJson(newOrder, Order.class), false));
                                 break;
 
                             case METHOD_NEW_MESSAGE:

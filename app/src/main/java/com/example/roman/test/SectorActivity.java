@@ -17,13 +17,14 @@ public class SectorActivity extends AppCompatActivity {
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
         Functions.setWholeTheme(this, prefs);
 
-        super.onCreate(savedInstanceState);
+        String sectorId = Functions.getFromPreferences("sectorId", prefs);
 
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sector);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.sectors_container, SectorFragment.newInstance())
+                    .add(R.id.sectors_container, SectorFragment.newInstance(sectorId))
                     .commit();
         }
     }

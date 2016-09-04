@@ -14,13 +14,14 @@ import android.content.res.Configuration;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -35,6 +36,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.Preference;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -58,9 +60,7 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -84,16 +84,19 @@ import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDER_BY_ID;
 import static com.example.roman.test.utilities.Constants.METHOD_NEW_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER_STATUS;
 import static com.example.roman.test.utilities.Constants.ORDER_ID;
+import static com.example.roman.test.utilities.Constants.ORDER_STATUS_TAKE;
 import static com.example.roman.test.utilities.Constants.RESPONSE;
+import static com.example.roman.test.utilities.Constants.SECTOR_ID;
 import static com.example.roman.test.utilities.Constants.STATUS_ARRAY;
+import static com.example.roman.test.utilities.Constants.STATUS_ID;
 import static com.example.roman.test.utilities.Functions.getSectorList;
 import static com.example.roman.test.utilities.Functions.getStreetFromLocation;
 import static com.example.roman.test.utilities.Functions.isBetterLocation;
+import static com.example.roman.test.utilities.Functions.saveToPreferences;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        NetworkChangeReceiver.SnackInterface,
-        DetailOrderFragment.OnOrderListener {
+        NetworkChangeReceiver.SnackInterface {
 
     public static final int REQUEST_LANGUAGE = 2;
     public static final int RESULT_SUCCESS = 1;
@@ -173,15 +176,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPageSelected(int position) {
                 mTabPosition = position;
-                expandToolbar();
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
-                    expandToolbar();
-                }
-            }
+            public void onPageScrollStateChanged(int state) {}
         });
 
         if (mTabPosition == ListView.INVALID_POSITION) {
@@ -230,6 +228,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, mLocationListener);
 
         if (mReceiver == null) {
@@ -395,7 +394,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_alarm:
                 item.setChecked(false);
                 showAlert();
-                break;
+                backToMain();
+                return false;
             case R.id.nav_exit:
                 try {
                     SocketService.getInstance().logout();
@@ -404,6 +404,11 @@ public class MainActivity extends AppCompatActivity
                 }
                 showExitDialog();
                 break;
+            case R.id.nav_gps_map:
+            case R.id.nav_meter:
+            case R.id.nav_add_functions:
+                backToMain();
+                return false;
         }
 
         mDrawer.closeDrawer(GravityCompat.START);
@@ -413,11 +418,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void reconnect(boolean isConnected) {
         View view = findViewById(android.R.id.content);
+        final MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.reconnect);
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        long[] pattern = {0, 2000, 100};
 
         if (isConnected) {
             final Snackbar snackBar = Snackbar.make(view,
                     getString(R.string.internet_came_back),
                     Snackbar.LENGTH_INDEFINITE);
+            v.cancel();
+            mp.setLooping(false);
+            mp.stop();
             snackBar.setAction(getString(R.string.internet_online), new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -428,6 +439,9 @@ public class MainActivity extends AppCompatActivity
             });
             snackBar.show();
         } else {
+            mp.setLooping(true);
+            mp.start();
+            v.vibrate(pattern, 0);
             Snackbar.make(view, getString(R.string.internet_gone), Snackbar.LENGTH_INDEFINITE).show();
         }
     }
@@ -442,11 +456,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onOrderTaken(String orderId) {
-        mAirFragment.removeOrder(orderId);
     }
 
     private class MyPageAdapter extends FragmentStatePagerAdapter {
@@ -625,11 +634,14 @@ public class MainActivity extends AppCompatActivity
                     switch (method) {
                         case METHOD_SET_ORDER_STATUS:
                             final String orderId = intent.getStringExtra(ORDER_ID);
-                            showToast("You have successfully taken order #" + orderId);
-                            try {
-                                SocketService.getInstance().getOrderById();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                            final String orderStatus = intent.getStringExtra(STATUS_ID);
+                            if (orderStatus.equals(ORDER_STATUS_TAKE)) {
+                                showToast("You have successfully taken order #" + orderId);
+                                try {
+                                    SocketService.getInstance().getOrderById();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                             break;
 
@@ -638,25 +650,20 @@ public class MainActivity extends AppCompatActivity
                             final Order[] orders = gson.fromJson(orderList, Order[].class);
                             runOnUiThread(new Runnable() {
                                 @Override
-                                public void run() {
-                                    mAirFragment.addOrders(orders);
+                                public void run() {mAirFragment.addOrders(orders);
                                 }
                             });
                             break;
 
                         case METHOD_GET_ORDER_BY_ID:
                             String jsonOrder = intent.getStringExtra(RESPONSE);
-                            Order newOrder = gson.fromJson(jsonOrder, Order.class);
-                            SimpleDateFormat sdf = new SimpleDateFormat("MMM/dd HH:mm");
-                            String currentTime = sdf.format(new Date());
-                            final Message message = new Message(newOrder.getOrderId(),
-                                    "You have accepted order from air", currentTime);
-//                            runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    newMessage(message);
-//                                }
-//                            });
+                            final Order newOrder = gson.fromJson(jsonOrder, Order.class);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mOrderFragment.addOrder(newOrder);
+                                }
+                            });
                             break;
 
                         case METHOD_GET_CURRENT_SECTOR:
@@ -668,14 +675,14 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             if (currentSector != null) {
-//                                try {
-////                                    String sectorId = currentSector.getString(SECTOR_ID);
-////                                    String name = getSectorNameById(MainActivity.this, sectorId);
-////                                    showToast(getString(R.string.format_sector, name));
-//                                } catch (JSONException e) {
-//                                    e.printStackTrace();
-//                                }
+                                try {
+                                    String sectorId = currentSector.getString(SECTOR_ID);
+                                    saveToPreferences(sectorId, "sectorId", prefs);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
+
                             break;
 
                         case METHOD_NEW_ORDER:
@@ -695,14 +702,16 @@ public class MainActivity extends AppCompatActivity
                                     gson.fromJson(text, com.example.roman.test.data.Status[].class);
                             for (final com.example.roman.test.data.Status status : statuses) {
                                 if (status.getId().equals(id)) {
-//                                    runOnUiThread(new Runnable() {
-//                                        @Override
-//                                        public void run() {
-//                                            mMainFragment.findPreference(getString(R.string.pref_status_key))
-//                                                    .setSummary(status.getName());
-//                                        }
-//                                    });
-                                    showToast(getString(R.string.format_status, status.getName()));
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Preference preference = mMainFragment.findPreference(getString(R.string.pref_status_key));
+                                            if (preference != null) {
+                                                preference.setTitle(getString(R.string.format_new_status,
+                                                        status.getName()));
+                                            }
+                                        }
+                                    });
                                     break;
                                 }
                             }
@@ -759,17 +768,20 @@ public class MainActivity extends AppCompatActivity
         System.exit(1);
     }
 
-    private void expandToolbar() {
-        ((AppBarLayout) findViewById(R.id.app_bar_layout)).setExpanded(true);
-    }
-
     private void showExitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
                 .setMessage(getString(R.string.exit_message))
                 .setPositiveButton(getString(R.string.exit_exit), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        exit();
+                        final MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.changestatusexit);
+                        mp.start();
+                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mediaPlayer) {
+                                exit();
+                            }
+                        });
                     }
                 });
 
@@ -780,5 +792,14 @@ public class MainActivity extends AppCompatActivity
         if (messageView != null) {
             messageView.setGravity(Gravity.CENTER);
         }
+    }
+
+    private void backToMain() {
+        tabLayout.setVisibility(VISIBLE);
+        mViewPager.setVisibility(VISIBLE);
+        findViewById(R.id.flContent).setVisibility(GONE);
+        mViewPager.setCurrentItem(mTabPosition);
+        mainFragment = true;
+        mDrawer.closeDrawer(GravityCompat.START);
     }
 }

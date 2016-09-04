@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:background="?attr/login_background"
+    android:background="?attr/loginBackground"
     tools:context="com.example.roman.test.LoginActivity">
 
     <TextView
@@ -38,6 +38,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/action_sign_in"
             android:text="@string/action_sign_in"
+            android:textSize="18dp"
             android:layout_margin="-5dp"
             android:layout_marginRight="-5dp"
             android:layout_marginLeft="-5dp"
@@ -60,6 +61,7 @@
                 android:id="@+id/action_setting"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:textSize="18dp"
                 android:layout_margin="-5dp"
                 android:layout_marginRight="-4dp"
                 android:layout_marginBottom="-5dp"
@@ -73,13 +75,14 @@
             <Button
                 android:id="@+id/action_style"
                 android:layout_width="0dp"
+                android:layout_weight="1"
+                android:textSize="18dp"
                 android:layout_marginLeft="-4dp"
                 android:layout_marginRight="-5dp"
                 android:layout_marginTop="-5dp"
                 android:layout_marginBottom="-5dp"
                 android:padding="8dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:drawableTop="@drawable/ic_theme_day"
                 android:text="@string/action_style" />
         </LinearLayout>

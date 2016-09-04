@@ -1,15 +1,15 @@
 package com.example.roman.test;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.roman.test.adapters.OrderAdapter;
@@ -31,15 +31,11 @@ import static com.example.roman.test.DetailOrderFragment.DETAIL_ORDER;
 
 public class AirFragment extends Fragment {
     @Inject Gson gson;
+
+    private int mPosition = ListView.INVALID_POSITION;
     private List<Order> mOrders;
     private OrderAdapter mOrderAdapter;
-    private RecyclerView mRecyclerView;
-    private Parcelable mListState;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private int mPosition = ListView.INVALID_POSITION;
-
     private static final String SELECTED_KEY = "selected_position";
-    private static final String LIST_STATE_KEY = "list_state_key";
 
     static AirFragment newInstance() {
         return new AirFragment();
@@ -48,24 +44,30 @@ public class AirFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mOrders = new ArrayList<>();
-        mOrderAdapter = new OrderAdapter(getActivity(), mOrders, this);
 
         View view =  inflater.inflate(R.layout.fragment_air, container, false);
-
         ButterKnife.bind(this, view);
         ((TaxiApp) getActivity().getApplication()).getNetComponent().inject(this);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
-        mRecyclerView.addItemDecoration(new ItemDecorator(getActivity().getApplicationContext()));
+        mOrders = new ArrayList<>();
+        mOrderAdapter = new OrderAdapter(getActivity(), mOrders);
 
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mOrderAdapter);
+        final ListView mListView = (ListView) view.findViewById(R.id.list_view_orders);
+        mListView.setAdapter(mOrderAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                mPosition = i;
+                Order order = mOrders.get(mPosition);
+                Intent intent = new Intent(getActivity(), DetailOrderActivity.class);
+                intent.putExtra(DETAIL_ORDER, gson.toJson(order));
+                startActivity(intent);
+            }
+        });
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
-            mRecyclerView.smoothScrollToPosition(mPosition);
+            mListView.smoothScrollToPosition(mPosition);
         }
 
         return view;
@@ -77,15 +79,27 @@ public class AirFragment extends Fragment {
     }
 
     public void addOrder(Order order) {
-        mOrders.add(order);
-        mOrderAdapter.notifyItemInserted(mOrders.size() - 1);
+
+        if (mOrders !=  null) {
+            MediaPlayer mp;
+            if (order.getIsPrevious()) {
+                mp = MediaPlayer.create(getActivity(), R.raw.freeorders);
+            } else {
+                mp = MediaPlayer.create(getActivity(), R.raw.coldetherorders);
+            }
+            mp.start();
+            mOrders.add(order);
+            mOrderAdapter.notifyDataSetChanged();
+        }
     }
 
     public void removeOrder(String id) {
-        for (int i = 0; i < mOrders.size(); i++) {
-            if (mOrders.get(i).getOrderId().equals(id)) {
-                removeAt(i);
-                return;
+        if (mOrders != null) {
+            for (int i = 0; i < mOrders.size(); i++) {
+                if (mOrders.get(i).getOrderId().equals(id)) {
+                    mOrderAdapter.remove(mOrders.get(i));
+                    return;
+                }
             }
         }
     }
@@ -102,7 +116,9 @@ public class AirFragment extends Fragment {
             }
         } else {
             List<Order> orders = savedInstanceState.getParcelableArrayList("orders");
-            addOrders(orders.toArray(new Order[0]));
+            if (orders != null) {
+                addOrders(orders.toArray(new Order[0]));
+            }
         }
     }
 
@@ -114,39 +130,5 @@ public class AirFragment extends Fragment {
 
         outState.putParcelableArrayList("orders", (ArrayList<? extends Parcelable>) mOrders);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-
-        if(savedInstanceState != null)
-            mListState = savedInstanceState.getParcelable(LIST_STATE_KEY);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if (mListState != null) {
-            mLayoutManager.onRestoreInstanceState(mListState);
-        }
-    }
-
-    public class MyOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(final View view) {
-            mPosition = mRecyclerView.getChildLayoutPosition(view);
-            Order order = mOrders.get(mPosition);
-            Intent intent = new Intent(getActivity(), DetailOrderActivity.class);
-            intent.putExtra(DETAIL_ORDER, gson.toJson(order));
-            startActivity(intent);
-        }
-    }
-
-    private void removeAt(int position) {
-        mOrders.remove(position);
-        mOrderAdapter.notifyItemRemoved(position);
-        mOrderAdapter.notifyItemRangeChanged(position, mOrders.size());
     }
 }

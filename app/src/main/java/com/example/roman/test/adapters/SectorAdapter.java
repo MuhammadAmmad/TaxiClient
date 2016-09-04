@@ -63,7 +63,6 @@ public class SectorAdapter extends ArrayAdapter<Sector> {
                 holder.drivers.setText(String.valueOf(drivers).toUpperCase());
             }
         }
-
         return view;
     }
 }

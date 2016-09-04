@@ -11,7 +11,7 @@
     <string name="format_version">Версія програми: <xliff:g>%1$s</xliff:g></string>
     <string name="format_call_sign">Позивний: <xliff:g>%1$s</xliff:g></string>
 
-    <string name="pref_header_login">Налаштування входу</string>
+    <string name="pref_header_login">Налаштування профілю</string>
     <string name="pref_header_general">Загальні налаштування</string>
     <string name="pref_header_network">Налаштування мережі</string>
     <string name="pref_header_fonts">Шрифти</string>
@@ -63,6 +63,8 @@
     <string name="pref_filter_label">Фільтр</string>
     <string name="pref_ex_filter_label">Розширений фільтр</string>
     <string name="pref_rating_label">Рейтинг</string>
+
+    <string name="format_new_status">Статус: <xliff:g>%1$s</xliff:g></string>
     <string name="pref_status_label">Статус</string>
 
     <string name="pref_text_size_label">Розмір тексту</string>

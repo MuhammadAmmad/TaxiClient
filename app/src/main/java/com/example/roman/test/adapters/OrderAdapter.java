@@ -1,13 +1,13 @@
 package com.example.roman.test.adapters;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.example.roman.test.AirFragment;
 import com.example.roman.test.R;
 import com.example.roman.test.data.Order;
 
@@ -16,45 +16,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
-    private List<Order> mOrders;
-    private Context context;
-    private AirFragment mAirFragment;
-    private final View.OnClickListener mOnClickListener;
-
-    public OrderAdapter(Context context, List<Order> orders, AirFragment airFragment) {
-        mOrders = orders;
-        this.context = context;
-        mAirFragment = airFragment;
-        mOnClickListener = airFragment.new MyOnClickListener();
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.list_item_order, viewGroup, false);
-        view.setOnClickListener(mOnClickListener);
-
-        return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        Order order = mOrders.get(i);
-
-        // Populate the data into the template view using the data object
-        if (order != null) {
-            viewHolder.from.setText(order.getFrom());
-            viewHolder.description.setText(order.getDescription());
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return mOrders.size();
-    }
-
-    class ViewHolder extends RecyclerView.ViewHolder {
+public class OrderAdapter extends ArrayAdapter<Order> {
+    static class ViewHolder {
 
         @BindView(R.id.list_item_from)
         TextView from;
@@ -62,10 +25,43 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         @BindView(R.id.list_item_description)
         TextView description;
 
-
         ViewHolder(View view) {
-            super(view);
             ButterKnife.bind(this, view);
         }
+    }
+
+    public OrderAdapter(Context context, List<Order> orders) {
+        super(context, R.layout.list_item_order, orders);
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, View view, @NonNull ViewGroup parent) {
+        // Get the data item for this position
+        Order order = getItem(position);
+
+        // Check if an existing view is being reused, otherwise inflate the view
+        OrderAdapter.ViewHolder holder;
+
+        if (view == null) {
+            // If there's no view to re-use, inflate a brand new view for now
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            view = inflater.inflate(R.layout.list_item_order, parent, false);
+
+            holder = new OrderAdapter.ViewHolder(view);
+            // Cache the viewHolder object inside the fresh view
+            view.setTag(holder);
+        } else {
+            holder = (OrderAdapter.ViewHolder) view.getTag();
+            holder.from.setText("");
+            holder.description.setText("");
+        }
+
+        if (order != null) {
+            holder.from.setText(order.getFrom());
+            holder.description.setText(order.getDescription());
+        }
+
+        return view;
     }
 }

@@ -16,7 +16,7 @@
     <string name="pref_header_privacy">Privacy settings</string>
     <string name="pref_header_app">App settings</string>
 
-    <string name="pref_header_login">Login settings</string>
+    <string name="pref_header_login">Profile settings</string>
     <string name="pref_header_network">Network settings</string>
     <string name="pref_header_fonts">Fonts</string>
 
@@ -60,7 +60,7 @@
     <string name="pref_style_key" translatable="false">style</string>
 
     <string name="pref_waiting_time_label">Default waiting time</string>
-    <string name="pref_waiting_time_key">waiting time</string>
+    <string name="pref_waiting_time_key">waiting_time</string>
     <string name="pref_waiting_time_default">5</string>
     <string-array name="pref_waiting_time_titles">
         <item>3 minutes</item>
@@ -135,10 +135,11 @@
 
     <string name="pref_balance_key" translatable="false">balance</string>
 
-    <string name="pref_rating_label">Rating</string>
+    <string name="pref_rating_label">Rating: </string>
     <string name="pref_rating_key" translatable="false">rating</string>
 
-    <string name="pref_status_label">Status</string>
+    <string name="format_new_status">Status: <xliff:g>%1$s</xliff:g></string>
+    <string name="pref_status_label">Status: </string>
     <string name="pref_status_key" translatable="false">status</string>
 
     <string name="pref_text_size_label">Text size</string>
@@ -184,7 +185,7 @@
 
     <string name="nav_drawer_exit">Exit</string>
     <string name="nav_drawer_settings" translatable="false">@string/action_settings</string>
-    <string name="nav_drawer_extra_functions">Additional functions</string>
+    <string name="nav_drawer_extra_functions">Extra functions</string>
     <string name="nav_drawer_gps_map">GPS map</string>
     <string name="nav_drawer_tax_o_meter">Tax-o-meter</string>
     <string name="nav_drawer_messages">Messages</string>

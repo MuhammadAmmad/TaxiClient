@@ -26,8 +26,6 @@ public class MainFragment extends PreferenceFragmentCompat {
     @Inject Gson gson;
     @Inject SharedPreferences prefs;
 
-    private AirFragment mAirFragment;
-
     static MainFragment newInstance() {
         return new MainFragment();
     }
@@ -36,6 +34,12 @@ public class MainFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.pref_main);
         ((TaxiApp) getActivity().getApplication()).getNetComponent().inject(this);
+
+        try {
+            SocketService.getInstance().getCurrentSector();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         String balance = prefs.getString("balance", String.valueOf(DEFAULT));
         Preference preference = findPreference("balance");
@@ -78,5 +82,7 @@ public class MainFragment extends PreferenceFragmentCompat {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        lp.setValueIndex(0);
     }
 }

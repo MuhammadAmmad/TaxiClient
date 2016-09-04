@@ -39,15 +39,15 @@ public class Functions {
 
     public static String getStreetFromLocation(Context context, Location location) {
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        List<Address> addresses = null;
+        List<Address> FullAddress = null;
         try {
-            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            FullAddress = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (addresses != null) {
-            return addresses.get(0).getAddressLine(0);
+        if (FullAddress != null) {
+            return FullAddress.get(0).getAddressLine(0);
         }
 
         return "Unknown";

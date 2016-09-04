@@ -19,13 +19,15 @@
             <include
                 layout="@layout/main_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="35dp" />
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/tab_layout"
                 app:tabGravity="fill"
-                app:tabBackground="?attr/tab_selector"
                 app:tabIndicatorHeight="0dp"
+                app:tabTextColor="?attr/airTabTextColor"
+                app:tabSelectedTextColor="?attr/airTabTextSelectedColor"
+                app:tabBackground="?attr/tabSelector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </android.support.design.widget.AppBarLayout>
@@ -49,6 +51,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        app:theme="@style/NavigationDrawerStyle"
         app:menu="@menu/nav_drawer" />
 </android.support.v4.widget.DrawerLayout>
-
