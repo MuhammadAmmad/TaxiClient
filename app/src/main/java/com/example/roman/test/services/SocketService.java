@@ -50,6 +50,7 @@ import static com.example.roman.test.utilities.Constants.METHOD_LOGIN;
 import static com.example.roman.test.utilities.Constants.METHOD_NEW_MESSAGE;
 import static com.example.roman.test.utilities.Constants.METHOD_NEW_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_NEW_STATUS;
+import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER_STATUS;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_TO_SECTOR;
 import static com.example.roman.test.utilities.Constants.NEW_ORDER_MASK;
@@ -276,6 +277,12 @@ public class SocketService extends Service {
                             case METHOD_GET_SETTINGS:
                                 JSONObject sectorsArray = object.getJSONObject(RESPONSE);
                                 setSettings(sectorsArray);
+                                break;
+
+                            case METHOD_SET_ORDER:
+                                String setOrder = object.getString(RESPONSE);
+                                broadcastIntent.setAction(MAIN_INTENT);
+                                broadcastIntent.putExtra(Constants.RESPONSE, setOrder);
                                 break;
 
                             case METHOD_GET_SECTORS:

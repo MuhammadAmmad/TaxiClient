@@ -1,7 +1,6 @@
 package com.example.roman.test;
 
 import android.Manifest;
-import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,7 +13,6 @@ import android.content.res.Configuration;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -60,7 +58,9 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -82,6 +82,7 @@ import static com.example.roman.test.utilities.Constants.METHOD_GET_NEW_STATUS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDERS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDER_BY_ID;
 import static com.example.roman.test.utilities.Constants.METHOD_NEW_ORDER;
+import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER_STATUS;
 import static com.example.roman.test.utilities.Constants.ORDER_ID;
 import static com.example.roman.test.utilities.Constants.ORDER_STATUS_TAKE;
@@ -91,6 +92,7 @@ import static com.example.roman.test.utilities.Constants.STATUS_ARRAY;
 import static com.example.roman.test.utilities.Constants.STATUS_ID;
 import static com.example.roman.test.utilities.Functions.getSectorList;
 import static com.example.roman.test.utilities.Functions.getStreetFromLocation;
+import static com.example.roman.test.utilities.Functions.isActive;
 import static com.example.roman.test.utilities.Functions.isBetterLocation;
 import static com.example.roman.test.utilities.Functions.saveToPreferences;
 
@@ -418,7 +420,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void reconnect(boolean isConnected) {
         View view = findViewById(android.R.id.content);
-        final MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.reconnect);
+//        final MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.reconnect);
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {0, 2000, 100};
 
@@ -427,8 +429,8 @@ public class MainActivity extends AppCompatActivity
                     getString(R.string.internet_came_back),
                     Snackbar.LENGTH_INDEFINITE);
             v.cancel();
-            mp.setLooping(false);
-            mp.stop();
+//            mp.setLooping(false);
+//            mp.stop();
             snackBar.setAction(getString(R.string.internet_online), new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -439,8 +441,8 @@ public class MainActivity extends AppCompatActivity
             });
             snackBar.show();
         } else {
-            mp.setLooping(true);
-            mp.start();
+//            mp.setLooping(true);
+//            mp.start();
             v.vibrate(pattern, 0);
             Snackbar.make(view, getString(R.string.internet_gone), Snackbar.LENGTH_INDEFINITE).show();
         }
@@ -554,20 +556,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void newMessage(Message message) {
-        ActivityManager activityManager = (ActivityManager)
-                getApplication().getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> services = activityManager.getRunningTasks(1);
-        boolean isActivityFound = false;
+        boolean isActive = isActive(this);
 
         getContentResolver().insert(MessagesTable.CONTENT_URI,
                 MessagesTable.getContentValues(new ChatMessage(message, false), false));
 
-        if (services.get(0).topActivity.getPackageName()
-                .equalsIgnoreCase(getApplicationContext().getPackageName())) {
-            isActivityFound = true;
-        }
-
-        if (isActivityFound) {
+        if (isActive) {
             showMessage(message);
         } else {
             Functions.showMessageNotification(this, message);
@@ -666,6 +660,19 @@ public class MainActivity extends AppCompatActivity
                             });
                             break;
 
+                        case METHOD_SET_ORDER:
+                            String setOrder = intent.getStringExtra(RESPONSE);
+                            final Order newSetOrder = gson.fromJson(setOrder, Order.class);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                            final String currentDate = sdf.format(new Date());
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    newMessage(new Message(newSetOrder.getOrderId(), newSetOrder.getFrom(), currentDate));
+                                }
+                            });
+                            break;
+
                         case METHOD_GET_CURRENT_SECTOR:
                             JSONObject currentSector = null;
                             try {
@@ -687,10 +694,13 @@ public class MainActivity extends AppCompatActivity
 
                         case METHOD_NEW_ORDER:
                             final Order order = gson.fromJson(intent.getStringExtra(RESPONSE), Order.class);
+                            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd");
+                            final String currentDate1 = sdf1.format(new Date());
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     mAirFragment.addOrder(order);
+                                    newMessage(new Message(order.getOrderId(), order.getFrom(), currentDate1));
                                 }
                             });
                             break;
@@ -774,14 +784,16 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton(getString(R.string.exit_exit), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        final MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.changestatusexit);
-                        mp.start();
-                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mediaPlayer) {
-                                exit();
-                            }
-                        });
+                        exit();
+//                        final MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.changestatusexit);
+//                        mp.start();
+//                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//                            @Override
+//                            public void onCompletion(MediaPlayer mediaPlayer) {
+//                                exit();
+//                            }
+//                        }
+//                    );
                     }
                 });
 

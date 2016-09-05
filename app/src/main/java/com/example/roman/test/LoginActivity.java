@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -67,8 +66,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                final MediaPlayer mp = MediaPlayer.create(LoginActivity.this, R.raw.changestatus);
-                mp.start();
                 attemptLogin(getApplication());
             }
         });
@@ -132,13 +129,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
+    protected void onStop()  {
         super.onStop();
 
         if (receiver != null) {
             unregisterReceiver(receiver);
             receiver = null;
         }
+
+//        final MediaPlayer mp = MediaPlayer.create(LoginActivity.this, R.raw.changestatus);
+//        mp.start();
     }
 
     public static void attemptLogin(Context context) {

@@ -1,6 +1,7 @@
 package com.example.roman.test.utilities;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
@@ -47,7 +48,8 @@ public class Functions {
         }
 
         if (FullAddress != null) {
-            return FullAddress.get(0).getAddressLine(0);
+            return FullAddress.get(0).getThoroughfare() + ", "
+                    + FullAddress.get(0).getSubThoroughfare();
         }
 
         return "Unknown";
@@ -256,5 +258,18 @@ public class Functions {
     public static void setLanguage(Activity activity, SharedPreferences prefs) {
         String globalLocale = LocaleHelper.getLanguage(activity.getApplicationContext());
         LocaleHelper.setLocale(activity.getApplicationContext(), globalLocale);
+    }
+
+    public static boolean isActive(Activity activity) {
+        ActivityManager activityManager = (ActivityManager)
+                activity.getApplication().getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> services = activityManager.getRunningTasks(1);
+
+        if (services.get(0).topActivity.getPackageName()
+                .equalsIgnoreCase(activity.getApplicationContext().getPackageName())) {
+            return true;
+        }
+
+        return false;
     }
 }

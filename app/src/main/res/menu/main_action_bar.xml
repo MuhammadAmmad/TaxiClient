@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/address"
-        app:showAsAction="always"
-        android:title=""/>
-
     <item android:id="@+id/clock"
         app:showAsAction="always"
         app:actionViewClass="com.example.roman.test.utilities.CustomClock"
         android:iconifiedByDefault="true"
         android:title=""/>
+    <item
+        android:id="@+id/address"
+        app:showAsAction="ifRoom"
+        android:title=""/>
+
 </menu>

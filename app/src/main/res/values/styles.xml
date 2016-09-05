@@ -20,6 +20,7 @@
     <style name="AppTheme.Night" parent="PreferenceFixTheme">
         <item name="@android:windowNoTitle">true</item>
         <item name="@android:windowFullscreen">true</item>
+        <item name="android:colorBackground">@android:color/black</item>
         <item name="colorPrimary">@android:color/black</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
         <item name="android:buttonStyle">@style/TaxiButton.Night</item>
