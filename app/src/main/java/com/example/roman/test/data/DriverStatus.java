@@ -1,14 +1,17 @@
 package com.example.roman.test.data;
 
 import com.google.gson.annotations.SerializedName;
+import com.orm.SugarRecord;
+import com.orm.dsl.Unique;
 
-public class Status {
+public class DriverStatus extends SugarRecord {
     private static final String ID = "ID";
     private static final String NAME = "DN";
     private static final String CAN_SET = "CD";
 
     @SerializedName(ID)
-    private String id;
+    @Unique
+    private String statusId;
 
     @SerializedName(NAME)
     private String name;
@@ -16,10 +19,16 @@ public class Status {
     @SerializedName(CAN_SET)
     private boolean canSet;
 
-    public Status() { }
+    public DriverStatus() { }
 
-    public void setId(String id) {
-        this.id = id;
+    public DriverStatus(String statusId, String name, boolean canSet) {
+        this.statusId = statusId;
+        this.name = name;
+        this.canSet = canSet;
+    }
+
+    public void setId(String statusId) {
+        this.statusId = statusId;
     }
 
     public void setName(String name) {
@@ -34,8 +43,8 @@ public class Status {
         this.canSet = canSet;
     }
 
-    public String getId() {
-        return id;
+    public String getStatusId() {
+        return statusId;
     }
 
     public String getName() {

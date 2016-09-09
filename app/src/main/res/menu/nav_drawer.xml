@@ -17,16 +17,19 @@
             android:title="@string/nav_drawer_messages" />
 
         <item
+            android:enabled="false"
             android:id="@+id/nav_gps_map"
             android:icon="@drawable/ic_sidebar_map"
             android:title="@string/nav_drawer_gps_map" />
 
         <item
+            android:enabled="false"
             android:id="@+id/nav_meter"
             android:icon="@drawable/ic_sidebar_taximeter"
             android:title="@string/nav_drawer_tax_o_meter" />
 
         <item
+            android:enabled="false"
             android:id="@+id/nav_add_functions"
             android:icon="@drawable/ic_sidebar_extras"
             android:title="@string/nav_drawer_extra_functions" />

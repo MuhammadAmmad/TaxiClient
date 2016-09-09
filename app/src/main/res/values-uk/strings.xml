@@ -4,6 +4,10 @@
     <string name="action_settings">Налаштування</string>
     <string name="action_style">Тема</string>
 
+    <string name="internet_request_title">Дозвіл на використання інтернету</string>
+    <string name="internet_request_text">Цей додаток не зможе працювати без інтернету.
+        Будь ласка, увімкніть його і спробуйте ще раз</string>
+
     <string name="title_activity_login_settings">LoginSettings</string>
     <string name="title_activity_settings">@string/action_settings</string>
 
@@ -144,10 +148,13 @@
 
     <string name="format_sector">Ви стали в сектор <xliff:g>%1$s</xliff:g></string>
     <string name="format_status">Ваш статус: <xliff:g>%1$s</xliff:g></string>
-    <string name="format_callsign">Позивний: <xliff:g>%1$s</xliff:g></string>
-    <string name="format_balance">Баланс: <xliff:g id="condition">%1$s</xliff:g></string>
+    <string name="format_balance">Баланс: <xliff:g messageId="condition">%1$s</xliff:g></string>
 
     <string name="exit_message">Ви впевнені, що хочете вийти з додатку?</string>
     <string name="exit_exit">Вихід</string>
     <string name="exit_change_user">Змінити</string>
+
+    <string name="preference_desc">Іконка меню</string>
+    <string name="message_hint">Повідомлення</string>
+    <string name="previous_order">previous_order</string>
 </resources>

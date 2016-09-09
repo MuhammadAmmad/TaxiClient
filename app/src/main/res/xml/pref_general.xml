@@ -9,6 +9,7 @@
             android:title="@string/pref_header_general">
 
             <PreferenceCategory
+                android:enabled="false"
                 android:title="@string/pref_cat_orders">
 
                 <ListPreference
@@ -55,6 +56,7 @@
 
         <PreferenceScreen
             xmlns:android="http://schemas.android.com/apk/res/android"
+            android:enabled="false"
             android:title="@string/pref_updates_label">
 
             <CheckBoxPreference
@@ -108,6 +110,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:enabled="false"
         android:title="@string/pref_header_privacy">
 
         <PreferenceScreen
@@ -128,6 +131,7 @@
         </PreferenceScreen>
 
         <CheckBoxPreference
+            android:enabled="false"
             android:defaultValue="true"
             android:key="@string/pref_gps_key"
             android:title="@string/pref_gps_label"

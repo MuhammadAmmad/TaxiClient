@@ -14,7 +14,7 @@ import dagger.Provides;
 
 @Module
 public class NetModule {
-    public NetModule(String baseUrl) { }
+    public NetModule() { }
 
     @Provides
     @Singleton
@@ -25,7 +25,6 @@ public class NetModule {
     @Provides
     @Singleton
     Gson providesGson() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        return gsonBuilder.create();
+        return new GsonBuilder().create();
     }
 }

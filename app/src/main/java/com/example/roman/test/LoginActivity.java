@@ -2,11 +2,11 @@ package com.example.roman.test;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.example.roman.test.services.SocketService;
 import com.example.roman.test.utilities.Constants;
 import com.example.roman.test.utilities.Functions;
+import com.example.roman.test.utilities.HelperClasses;
 
 import org.json.JSONException;
 
@@ -28,14 +29,12 @@ import butterknife.ButterKnife;
 
 import static com.example.roman.test.utilities.Constants.LOGIN_INTENT;
 import static com.example.roman.test.utilities.Constants.THEME;
+import static com.example.roman.test.utilities.Functions.isNetworkConnected;
 import static com.example.roman.test.utilities.Functions.saveToPreferences;
 import static com.example.roman.test.utilities.Functions.setLanguage;
 
 public class LoginActivity extends AppCompatActivity {
     private SocketServiceReceiver receiver;
-
-//    @BindView(R.id.login_progress)
-//    View mProgressView;
 
     @BindView(R.id.login_form)
     View mLoginFormView;
@@ -46,33 +45,46 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.login_call_sign)
     TextView mCallSignTextView;
 
-    @Inject
-    SharedPreferences prefs;
+    @BindView(R.id.action_sign_in)
+    Button loginButton;
+
+    @BindView(R.id.action_style)
+    Button styleButton;
+
+    @BindView(R.id.action_setting)
+    Button settingsButton;
+
+    @Inject SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
+
+        if (savedInstanceState == null) {
+            saveToPreferences(Constants.NIGHT, THEME, prefs);
+        }
+
         Functions.setWholeTheme(this, prefs);
         setLanguage(this, prefs);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        final Context context = this;
 
+        setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        final Button mLoginButton = (Button) findViewById(R.id.action_sign_in);
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                attemptLogin(getApplication());
+                if (isNetworkConnected(getApplication())) {
+                    requestInternet();
+                } else {
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    startService(new Intent(LoginActivity.this, SocketService.class));
+                }
             }
         });
 
-        Button mStyleButton = (Button) findViewById(R.id.action_style);
-        assert mStyleButton != null;
-        mStyleButton.setOnClickListener(new View.OnClickListener() {
+        styleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean isNight = Functions.isNight(prefs);
@@ -89,12 +101,10 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        final Button mSettingsButton = (Button) findViewById(R.id.action_setting);
-        assert mSettingsButton != null;
-        mSettingsButton.setOnClickListener(new View.OnClickListener() {
+        settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(context, LoginSettingsActivity.class));
+                startActivity(new Intent(LoginActivity.this, LoginSettingsActivity.class));
             }
         });
 
@@ -105,10 +115,14 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mCallSignTextView.setText(getString(R.string.format_call_sign,
-                preferences.getString(getString(R.string.pref_login_key),
-                        getString(R.string.pref_login_default))));
+        String callSign = getString(R.string.format_call_sign,
+                prefs.getString(getString(R.string.pref_login_key),
+                        getString(R.string.pref_login_default)));
+
+        // TODO remove default login and check properly
+        if (!callSign.equals("-1")) {
+            mCallSignTextView.setText(callSign);
+        }
     }
 
     @Override
@@ -123,12 +137,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        startService(new Intent(this, SocketService.class));
-        super.onResume();
-    }
-
-    @Override
     protected void onStop()  {
         super.onStop();
 
@@ -136,20 +144,13 @@ public class LoginActivity extends AppCompatActivity {
             unregisterReceiver(receiver);
             receiver = null;
         }
-
-//        final MediaPlayer mp = MediaPlayer.create(LoginActivity.this, R.raw.changestatus);
-//        mp.start();
     }
 
-    public static void attemptLogin(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        String login = prefs.getString(context.getString(R.string.pref_login_key), context.getString(R.string.pref_login_default));
-        saveToPreferences(login, "login", prefs);
-        String password = prefs.getString(context.getString(R.string.pref_password_key), context.getString(R.string.pref_password_default));
-        saveToPreferences(password, "password", prefs);
-
-        new UserLoginTask(login, password).execute();
+    public static void attemptLogin(Context context) throws JSONException {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String login = preferences.getString(context.getString(R.string.pref_login_key), context.getString(R.string.pref_login_default));
+        String password = preferences.getString(context.getString(R.string.pref_password_key), context.getString(R.string.pref_password_default));
+        SocketService.getInstance().login(login, password);
     }
 
     private class SocketServiceReceiver extends BroadcastReceiver {
@@ -183,23 +184,18 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public static class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-        private final String mLogin;
-        private final String mPassword;
-
-        UserLoginTask(String login, String password) {
-            mLogin = login;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            try {
-                SocketService.getInstance().login(mLogin, mPassword);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return true;
-        }
+    private void requestInternet() {
+        HelperClasses.MyDialogFragment.newInstance(LoginActivity.this,
+                getString(R.string.internet_request_title),
+                getString(R.string.internet_request_text))
+                .setPositiveButton(getString(android.R.string.ok),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                .create()
+                .show();
     }
 }

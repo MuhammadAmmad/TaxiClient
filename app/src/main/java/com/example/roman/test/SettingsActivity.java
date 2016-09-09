@@ -3,9 +3,6 @@ package com.example.roman.test;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -30,6 +27,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.example.roman.test.data.Message;
+import com.example.roman.test.data.Order;
 import com.example.roman.test.utilities.Functions;
 import com.example.roman.test.utilities.LocaleHelper;
 
@@ -46,7 +45,6 @@ import static com.example.roman.test.utilities.Functions.setWholeTheme;
 public class SettingsActivity extends PreferenceActivity {
     @Inject
     SharedPreferences prefs;
-    private static String appVersion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +66,7 @@ public class SettingsActivity extends PreferenceActivity {
             root.addView(bar, 0);
         } else {
             ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
-            ListView content = (ListView) root.getChildAt(0);
+            LinearLayout content = (LinearLayout) root.getChildAt(0);
             root.removeAllViews();
             bar = (AppBarLayout) LayoutInflater.from(this).inflate(R.layout.toolbar_settings, root, false);
 
@@ -93,14 +91,6 @@ public class SettingsActivity extends PreferenceActivity {
                 finish();
             }
         });
-
-        try {
-            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            appVersion = pInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            appVersion = "unknown";
-        }
-
         setupSimplePreferencesScreen();
     }
 
@@ -122,6 +112,34 @@ public class SettingsActivity extends PreferenceActivity {
                 }
             });
         }
+
+        final Preference deleteOrders = findPreference(getString(R.string.pref_del_orders_key));
+        deleteOrders.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Order.deleteAll(Order.class);
+                return true;
+            }
+        });
+
+        final Preference deleteMessages = findPreference(getString(R.string.pref_del_msg_key));
+        deleteOrders.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Message.deleteAll(Message.class);
+                return true;
+            }
+        });
+
+        final Preference deleteMessagesOrders = findPreference(getString(R.string.pref_del_orders_msg_key));
+        deleteOrders.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Message.deleteAll(Message.class);
+                Order.deleteAll(Order.class);
+                return true;
+            }
+        });
 
         final ListPreference languagesList = (ListPreference) findPreference(getString(R.string.pref_languages_key));
         languagesList.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -166,7 +184,7 @@ public class SettingsActivity extends PreferenceActivity {
 //        setPreferenceSummary(app_version, appVersion);
     }
 
-    private static Preference.OnPreferenceChangeListener
+    private static final Preference.OnPreferenceChangeListener
             sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
@@ -231,6 +249,7 @@ public class SettingsActivity extends PreferenceActivity {
         preference.setSummary(value);
     }
 
+
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs) {
         // Allow super to try and create a view first
@@ -260,10 +279,6 @@ public class SettingsActivity extends PreferenceActivity {
         return null;
     }
 
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
-
     @SuppressWarnings("deprecation")
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, android.preference.Preference preference) {
@@ -283,7 +298,7 @@ public class SettingsActivity extends PreferenceActivity {
         return false;
     }
 
-    public void setUpNestedScreen(PreferenceScreen preferenceScreen) {
+    private void setUpNestedScreen(PreferenceScreen preferenceScreen) {
         final Dialog dialog = preferenceScreen.getDialog();
 
         AppBarLayout appBar;
@@ -326,5 +341,4 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
     }
-
 }

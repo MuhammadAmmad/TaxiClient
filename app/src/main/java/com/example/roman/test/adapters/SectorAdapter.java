@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.roman.test.R;
@@ -18,6 +19,9 @@ import butterknife.ButterKnife;
 
 public class SectorAdapter extends ArrayAdapter<Sector> {
     static class ViewHolder {
+        @BindView(R.id.sector_radio_button)
+        RadioButton radioButton;
+
         @BindView(R.id.list_item_sector)
         TextView name;
 
@@ -48,16 +52,17 @@ public class SectorAdapter extends ArrayAdapter<Sector> {
             view = inflater.inflate(R.layout.list_item_sector, parent, false);
 
             holder = new ViewHolder(view);
-            // Cache the viewHolder object inside the fresh view
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
             holder.name.setText("");
             holder.drivers.setText("");
+            holder.radioButton.setChecked(false);
         }
 
         if (sector != null) {
             holder.name.setText(sector.getName());
+            holder.radioButton.setChecked(sector.isChecked());
             int drivers = sector.getDrivers();
             if (drivers != 0) {
                 holder.drivers.setText(String.valueOf(drivers).toUpperCase());

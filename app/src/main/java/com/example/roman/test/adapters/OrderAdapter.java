@@ -1,67 +1,211 @@
 package com.example.roman.test.adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.roman.test.R;
 import com.example.roman.test.data.Order;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class OrderAdapter extends ArrayAdapter<Order> {
-    static class ViewHolder {
+import static com.example.roman.test.utilities.Constants.SHOW_ADDRESS_END;
+import static com.example.roman.test.utilities.Constants.SHOW_ADDRESS_START;
+import static com.example.roman.test.utilities.Constants.SHOW_DATE_START;
+import static com.example.roman.test.utilities.Constants.SHOW_DESCRIPTION;
+import static com.example.roman.test.utilities.Constants.SHOW_OPTIONS;
+import static com.example.roman.test.utilities.Constants.SHOW_PHONE_NUMBER;
+import static com.example.roman.test.utilities.Constants.SHOW_PRICE;
+import static com.example.roman.test.utilities.Constants.SHOW_ROUTE_LENGTH;
+import static com.example.roman.test.utilities.Constants.SHOW_TARIFF;
+import static com.example.roman.test.utilities.Constants.SHOW_TIME_CREATED;
+import static com.example.roman.test.utilities.Constants.SHOW_TIME_START;
+import static com.example.roman.test.utilities.Functions.showField;
 
-        @BindView(R.id.list_item_from)
-        TextView from;
+public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
+    private Context context;
+    private List<Order> mOrders;
 
-        @BindView(R.id.list_item_description)
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.order_date_created)
+        TextView dateCreated;
+
+        @BindView(R.id.order_time_created)
+        TextView timeCreated;
+
+        @BindView(R.id.order_phone)
+        TextView phone;
+
+        @BindView(R.id.order_description)
         TextView description;
 
+        @BindView(R.id.order_price)
+        TextView price;
+
+        @BindView(R.id.order_options)
+        TextView options;
+
+        @BindView(R.id.order_from)
+        TextView from;
+
+        @BindView(R.id.order_to)
+        TextView to;
+
+        @BindView(R.id.order_tariff_id)
+        TextView tariffId;
+
+        @BindView(R.id.order_date)
+        TextView date;
+
+        @BindView(R.id.order_time)
+        TextView time;
+
+        @BindView(R.id.order_distance)
+        TextView distance;
+
+        @BindView(R.id.order_sector)
+        TextView sector;
+
+        @BindView(R.id.action_map)
+        Button map;
+
         ViewHolder(View view) {
+            super(view);
             ButterKnife.bind(this, view);
         }
     }
 
-    public OrderAdapter(Context context, List<Order> orders) {
-        super(context, R.layout.list_item_order, orders);
+    public OrderAdapter(Context context) {
+        this.context = context;
+        mOrders = new ArrayList<>();
+        Order first = new Order();
+        Order second = new Order();
+
+        first.setOrderId("25");
+        first.setStatusId(1);
+        first.setDateCreated("Today");
+        first.setTimeCreated("now");
+        first.setInfoStatusId(15);
+        first.setPhone("+380508453060");
+        first.setDescription("Just right here");
+        first.setPrice("22");
+        first.setOption("Some options");
+        first.setFrom("Here");
+        first.setTo("There");
+        first.setCanTake(true);
+        first.setSectorFrom("this one");
+        first.setTariffId("1");
+        first.setDate("Today");
+        first.setTime("Now");
+        first.setLength("22");
+        first.setIsPrevious(true);
+        first.setCanRefuse(true);
+//        new GetOrdersTask().execute();
     }
 
-    @NonNull
     @Override
-    public View getView(int position, View view, @NonNull ViewGroup parent) {
-        // Get the data item for this position
-        Order order = getItem(position);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item_order, parent, false);
 
-        // Check if an existing view is being reused, otherwise inflate the view
-        OrderAdapter.ViewHolder holder;
+        return new ViewHolder(v);
+    }
 
-        if (view == null) {
-            // If there's no view to re-use, inflate a brand new view for now
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            view = inflater.inflate(R.layout.list_item_order, parent, false);
-
-            holder = new OrderAdapter.ViewHolder(view);
-            // Cache the viewHolder object inside the fresh view
-            view.setTag(holder);
-        } else {
-            holder = (OrderAdapter.ViewHolder) view.getTag();
-            holder.from.setText("");
-            holder.description.setText("");
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        Order order = null;
+        if (mOrders != null) {
+            order = mOrders.get(position);
         }
 
         if (order != null) {
-            holder.from.setText(order.getFrom());
-            holder.description.setText(order.getDescription());
-        }
+//            int mask = Integer.parseInt(Functions
+//                    .getFromPreferences(NEW_ORDER_MASK, prefs));
+            int mask = 4096;
 
-        return view;
+            if (showField(mask, SHOW_TIME_CREATED) && !order.getTimeCreated().equals("")) {
+                holder.timeCreated.setVisibility(View.VISIBLE);
+                holder.timeCreated.setText(context.getString(R.string.format_order_time_created,
+                        order.getTimeCreated()));
+            }
+
+            if (showField(mask, SHOW_PHONE_NUMBER) && !order.getPhone().equals("")) {
+                holder.phone.setVisibility(View.VISIBLE);
+                holder.phone.setText(context.getString(R.string.format_order_phone, order.getPhone()));
+            }
+
+            if (showField(mask, SHOW_DESCRIPTION) && !order.getDescription().equals("")) {
+                holder.description.setVisibility(View.VISIBLE);
+                holder.description.setText(context.getString(R.string.format_order_description, order.getDescription()));
+            }
+
+            if (showField(mask, SHOW_PRICE) && !order.getPrice().equals("")) {
+                holder.price.setVisibility(View.VISIBLE);
+                holder.price.setText(context.getString(R.string.format_order_price, order.getPrice().split(",")[0]));
+            }
+
+            if (showField(mask, SHOW_OPTIONS) && !order.getOption().equals("0")) {
+                holder.options.setVisibility(View.VISIBLE);
+                holder.options.setText(context.getString(R.string.format_order_options, order.getOption()));
+            }
+
+            if (showField(mask, SHOW_ADDRESS_START) && !order.getFrom().equals("")) {
+                holder.from.setVisibility(View.VISIBLE);
+                holder.from.setText(context.getString(R.string.format_order_from, order.getFrom()));
+            }
+
+            if (showField(mask, SHOW_ADDRESS_END) && !order.getTo().equals("")) {
+                holder.to.setVisibility(View.VISIBLE);
+                holder.to.setText(context.getString(R.string.format_order_to, order.getTo()));
+            }
+
+            if (showField(mask, SHOW_DATE_START) && !order.getDate().equals("")) {
+                holder.date.setVisibility(View.VISIBLE);
+                holder.date.setText(context.getString(R.string.format_order_date, order.getDate()));
+            }
+
+            if (showField(mask, SHOW_TIME_START) && !order.getTime().equals("")) {
+                holder.time.setVisibility(View.VISIBLE);
+                holder.time.setText(context.getString(R.string.format_order_time, order.getTime()));
+            }
+
+            if (showField(mask, SHOW_ROUTE_LENGTH) && !order.getLength().equals("")) {
+                holder.distance.setVisibility(View.VISIBLE);
+                holder.distance.setText(context.getString(R.string.format_order_distance, order.getLength()));
+            }
+
+            if (showField(mask, SHOW_TARIFF) && !order.getTariffId().equals("")) {
+                holder.tariffId.setVisibility(View.VISIBLE);
+                holder.tariffId.setText(context.getString(R.string.format_order_tariff, order.getTariffId()));
+            }
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+//        return mOrders.size();
+        return 0;
+    }
+
+    private class GetOrdersTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+//            Cursor cursor = context.getContentResolver()
+//                    .query(OrdersTable.CONTENT_URI, null, null, null, null);
+//
+//            if (cursor != null) {
+//                mOrders = OrdersTable.getRows(cursor, true);
+//            }
+            return null;
+        }
     }
 }

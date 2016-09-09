@@ -3,7 +3,6 @@ package com.example.roman.test;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,12 +11,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.roman.test.adapters.OrderAdapter;
+import com.example.roman.test.adapters.AirAdapter;
 import com.example.roman.test.data.Order;
-import com.example.roman.test.services.SocketService;
 import com.google.gson.Gson;
-
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +30,7 @@ public class AirFragment extends Fragment {
 
     private int mPosition = ListView.INVALID_POSITION;
     private List<Order> mOrders;
-    private OrderAdapter mOrderAdapter;
+    private AirAdapter mAirAdapter;
     private static final String SELECTED_KEY = "selected_position";
 
     static AirFragment newInstance() {
@@ -50,10 +46,10 @@ public class AirFragment extends Fragment {
         ((TaxiApp) getActivity().getApplication()).getNetComponent().inject(this);
 
         mOrders = new ArrayList<>();
-        mOrderAdapter = new OrderAdapter(getActivity(), mOrders);
+        mAirAdapter = new AirAdapter(getActivity(), mOrders);
 
         final ListView mListView = (ListView) view.findViewById(R.id.list_view_orders);
-        mListView.setAdapter(mOrderAdapter);
+        mListView.setAdapter(mAirAdapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -75,7 +71,7 @@ public class AirFragment extends Fragment {
 
     public void addOrders(Order[] orders) {
         Collections.addAll(mOrders, orders);
-        mOrderAdapter.notifyDataSetChanged();
+        mAirAdapter.notifyDataSetChanged();
     }
 
     public void addOrder(Order order) {
@@ -83,13 +79,13 @@ public class AirFragment extends Fragment {
         if (mOrders !=  null) {
             MediaPlayer mp;
             if (order.getIsPrevious()) {
-                mp = MediaPlayer.create(getActivity(), R.raw.freeorders);
+                mp = MediaPlayer.create(getActivity(), R.raw.free_orders);
             } else {
-                mp = MediaPlayer.create(getActivity(), R.raw.coldetherorders);
+                mp = MediaPlayer.create(getActivity(), R.raw.cold_air_orders);
             }
             mp.start();
             mOrders.add(order);
-            mOrderAdapter.notifyDataSetChanged();
+            mAirAdapter.notifyDataSetChanged();
         }
     }
 
@@ -97,7 +93,7 @@ public class AirFragment extends Fragment {
         if (mOrders != null) {
             for (int i = 0; i < mOrders.size(); i++) {
                 if (mOrders.get(i).getOrderId().equals(id)) {
-                    mOrderAdapter.remove(mOrders.get(i));
+                    mAirAdapter.remove(mOrders.get(i));
                     return;
                 }
             }
@@ -107,19 +103,12 @@ public class AirFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            try {
-                SocketService.getInstance().getOrders();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            List<Order> orders = savedInstanceState.getParcelableArrayList("orders");
-            if (orders != null) {
-                addOrders(orders.toArray(new Order[0]));
-            }
-        }
+//        if (savedInstanceState != null) {
+//            List<Order> orders = savedInstanceState.getParcelableArrayList("orders");
+//            if (orders != null) {
+//                addOrders(orders.toArray(new Order[0]));
+//            }
+//        }
     }
 
     @Override
@@ -128,7 +117,7 @@ public class AirFragment extends Fragment {
             outState.putInt(SELECTED_KEY, mPosition);
         }
 
-        outState.putParcelableArrayList("orders", (ArrayList<? extends Parcelable>) mOrders);
+//        outState.putParcelableArrayList("orders", (ArrayList<? extends Parcelable>) mOrders);
         super.onSaveInstanceState(outState);
     }
 }

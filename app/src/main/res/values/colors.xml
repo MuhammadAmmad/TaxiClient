@@ -6,7 +6,11 @@
 
     <color name="teal">#009688</color>
     <color name="dark_gray">#a9a9a9</color>
-    <color name="grey_800">#212121</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_600">#757575</color>
+    <color name="grey_750">#595959</color>
+    <color name="grey_250">#d8d8d8</color>
+
     <color name="light_green">#8BC34A</color>
 
     <color name="actionbar">#3cb879</color>

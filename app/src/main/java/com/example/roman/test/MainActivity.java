@@ -1,7 +1,6 @@
 package com.example.roman.test;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,7 +23,6 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -45,9 +43,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.roman.test.data.ChatMessage;
+import com.example.roman.test.data.DriverStatus;
 import com.example.roman.test.data.Message;
-import com.example.roman.test.data.MessagesTable;
 import com.example.roman.test.data.Order;
 import com.example.roman.test.data.Sector;
 import com.example.roman.test.services.SocketService;
@@ -58,9 +55,7 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -77,22 +72,24 @@ import static com.example.roman.test.utilities.Constants.ERROR_NONE;
 import static com.example.roman.test.utilities.Constants.ERROR_NOT_CONFIRMED;
 import static com.example.roman.test.utilities.Constants.ERROR_ORDER_NOT_FOUND;
 import static com.example.roman.test.utilities.Constants.ERROR_ORDER_TAKEN;
+import static com.example.roman.test.utilities.Constants.MESSAGE;
+import static com.example.roman.test.utilities.Constants.METHOD_GET_BALANCE;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_CURRENT_SECTOR;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_NEW_STATUS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDERS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDER_BY_ID;
+import static com.example.roman.test.utilities.Constants.METHOD_GET_SETTINGS;
 import static com.example.roman.test.utilities.Constants.METHOD_NEW_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER_STATUS;
+import static com.example.roman.test.utilities.Constants.METHOD_SET_TO_SECTOR;
 import static com.example.roman.test.utilities.Constants.ORDER_ID;
 import static com.example.roman.test.utilities.Constants.ORDER_STATUS_TAKE;
 import static com.example.roman.test.utilities.Constants.RESPONSE;
 import static com.example.roman.test.utilities.Constants.SECTOR_ID;
-import static com.example.roman.test.utilities.Constants.STATUS_ARRAY;
 import static com.example.roman.test.utilities.Constants.STATUS_ID;
-import static com.example.roman.test.utilities.Functions.getSectorList;
+import static com.example.roman.test.utilities.Functions.getSectorNameById;
 import static com.example.roman.test.utilities.Functions.getStreetFromLocation;
-import static com.example.roman.test.utilities.Functions.isActive;
 import static com.example.roman.test.utilities.Functions.isBetterLocation;
 import static com.example.roman.test.utilities.Functions.saveToPreferences;
 
@@ -100,7 +97,9 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         NetworkChangeReceiver.SnackInterface {
 
-    public static final int REQUEST_LANGUAGE = 2;
+    SocketService socketService;
+
+    private static final int REQUEST_LANGUAGE = 2;
     public static final int RESULT_SUCCESS = 1;
     private static final int REQUEST_LOCATION = 1;
     private static final int MAIN = 0;
@@ -146,12 +145,12 @@ public class MainActivity extends AppCompatActivity
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
         Functions.setWholeTheme(this, prefs);
         Functions.setLanguage(this, prefs);
+        socketService = SocketService.getInstance();
 
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
-
         ButterKnife.bind(this);
-
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -244,10 +243,6 @@ public class MainActivity extends AppCompatActivity
             IntentFilter intentNetworkFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
             registerReceiver(mNetworkReceiver, intentNetworkFilter);
         }
-
-        if (savedInstanceState == null) {
-            new StartUpTask().execute();
-        }
     }
 
     @Override
@@ -298,16 +293,19 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawer(GravityCompat.START);
         } else if (!mainFragment) {
             onNavigationItemSelected(navigationView.getMenu().getItem(0));
         } else if (mTabPosition != AIR) {
             mViewPager.setCurrentItem(AIR);
         } else {
             if (backPressed) {
-                exit();
+                try {
+                    exit();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             backPressed = true;
@@ -400,7 +398,7 @@ public class MainActivity extends AppCompatActivity
                 return false;
             case R.id.nav_exit:
                 try {
-                    SocketService.getInstance().logout();
+                    socketService.logout();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -434,7 +432,11 @@ public class MainActivity extends AppCompatActivity
             snackBar.setAction(getString(R.string.internet_online), new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    attemptLogin(MainActivity.this);
+                    try {
+                        attemptLogin(MainActivity.this);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     snackBar.dismiss();
                     recreate();
                 }
@@ -461,7 +463,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private class MyPageAdapter extends FragmentStatePagerAdapter {
-        private String tabTitles[] = new String[] { getString(R.string.main_main),
+        private final String[] tabTitles = new String[] { getString(R.string.main_main),
                 getString(R.string.main_air),
                 getString(R.string.main_order)};
         private final List<Fragment> fragments;
@@ -510,56 +512,32 @@ public class MainActivity extends AppCompatActivity
                 getString(R.string.alert_fire),
                 getString(R.string.alert_message));
 
-        helpBuilder.setPositiveButton(getString(R.string.alert_fire),
-                new DialogInterface.OnClickListener() {
+        helpBuilder.setPositiveButton(getString(R.string.alert_fire), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         try {
-                            SocketService.getInstance().alert();
+                            socketService.alert();
                         } catch (JSONException e) {
                             e.printStackTrace();
-                        }
-                    }
-                }).setNegativeButton(getString(R.string.alert_cancel),
-                new DialogInterface.OnClickListener() {
+                        }}
+                })
+                    .setNegativeButton(getString(R.string.alert_cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
+                        dialogInterface.dismiss();}
                 }).create().show();
     }
 
-    public void showMessage(final Message message) {
+    private void showMessage(final Message message) {
         Bundle bundle = new Bundle();
-        bundle.putString("MSG", message.getMessage());
-        MyDialogFragment dialogFragment = new MyDialogFragment();
-        dialogFragment.setArguments(bundle);
-        dialogFragment.show(getSupportFragmentManager(), "tag");
+        bundle.putString(MESSAGE, message.getMessage());
+        Functions.getDialog(this, "New Message", message.getMessage()).create().show();
     }
 
-    public static class MyDialogFragment extends DialogFragment {
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            Bundle bundle = getArguments();
-            String text = bundle.getString("MSG");
+    public void newMessage(Message message) {
+        boolean isActive = Functions.isActive(this);
 
-            return new AlertDialog.Builder(getActivity())
-                    .setTitle("New message")
-                    .setMessage(text)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    }).create();
-        }
-    }
-
-    private void newMessage(Message message) {
-        boolean isActive = isActive(this);
-
-        getContentResolver().insert(MessagesTable.CONTENT_URI,
-                MessagesTable.getContentValues(new ChatMessage(message, false), false));
+        message.save();
 
         if (isActive) {
             showMessage(message);
@@ -579,39 +557,27 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void showSectorInfo() {
-        List<Sector> sectors = getSectorList(this);
-        StringBuilder textMessage = new StringBuilder("");
-
-        for (Sector sector : sectors) {
-            if (sector.getDrivers() != 0) {
-                textMessage
-                        .append(sector.getName())
-                        .append(": ")
-                        .append(sector.getDrivers())
-                        .append("\n");
-            }
-        }
-
-        newMessage(new Message("1", textMessage.toString(), "19/08/2016"));
-    }
+//    public void showSectorInfo() {
+////        List<Sector> sectors = Sector.listAll(Sector.class);
+//        StringBuilder textMessage = new StringBuilder("");
+//
+//        for (Sector sector : sectors) {
+//            if (sector.getDrivers() != 0) {
+//                textMessage
+//                        .append(sector.getName())
+//                        .append(": ")
+//                        .append(sector.getDrivers())
+//                        .append("\n");
+//            }
+//        }
+//
+//        newMessage(new Message("1", textMessage.toString(), "19/08/2016"));
+//    }
 
     private class SocketServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             new HandleRequestTask().execute(intent);
-        }
-    }
-
-    private static class StartUpTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                SocketService.getInstance().getDriverStatus();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
         }
     }
 
@@ -626,13 +592,17 @@ public class MainActivity extends AppCompatActivity
                 case ERROR_NONE:
                     int method = intent.getIntExtra(Constants.METHOD, DEFAULT);
                     switch (method) {
+                        case METHOD_GET_SETTINGS:
+                            mMainFragment.setStatusData();
+                            break;
+
                         case METHOD_SET_ORDER_STATUS:
                             final String orderId = intent.getStringExtra(ORDER_ID);
                             final String orderStatus = intent.getStringExtra(STATUS_ID);
                             if (orderStatus.equals(ORDER_STATUS_TAKE)) {
                                 showToast("You have successfully taken order #" + orderId);
                                 try {
-                                    SocketService.getInstance().getOrderById();
+                                    socketService.getOrderById();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -652,23 +622,27 @@ public class MainActivity extends AppCompatActivity
                         case METHOD_GET_ORDER_BY_ID:
                             String jsonOrder = intent.getStringExtra(RESPONSE);
                             final Order newOrder = gson.fromJson(jsonOrder, Order.class);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mOrderFragment.addOrder(newOrder);
-                                }
-                            });
+                            break;
+
+                        case METHOD_GET_BALANCE:
+                            if (mMainFragment != null) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mMainFragment.setBalance();
+                                    }
+                                });
+                            }
                             break;
 
                         case METHOD_SET_ORDER:
                             String setOrder = intent.getStringExtra(RESPONSE);
                             final Order newSetOrder = gson.fromJson(setOrder, Order.class);
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-                            final String currentDate = sdf.format(new Date());
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    newMessage(new Message(newSetOrder.getOrderId(), newSetOrder.getFrom(), currentDate));
+                                    newMessage(new Message(newSetOrder.getOrderId(),
+                                            newSetOrder.getFrom(), Functions.getDate()));
                                 }
                             });
                             break;
@@ -689,42 +663,47 @@ public class MainActivity extends AppCompatActivity
                                     e.printStackTrace();
                                 }
                             }
-
                             break;
 
                         case METHOD_NEW_ORDER:
                             final Order order = gson.fromJson(intent.getStringExtra(RESPONSE), Order.class);
-                            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd");
-                            final String currentDate1 = sdf1.format(new Date());
+                            mAirFragment.removeOrder(order.getOrderId());
+
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     mAirFragment.addOrder(order);
-                                    newMessage(new Message(order.getOrderId(), order.getFrom(), currentDate1));
+                                    newMessage(new Message(order.getOrderId(), order.getFrom(), Functions.getDate()));
                                 }
                             });
                             break;
 
                         case METHOD_GET_NEW_STATUS:
                             String id = intent.getStringExtra(RESPONSE);
-                            String text = prefs.getString(STATUS_ARRAY, "[]");
-                            com.example.roman.test.data.Status[] statuses =
-                                    gson.fromJson(text, com.example.roman.test.data.Status[].class);
-                            for (final com.example.roman.test.data.Status status : statuses) {
-                                if (status.getId().equals(id)) {
+
+                            for (final DriverStatus driverStatus : DriverStatus.listAll(DriverStatus.class)) {
+                                if (driverStatus.getStatusId().equals(id)) {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
                                             Preference preference = mMainFragment.findPreference(getString(R.string.pref_status_key));
                                             if (preference != null) {
                                                 preference.setTitle(getString(R.string.format_new_status,
-                                                        status.getName()));
+                                                        driverStatus.getName()));
                                             }
                                         }
                                     });
                                     break;
                                 }
                             }
+                            break;
+
+                        case METHOD_SET_TO_SECTOR:
+                            String sectorId = intent.getStringExtra(RESPONSE);
+                            Sector sector = getSectorNameById(sectorId);
+                            showToast("You have set to " + sector.getName());
+                            sector.setChecked(true);
+                            sector.save();
                             break;
 
                         case Constants.METHOD_DELETE_ORDER:
@@ -772,38 +751,35 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void exit() {
+    private void exit() throws JSONException {
+        socketService.logout();
         moveTaskToBack(true);
         android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(1);
+        System.exit(0);
     }
 
     private void showExitDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
-                .setMessage(getString(R.string.exit_message))
+        AlertDialog.Builder helpBuilder = Functions.getDialog(this, "",
+                getString(R.string.exit_message));
+
+        helpBuilder.setNegativeButton(getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
                 .setPositiveButton(getString(R.string.exit_exit), new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        exit();
-//                        final MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.changestatusexit);
-//                        mp.start();
-//                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                            @Override
-//                            public void onCompletion(MediaPlayer mediaPlayer) {
-//                                exit();
-//                            }
-//                        }
-//                    );
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        try {
+                            exit();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                });
+                }).create().show();
 
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        TextView messageView = (TextView)dialog.findViewById(android.R.id.message);
-        if (messageView != null) {
-            messageView.setGravity(Gravity.CENTER);
-        }
     }
 
     private void backToMain() {

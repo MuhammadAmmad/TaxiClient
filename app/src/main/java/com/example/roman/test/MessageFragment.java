@@ -7,13 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.roman.test.adapters.MessagesListAdapter;
-import com.example.roman.test.data.ChatMessage;
-import com.example.roman.test.utilities.Functions;
-
-import java.util.List;
-
-
 public class MessageFragment extends Fragment {
     private int positionChecked = ListView.INVALID_POSITION;
 
@@ -26,11 +19,11 @@ public class MessageFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat_dialog, container, false);
 
-        List<ChatMessage> messages = Functions.getMessageList(getActivity());
-        MessagesListAdapter messageAdapter = new MessagesListAdapter(getContext(), messages);
+//        List<ChatMessage> messages = Functions.getMessageList(getActivity());
+//        MessagesListAdapter messageAdapter = new MessagesListAdapter(getContext(), messages);
 
         final ListView mListView = (ListView) rootView.findViewById(R.id.list_view_messages);
-        mListView.setAdapter(messageAdapter);
+//        mListView.setAdapter(messageAdapter);
 
         return rootView;
     }

@@ -8,7 +8,7 @@ import android.net.NetworkInfo;
 
 public class NetworkChangeReceiver extends BroadcastReceiver {
     private SnackInterface callback;
-    private boolean isConnnected = true;
+    private boolean isConnected = true;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -29,9 +29,9 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             if (info != null) {
                 for (NetworkInfo networkInfo : info) {
                     if (networkInfo.getState().equals(NetworkInfo.State.CONNECTED) ) {
-                        if (!isConnnected) {
+                        if (!isConnected) {
                             callback.reconnect(true);
-                            isConnnected = true;
+                            isConnected = true;
                         }
                         return true;
                     }
@@ -40,7 +40,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         }
 
         callback.reconnect(false);
-        isConnnected = false;
+        isConnected = false;
         return false;
     }
 

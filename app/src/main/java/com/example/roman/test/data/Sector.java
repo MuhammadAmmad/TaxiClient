@@ -1,42 +1,40 @@
 package com.example.roman.test.data;
 
 import com.google.gson.annotations.SerializedName;
+import com.orm.SugarRecord;
+import com.orm.dsl.Unique;
 
-import ckm.simple.sql_provider.annotation.SimpleSQLColumn;
-import ckm.simple.sql_provider.annotation.SimpleSQLTable;
-
-@SimpleSQLTable(
-        table = "sectors",
-        provider = "SectorProvider")
-public class Sector {
+public class Sector extends SugarRecord {
     private static final String ID = "I";
     private static final String NAME = "N";
     private static final String DRIVERS = "P";
 
+    @Unique
     @SerializedName(ID)
-    @SimpleSQLColumn("id")
-    private String id;
+    private String sectorId;
 
     @SerializedName(NAME)
-    @SimpleSQLColumn("name")
     private String name;
 
     @SerializedName(DRIVERS)
-    @SimpleSQLColumn("drivers")
     private int drivers;
 
-    public Sector() {
-        id = "";
-        name = "";
-        drivers = 0;
+    private transient boolean isChecked;
+
+    public Sector() { }
+
+    public Sector(String sectorId, String name, int drivers) {
+        this.sectorId = sectorId;
+        this.name = name;
+        this.drivers = drivers;
     }
 
-    public String getId() {
-        return id;
+    public String getSectorId() {
+        return sectorId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setSectorId(String id) {
+        this.sectorId = id;
     }
 
     public String getName() {
@@ -51,7 +49,15 @@ public class Sector {
         return drivers;
     }
 
-    void setDrivers(int drivers) {
+    public void setDrivers(int drivers) {
         this.drivers = drivers;
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean isChecked) {
+        this.isChecked = isChecked;
     }
 }

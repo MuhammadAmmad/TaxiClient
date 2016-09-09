@@ -4,11 +4,11 @@
     android:id="@+id/toolbar"
     android:layout_height="?attr/actionBarSize"
     android:layout_width="match_parent"
+    android:background="@color/grey_800"
     app:contentInsetLeft="0dp"
     app:contentInsetStart="0dp"
     app:navigationIcon="?attr/homeAsUpIndicator"
     android:fitsSystemWindows="true"
     android:minHeight="?attr/actionBarSize"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-    android:background="?attr/colorPrimaryDark">
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 </android.support.v7.widget.Toolbar>

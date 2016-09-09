@@ -1,30 +1,26 @@
 package com.example.roman.test.data;
 
-import ckm.simple.sql_provider.annotation.SimpleSQLColumn;
-import ckm.simple.sql_provider.annotation.SimpleSQLTable;
+import com.orm.SugarRecord;
 
-@SimpleSQLTable(
-        table = "messages",
-        provider = "MessageProvider")
-public class ChatMessage {
-    @SimpleSQLColumn("id")
-    private String id;
-
-    @SimpleSQLColumn("date")
+public class ChatMessage extends SugarRecord {
+    private String messageId;
     private String date;
-
-    @SimpleSQLColumn("self")
     private boolean isSelf;
-
-    @SimpleSQLColumn("message")
     private String message;
 
-    public ChatMessage() { }
+    ChatMessage() { }
+
+    public ChatMessage(String messageId, String date, boolean isSelf, String message) {
+        this.messageId = messageId;
+        this.date = date;
+        this.isSelf = isSelf;
+        this.message = message;
+    }
 
     public ChatMessage(Message message, boolean isSelf) {
         this.message = message.getMessage();
         this.date = message.getDate();
-        this.id = message.getId();
+        this.messageId = message.getMessageId();
         this.isSelf = isSelf;
     }
 
@@ -44,12 +40,12 @@ public class ChatMessage {
         this.isSelf = isSelf;
     }
 
-    public String getId() {
-        return id;
+    public String getMessageId() {
+        return messageId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     public String getDate() {

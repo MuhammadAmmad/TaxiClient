@@ -1,17 +1,10 @@
 package com.example.roman.test.data;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
+import com.orm.SugarRecord;
+import com.orm.dsl.Unique;
 
-import ckm.simple.sql_provider.annotation.SimpleSQLColumn;
-import ckm.simple.sql_provider.annotation.SimpleSQLTable;
-
-@SimpleSQLTable(
-        table = "orders",
-        provider = "OrderProvider")
-public class Order implements Parcelable {
+public class Order extends SugarRecord {
     private static final String ORDER_ID = "OI";
     private static final String STATUS_ID = "SI";
     private static final String DATE_CREATED = "DC";
@@ -33,82 +26,64 @@ public class Order implements Parcelable {
     private static final String CAN_REFUSE = "IPOA";
 
     @SerializedName(ORDER_ID)
-    @SimpleSQLColumn("order_id")
+    @Unique
     private String orderId;
 
     @SerializedName(STATUS_ID)
-    @SimpleSQLColumn("status_id")
     private int statusId;
 
     @SerializedName(DATE_CREATED)
-    @SimpleSQLColumn("date_created")
     private String dateCreated;
 
     @SerializedName(TIME_CREATED)
-    @SimpleSQLColumn("time_created")
     private String timeCreated;
 
     @SerializedName(INFO_STATUS_ID)
-    @SimpleSQLColumn("info_status_id")
     private int infoStatusId;
 
     @SerializedName(PHONE)
-    @SimpleSQLColumn("phone")
     private String phone;
 
     @SerializedName(DESCRIPTION)
-    @SimpleSQLColumn("description")
     private String description;
 
     @SerializedName(PRICE)
-    @SimpleSQLColumn("price")
     private String price;
 
     @SerializedName(OPTION)
-    @SimpleSQLColumn("option")
     private String option;
 
-    @SimpleSQLColumn("from")
     @SerializedName(FROM)
     private String from;
 
     @SerializedName(TO)
-    @SimpleSQLColumn("to")
     private String to;
 
     @SerializedName(CAN_TAKE)
-    @SimpleSQLColumn("can_take")
     private boolean canTake;
 
     @SerializedName(SECTOR_FROM)
-    @SimpleSQLColumn("sector_from")
     private String sectorFrom;
 
     @SerializedName(TARIFF_ID)
-    @SimpleSQLColumn("tariff_id")
     private String tariffId;
 
     @SerializedName(DATE)
-    @SimpleSQLColumn("date")
     private String date;
 
     @SerializedName(TIME)
-    @SimpleSQLColumn("time")
     private String time;
 
     @SerializedName(LENGTH)
-    @SimpleSQLColumn("length")
     private String length;
 
     @SerializedName(IS_PREVIOUS)
-    @SimpleSQLColumn("is_previous")
     private boolean isPrevious;
 
     @SerializedName(CAN_REFUSE)
-    @SimpleSQLColumn("can_refurse")
     private boolean canRefuse;
 
-    public Order() { }
+    public Order() {}
 
     public String getOrderId() {
         return orderId;
@@ -260,34 +235,5 @@ public class Order implements Parcelable {
 
     public void setCanRefuse(boolean canRefuse) {
         this.canRefuse = canRefuse;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(orderId);
-        parcel.writeInt(statusId);
-        parcel.writeString(dateCreated);
-        parcel.writeString(timeCreated);
-        parcel.writeInt(infoStatusId);
-        parcel.writeString(phone);
-        parcel.writeString(description);
-        parcel.writeString(price);
-        parcel.writeString(option);
-        parcel.writeString(from);
-        parcel.writeString(to);
-        parcel.writeBooleanArray(new boolean[]{canTake});
-        parcel.writeString(sectorFrom);
-        parcel.writeString(tariffId);
-        parcel.writeString(date);
-        parcel.writeString(time);
-        parcel.writeString(length);
-        parcel.writeBooleanArray(new boolean[]{isPrevious});
-        parcel.writeBooleanArray(new boolean[]{canRefuse});
-
     }
 }

@@ -5,18 +5,20 @@
         android:key="@string/pref_sector_key"
         android:title="@string/pref_sector_label"
         android:layout="@layout/menu_preference"
-        android:icon="@drawable/ic_main_sektor">
+        android:icon="@drawable/ic_main_sector">
         <intent
             android:targetPackage="com.example.roman.test"
             android:targetClass="com.example.roman.test.SectorActivity" />
     </Preference>
 
     <Preference
+        android:enabled="false"
         android:layout="@layout/menu_preference"
         android:icon="@drawable/ic_main_filter"
         android:title="@string/pref_filter_label"/>
 
     <Preference
+        android:enabled="false"
         android:layout="@layout/menu_preference"
         android:icon="@drawable/ic_big_filter"
         android:title="@string/pref_ex_filter_label"/>
@@ -27,8 +29,9 @@
         android:icon="@drawable/ic_main_money"/>
 
     <Preference
+        android:enabled="false"
         android:layout="@layout/menu_preference"
-        android:key="@string/pref_balance_key"
+        android:key="@string/pref_rating_key"
         android:icon="@drawable/rating_star"
         android:title="@string/pref_rating_label"/>
 

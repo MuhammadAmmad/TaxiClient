@@ -18,8 +18,8 @@ import butterknife.ButterKnife;
 
 public class MessagesListAdapter extends BaseAdapter {
 
-    private Context context;
-    private List<ChatMessage> messagesItems;
+    private final Context context;
+    private final List<ChatMessage> messagesItems;
 
     static class ViewHolder {
         @BindView(R.id.label_date)
@@ -69,10 +69,10 @@ public class MessagesListAdapter extends BaseAdapter {
 
         if (message.getIsSelf()) {
             // message belongs to you, so load the right aligned layout
-            view = mInflater.inflate(R.layout.list_item_msg_right, null);
+            view = mInflater.inflate(R.layout.list_item_msg_right, parent, false);
         } else {
             // message belongs to other person, load the left aligned layout
-            view = mInflater.inflate(R.layout.list_item_msg_left, null);
+            view = mInflater.inflate(R.layout.list_item_msg_left, parent, false);
         }
 
         holder = new ViewHolder(view);

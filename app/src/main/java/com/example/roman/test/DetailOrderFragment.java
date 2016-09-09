@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -61,12 +60,6 @@ public class DetailOrderFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ((TaxiApp) getActivity().getApplication()).getNetComponent().inject(this);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail_order, container, false);
@@ -97,7 +90,6 @@ public class DetailOrderFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        removeOrder(order.getOrderId());
                         getActivity().finish();
                     }
                 });

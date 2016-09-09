@@ -57,7 +57,7 @@ public class CustomClock extends TextView {
             public void run() {
                 if (mTickerStopped) return;
                 mCalendar.setTimeInMillis(System.currentTimeMillis());
-                setText(DateFormat.format(mFormat, mCalendar) + "   ");
+                setText(DateFormat.format(mFormat, mCalendar));
                 invalidate();
                 long now = SystemClock.uptimeMillis();
                 long next = now + (1000 - now % 1000);

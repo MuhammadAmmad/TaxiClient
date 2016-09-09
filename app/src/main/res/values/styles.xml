@@ -6,6 +6,7 @@
     </style>
 
     <style name="AppTheme.Day" parent="PreferenceFixTheme.Light">
+        <item name="smallBarColor">@color/grey_250</item>
         <item name="@android:windowNoTitle">true</item>
         <item name="@android:windowFullscreen">true</item>
         <item name="tabSelector">@drawable/tab_selector_day</item>
@@ -18,6 +19,7 @@
     </style>
 
     <style name="AppTheme.Night" parent="PreferenceFixTheme">
+        <item name="smallBarColor">@color/grey_750</item>
         <item name="@android:windowNoTitle">true</item>
         <item name="@android:windowFullscreen">true</item>
         <item name="android:colorBackground">@android:color/black</item>
@@ -83,6 +85,7 @@
     <attr name="loginBackground" format="reference"/>
     <attr name="airTabTextColor" format="reference"/>
     <attr name="airTabTextSelectedColor" format="reference"/>
+    <attr name="smallBarColor" format="reference"/>
 
     <style name="WindowAnimationTransition">
         <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
@@ -95,7 +98,7 @@
     </style>
 
     <style name="TaxiButton.Night" parent="TaxiButton">
-        <item name="android:background">@drawable/button_gradient_night</item>
+        <item name="android:background">@drawable/button_night</item>
     </style>
 
     <style name="TaxiButton.Day" parent="TaxiButton">

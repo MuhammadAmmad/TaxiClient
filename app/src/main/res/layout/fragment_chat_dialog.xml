@@ -27,10 +27,11 @@
             android:layout_height="match_parent"
             android:layout_weight="12"
             android:background="@color/bg_msg_input"
-            android:hint="Message"
             android:imeOptions="flagNoFullscreen"
             android:paddingLeft="6dp"
             android:paddingRight="6dp"
+            android:hint="@string/message_hint"
+            android:inputType="textLongMessage"
             android:textColor="@color/server_status_bar"
             android:textColorHint="@color/title_gray" />
 
@@ -40,6 +41,7 @@
             android:layout_height="wrap_content"
             android:background="@color/bg_btn_join"
             android:padding="10dp"
-            android:src="@android:drawable/ic_menu_send" />
+            android:src="@android:drawable/ic_menu_send"
+            android:contentDescription="@string/preference_desc" />
     </LinearLayout>
 </LinearLayout>

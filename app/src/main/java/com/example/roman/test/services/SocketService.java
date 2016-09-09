@@ -3,23 +3,22 @@ package com.example.roman.test.services;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
+import com.example.roman.test.LoginActivity;
 import com.example.roman.test.R;
 import com.example.roman.test.TaxiApp;
-import com.example.roman.test.data.Order;
-import com.example.roman.test.data.OrdersTable;
+import com.example.roman.test.data.DelayReason;
+import com.example.roman.test.data.DriverStatus;
 import com.example.roman.test.data.Sector;
-import com.example.roman.test.data.SectorsTable;
 import com.example.roman.test.utilities.Constants;
 import com.example.roman.test.utilities.Functions;
+import com.example.roman.test.utilities.HelperClasses;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
@@ -37,6 +36,7 @@ import javax.inject.Inject;
 import static com.example.roman.test.utilities.Constants.CURRENT_SECTOR;
 import static com.example.roman.test.utilities.Constants.DG;
 import static com.example.roman.test.utilities.Constants.LOGIN;
+import static com.example.roman.test.utilities.Constants.LOGIN_INTENT;
 import static com.example.roman.test.utilities.Constants.MAIN_INTENT;
 import static com.example.roman.test.utilities.Constants.METHOD_DELETE_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_BALANCE;
@@ -71,7 +71,7 @@ public class SocketService extends Service {
     private static String serverAddress;
     private static final int TIMEOUT = 5000;
     private static SocketService sService;
-    private static String AUTHORITY = "ws://";
+    private static final String AUTHORITY = "ws://";
     private final static String PATH = "/test";
 
     private WebSocket webSocket;
@@ -95,12 +95,12 @@ public class SocketService extends Service {
         super.onCreate();
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
         sService = this;
+
         String server = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.pref_server_key),
-                        getString(R.string.pref_server_default));
+                .getString(getString(R.string.pref_server_key), getString(R.string.pref_server_default));
         String port = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.pref_port_key),
-                        getString(R.string.pref_port_default));
+                .getString(getString(R.string.pref_port_key), getString(R.string.pref_port_default));
+
         serverAddress = AUTHORITY + server + ":" + port + PATH;
     }
 
@@ -121,8 +121,8 @@ public class SocketService extends Service {
     }
 
     public void login(String username, String password) throws JSONException {
-        Functions.JSONField name = new Functions.JSONField(LOGIN, username);
-        Functions.JSONField pass = new Functions.JSONField(PASSWORD, password);
+        HelperClasses.JSONField name = new HelperClasses.JSONField(LOGIN, username);
+        HelperClasses.JSONField pass = new HelperClasses.JSONField(PASSWORD, password);
         sendMessage(METHOD_LOGIN, name, pass);
     }
 
@@ -135,13 +135,12 @@ public class SocketService extends Service {
     }
 
     public void getSectors(String sector) throws JSONException {
-        Log.e("Create", "getSectors");
-        Functions.JSONField currentSector = new Functions.JSONField(CURRENT_SECTOR, sector);
+        HelperClasses.JSONField currentSector = new HelperClasses.JSONField(CURRENT_SECTOR, sector);
         sendMessage(METHOD_GET_SECTORS, getId(), currentSector);
     }
 
     public void setSector(String sector) throws JSONException {
-        Functions.JSONField setSector = new Functions.JSONField(NEW_SECTOR, sector);
+        HelperClasses.JSONField setSector = new HelperClasses.JSONField(NEW_SECTOR, sector);
         sendMessage(METHOD_SET_TO_SECTOR, setSector);
     }
 
@@ -154,7 +153,7 @@ public class SocketService extends Service {
     }
 
     public void setDriverStatus(String id) throws JSONException {
-        Functions.JSONField newStatus = new Functions.JSONField(STATUS_ID, id);
+        HelperClasses.JSONField newStatus = new HelperClasses.JSONField(STATUS_ID, id);
         sendMessage(METHOD_SET_NEW_STATUS, newStatus, getId());
     }
 
@@ -167,29 +166,30 @@ public class SocketService extends Service {
     }
 
     public void getCurrentSector() throws JSONException {
-        sendMessage(METHOD_GET_CURRENT_SECTOR, getId());
+        HelperClasses.JSONField currentSector = new HelperClasses.JSONField(CURRENT_SECTOR, "22");
+        sendMessage(METHOD_GET_CURRENT_SECTOR, currentSector, getId());
     }
 
     public void takeOrder(String orderId, String waitingTime) throws JSONException {
-        Functions.JSONField newStatus = new Functions.JSONField(STATUS_ID, ORDER_STATUS_TAKE);
-        Functions.JSONField newWaitingTime = new Functions.JSONField(WAITING_TIME, waitingTime);
-        Functions.JSONField newOrder = new Functions.JSONField(ORDER_ID, orderId);
+        HelperClasses.JSONField newStatus = new HelperClasses.JSONField(STATUS_ID, ORDER_STATUS_TAKE);
+        HelperClasses.JSONField newWaitingTime = new HelperClasses.JSONField(WAITING_TIME, waitingTime);
+        HelperClasses.JSONField newOrder = new HelperClasses.JSONField(ORDER_ID, orderId);
         sendMessage(METHOD_SET_ORDER_STATUS, newStatus, newOrder, newWaitingTime);
     }
 
     public void getOrderById(String ... orderId) throws JSONException {
-        Functions.JSONField newOrderId;
+        HelperClasses.JSONField newOrderId;
         if (orderId.length > 0) {
-            newOrderId = new Functions.JSONField(ORDER_ID, orderId[0]);
+            newOrderId = new HelperClasses.JSONField(ORDER_ID, orderId[0]);
         } else {
-            newOrderId = new Functions.JSONField(ORDER_ID, "null");
+            newOrderId = new HelperClasses.JSONField(ORDER_ID, "null");
         }
 
         sendMessage(METHOD_GET_ORDER_BY_ID, newOrderId);
     }
 
-    private Functions.JSONField getId() {
-        return new Functions.JSONField(DG, id);
+    private HelperClasses.JSONField getId() {
+        return new HelperClasses.JSONField(DG, id);
     }
 
     private class SocketListener extends WebSocketAdapter {
@@ -200,9 +200,9 @@ public class SocketService extends Service {
         }
     }
 
-    private void sendMessage(final int method, Functions.JSONField ... args) throws JSONException {
+    private void sendMessage(final int method, HelperClasses.JSONField... args) throws JSONException {
         JSONObject requestObject = new JSONObject();
-        for (Functions.JSONField field : args) {
+        for (HelperClasses.JSONField field : args) {
             requestObject.put(field.getMethod(), field.getData());
         }
 
@@ -231,9 +231,19 @@ public class SocketService extends Service {
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            try {
+                LoginActivity.attemptLogin(getApplication());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    // TODO check hash not to update sectors
     public class HandleRequestTask extends AsyncTask<Void, Void, Void> {
         private final String mMessage;
 
@@ -258,14 +268,19 @@ public class SocketService extends Service {
                         switch (type) {
                             case METHOD_LOGIN:
                                 id = object.getString(Constants.RESPONSE);
+
+                                getStatus();
                                 getBalance();
                                 getSettings();
-                                broadcastIntent.setAction(Constants.LOGIN_INTENT);
+                                getOrders();
+
+                                broadcastIntent.setAction(LOGIN_INTENT);
                                 break;
 
                             case METHOD_GET_BALANCE:
                                 String balance = object.getString(Constants.RESPONSE);
                                 saveToPreferences(balance, "balance", prefs);
+                                broadcastIntent.setAction(Constants.MAIN_INTENT);
                                 break;
 
                             case METHOD_DELETE_ORDER:
@@ -277,6 +292,7 @@ public class SocketService extends Service {
                             case METHOD_GET_SETTINGS:
                                 JSONObject sectorsArray = object.getJSONObject(RESPONSE);
                                 setSettings(sectorsArray);
+                                broadcastIntent.setAction(MAIN_INTENT);
                                 break;
 
                             case METHOD_SET_ORDER:
@@ -309,7 +325,6 @@ public class SocketService extends Service {
                                 String sectorId = object.getString(RESPONSE);
                                 broadcastIntent.setAction(MAIN_INTENT);
                                 broadcastIntent.putExtra(RESPONSE, sectorId);
-                                getCurrentSector();
                                 break;
 
                             case METHOD_GET_CURRENT_SECTOR:
@@ -354,7 +369,7 @@ public class SocketService extends Service {
                     case Constants.ERROR_LOGIN_OCCUPIED:
                     case Constants.ERROR_LOGIN_RADIO:
                     case Constants.ERROR_LOGIN_TAKEN:
-                        broadcastIntent.setAction(Constants.LOGIN_INTENT);
+                        broadcastIntent.setAction(LOGIN_INTENT);
                         break;
                 }
                 sendBroadcast(broadcastIntent);
@@ -364,28 +379,40 @@ public class SocketService extends Service {
 
             return null;
         }
+    }
 
-        private void setSettings(JSONObject settings) {
-            JSONArray jsonSectors = null;
-            JSONArray jsonReasons = null;
-            JSONArray jsonStatuses = null;
-            int newOrderMask = 0;
-            String hash = null;
+    private void setSettings(JSONObject settings) {
+        JSONArray jsonSectors = null;
+        JSONArray jsonReasons = null;
+        JSONArray jsonStatuses = null;
+        int newOrderMask = 0;
+        String hash = null;
 
-            try {
-                jsonSectors = settings.getJSONArray(Constants.SECTORS);
-                jsonStatuses = settings.getJSONArray(STATUS_ARRAY);
-                jsonReasons = settings.getJSONArray(REASON_ARRAY);
-                newOrderMask = settings.getInt(NEW_ORDER_MASK);
-                hash = settings.getString(SECTOR_HASH);
-            } catch (JSONException e) {
-                e.printStackTrace();
+        try {
+            jsonSectors = settings.getJSONArray(Constants.SECTORS);
+            jsonStatuses = settings.getJSONArray(STATUS_ARRAY);
+            jsonReasons = settings.getJSONArray(REASON_ARRAY);
+            newOrderMask = settings.getInt(NEW_ORDER_MASK);
+            hash = settings.getString(SECTOR_HASH);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String oldHash = Functions.getFromPreferences(SECTOR_HASH, prefs);
+
+        saveToPreferences(hash, SECTOR_HASH, prefs);
+        if (!oldHash.equals(hash)) {
+            if (!oldHash.equals("-1")) {
+                DriverStatus.deleteAll(DriverStatus.class);
+                Sector.deleteAll(Sector.class);
+                DelayReason.deleteAll(DelayReason.class);
             }
 
-            String oldHash = Functions.getFromPreferences(SECTOR_HASH, prefs);
-
             if (jsonStatuses != null) {
-                saveToPreferences(jsonStatuses.toString(), STATUS_ARRAY, prefs);
+                DriverStatus[] statuses = gson.fromJson(jsonStatuses.toString(), DriverStatus[].class);
+                for (DriverStatus status : statuses) {
+                    status.save();
+                }
             }
 
             if (newOrderMask != 0) {
@@ -393,64 +420,33 @@ public class SocketService extends Service {
             }
 
             if (jsonReasons != null) {
-                saveToPreferences(jsonReasons.toString(), REASON_ARRAY, prefs);
+                DelayReason[] reasons = gson.fromJson(jsonReasons.toString(), DelayReason[].class);
+                for (DelayReason reason : reasons) {
+                    reason.save();
+                }
             }
 
-            if (!oldHash.equals(hash)) {
-                saveToPreferences(hash, SECTOR_HASH, prefs);
-                Cursor cursor = getContentResolver()
-                        .query(SectorsTable.CONTENT_URI, null, null, null, null);
-
-                if (cursor == null) {
-                    return;
-                }
-
-                if (jsonSectors != null) {
-                    if (cursor.getCount() == 0) {
-                        Sector[] sectorsArray = gson.fromJson(jsonSectors.toString(), Sector[].class);
-                        for (Sector s : sectorsArray) {
-                            getContentResolver().insert(SectorsTable.CONTENT_URI,
-                                    SectorsTable.getContentValues(s, false));
-                        }
-                    }
+            if (jsonSectors != null) {
+                Sector[] sectorsArray = gson.fromJson(jsonSectors.toString(), Sector[].class);
+                for (Sector sector : sectorsArray) {
+                    sector.save();
                 }
             }
         }
+    }
 
-        private void updateSectors(JSONObject sectors) {
-            JSONArray jsonSectorArray = null;
-            try {
-                jsonSectorArray = sectors.getJSONArray(Constants.SECTORS);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            Cursor cursor = getContentResolver().query(SectorsTable.CONTENT_URI, null, null, null, null);
-
-            if (cursor != null) {
-                if (jsonSectorArray != null) {
-                    Sector[] sectorsArray = gson.fromJson(jsonSectorArray.toString(), Sector[].class);
-
-                    for (Sector s : sectorsArray) {
-                        getContentResolver().update(
-                                SectorsTable.CONTENT_URI,
-                                SectorsTable.getContentValues(s, false),
-                                SectorsTable.FIELD_ID + "= ?",
-                                new String[]{s.getId()});
-                    }
-                }
-                cursor.close();
-            }
+    private void updateSectors(JSONObject sectors) {
+        JSONArray jsonSectorArray = null;
+        try {
+            jsonSectorArray = sectors.getJSONArray(Constants.SECTORS);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
-        private void addOrder(JsonObject jsonOrder) {
-            Order order = gson.fromJson(jsonOrder, Order.class);
-
-            Cursor cursor = getContentResolver().query(OrdersTable.CONTENT_URI, null, null, null, null);
-            if (cursor != null) {
-                getContentResolver().insert(OrdersTable.CONTENT_URI,
-                        OrdersTable.getContentValues(order, false));
-                cursor.close();
+        if (jsonSectorArray != null) {
+            Sector[] sectorsArray = gson.fromJson(jsonSectorArray.toString(), Sector[].class);
+            for (Sector s : sectorsArray) {
+                s.update();
             }
         }
     }

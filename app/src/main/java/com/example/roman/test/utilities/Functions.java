@@ -2,14 +2,15 @@ package com.example.roman.test.utilities;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Application;
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
@@ -19,16 +20,15 @@ import com.example.roman.test.LoginActivity;
 import com.example.roman.test.MainActivity;
 import com.example.roman.test.R;
 import com.example.roman.test.SettingsActivity;
-import com.example.roman.test.data.ChatMessage;
 import com.example.roman.test.data.Message;
-import com.example.roman.test.data.MessagesTable;
 import com.example.roman.test.data.Sector;
-import com.example.roman.test.data.SectorsTable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -53,6 +53,10 @@ public class Functions {
         }
 
         return "Unknown";
+    }
+
+    public static Sector getSectorNameById(String sectorId) {
+        return Sector.find(Sector.class, "sector_id = ?", sectorId).get(0);
     }
 
     public static boolean isNight(SharedPreferences prefs) {
@@ -121,7 +125,7 @@ public class Functions {
         showNotification(context, notification);
     }
 
-    static boolean isSameProvider(String provider1, String provider2) {
+    private static boolean isSameProvider(String provider1, String provider2) {
         if (provider1 == null) {
             return provider2 == null;
         }
@@ -174,30 +178,9 @@ public class Functions {
         return false;
     }
 
-    public static class JSONField {
-        private String method;
-        private String data;
-
-        public JSONField(String method, String data) {
-            this.method = method;
-            this.data = data;
-        }
-
-        public String getData() {
-            return data;
-        }
-
-        public String getMethod() {
-            return method;
-        }
-
-        public void setData(String data) {
-            this.data = data;
-        }
-
-        public void setMethod(String method) {
-            this.method = method;
-        }
+    public static String getDate() {
+        SimpleDateFormat sdf =  new SimpleDateFormat("yyyy/MM/dd");
+        return sdf.format(new Date());
     }
 
     public static void saveToPreferences(String item, String itemName, SharedPreferences prefs) {
@@ -208,37 +191,6 @@ public class Functions {
 
     public static String getFromPreferences(String itemName, SharedPreferences prefs) {
         return prefs.getString(itemName, String.valueOf(DEFAULT));
-    }
-
-    public static List<Sector> getSectorList(Context context) {
-        Cursor cursor = context.getContentResolver().query(
-                SectorsTable.CONTENT_URI, null, null, null, null);
-
-        return SectorsTable.getRows(cursor, false);
-    }
-
-    public static List<ChatMessage> getMessageList(Context context) {
-        Cursor cursor = context.getContentResolver().query(
-                MessagesTable.CONTENT_URI, null, null, null, null);
-
-        return MessagesTable.getRows(cursor, false);
-    }
-
-    public static String getSectorNameById(Context context, String id) {
-        String sectorName = null;
-
-        Cursor cursor = context.getContentResolver().query(
-                SectorsTable.CONTENT_URI,
-                null,
-                SectorsTable.FIELD_ID + " = ?",
-                new String[]{id},
-                null);
-
-        if (cursor != null && cursor.getCount() != 0) {
-            sectorName = SectorsTable.getRow(cursor, true).getName();
-        }
-
-        return sectorName;
     }
 
     public static boolean showField(int mask, int field) {
@@ -265,11 +217,15 @@ public class Functions {
                 activity.getApplication().getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> services = activityManager.getRunningTasks(1);
 
-        if (services.get(0).topActivity.getPackageName()
-                .equalsIgnoreCase(activity.getApplicationContext().getPackageName())) {
-            return true;
-        }
+        return services.get(0).topActivity.getPackageName()
+                .equalsIgnoreCase(activity.getApplicationContext().getPackageName());
 
-        return false;
+    }
+
+    public static boolean isNetworkConnected(Application application) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager)
+                application.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() == null ||
+                !connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }

@@ -131,4 +131,7 @@ public class Constants {
     public static final int SHOW_CAR_TYPE = 1 << 11;
     public static final int SHOW_DESCRIPTION = 1 << 12;
     public static final int SHOW_ROUTE_LENGTH = 1 << 13;
+
+    public static final String TITLE = "TITLE";
+    public static final String MESSAGE = "MESSAGE";
 }
