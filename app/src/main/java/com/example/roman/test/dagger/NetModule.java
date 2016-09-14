@@ -25,6 +25,6 @@ public class NetModule {
     @Provides
     @Singleton
     Gson providesGson() {
-        return new GsonBuilder().create();
+        return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     }
 }

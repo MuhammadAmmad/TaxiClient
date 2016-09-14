@@ -146,7 +146,8 @@
     <string name="internet_came_back">З\'єднання відновлено</string>
     <string name="internet_online">В онлайн-режим</string>
 
-    <string name="format_sector">Ви стали в сектор <xliff:g>%1$s</xliff:g></string>
+    <string name="format_set_sector">Вы успушно стали в сектор <xliff:g>%1$s</xliff:g></string>
+    <string name="format_unset_sector">Вы успішно знялися із сектора</string>
     <string name="format_status">Ваш статус: <xliff:g>%1$s</xliff:g></string>
     <string name="format_balance">Баланс: <xliff:g messageId="condition">%1$s</xliff:g></string>
 

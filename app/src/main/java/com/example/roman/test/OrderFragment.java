@@ -58,8 +58,7 @@ public class OrderFragment extends Fragment {
         map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                ((MainActivity) getActivity()).newMessage(
-//                        new Message("144", "This is your new order", "Today"));
+
             }
         });
         return view;

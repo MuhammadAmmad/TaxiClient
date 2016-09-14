@@ -1,5 +1,6 @@
 package com.example.roman.test.data;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.orm.SugarRecord;
 import com.orm.dsl.Unique;
@@ -9,13 +10,16 @@ public class DriverStatus extends SugarRecord {
     private static final String NAME = "DN";
     private static final String CAN_SET = "CD";
 
-    @SerializedName(ID)
+    @Expose
     @Unique
+    @SerializedName(ID)
     private String statusId;
 
+    @Expose
     @SerializedName(NAME)
     private String name;
 
+    @Expose
     @SerializedName(CAN_SET)
     private boolean canSet;
 

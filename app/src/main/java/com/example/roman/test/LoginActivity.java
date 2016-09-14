@@ -59,11 +59,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
-
-        if (savedInstanceState == null) {
-            saveToPreferences(Constants.NIGHT, THEME, prefs);
-        }
-
         Functions.setWholeTheme(this, prefs);
         setLanguage(this, prefs);
 

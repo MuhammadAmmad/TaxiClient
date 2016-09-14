@@ -9,14 +9,14 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.roman.test.R;
-import com.example.roman.test.data.Order;
+import com.example.roman.test.data.AirRecord;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AirAdapter extends ArrayAdapter<Order> {
+public class AirAdapter extends ArrayAdapter<AirRecord> {
     static class ViewHolder {
 
         @BindView(R.id.list_item_from)
@@ -30,7 +30,7 @@ public class AirAdapter extends ArrayAdapter<Order> {
         }
     }
 
-    public AirAdapter(Context context, List<Order> orders) {
+    public AirAdapter(Context context, List<AirRecord> orders) {
         super(context, R.layout.list_item_air_order, orders);
     }
 
@@ -38,7 +38,7 @@ public class AirAdapter extends ArrayAdapter<Order> {
     @Override
     public View getView(int position, View view, @NonNull ViewGroup parent) {
         // Get the data item for this position
-        Order order = getItem(position);
+        AirRecord order = getItem(position);
 
         // Check if an existing view is being reused, otherwise inflate the view
         AirAdapter.ViewHolder holder;
@@ -58,7 +58,7 @@ public class AirAdapter extends ArrayAdapter<Order> {
         }
 
         if (order != null) {
-            holder.from.setText(order.getFrom());
+            holder.from.setText(order.getFromAddress());
             holder.description.setText(order.getDescription());
         }
 

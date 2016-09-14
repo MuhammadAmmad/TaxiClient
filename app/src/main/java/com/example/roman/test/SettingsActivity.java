@@ -28,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.example.roman.test.data.Message;
-import com.example.roman.test.data.Order;
 import com.example.roman.test.utilities.Functions;
 import com.example.roman.test.utilities.LocaleHelper;
 
@@ -51,7 +50,6 @@ public class SettingsActivity extends PreferenceActivity {
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
         setLanguage(this, prefs);
         setWholeTheme(this, prefs);
-//        PreferenceManager.setDefaultValues(getBaseContext(), R.xml.pref_general, false);
         super.onCreate(savedInstanceState);
     }
 
@@ -117,7 +115,7 @@ public class SettingsActivity extends PreferenceActivity {
         deleteOrders.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Order.deleteAll(Order.class);
+//                Record.deleteAll(Record.class);
                 return true;
             }
         });
@@ -136,7 +134,7 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Message.deleteAll(Message.class);
-                Order.deleteAll(Order.class);
+//                Record.deleteAll(Record.class);
                 return true;
             }
         });

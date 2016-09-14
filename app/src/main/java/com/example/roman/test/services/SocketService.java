@@ -1,8 +1,10 @@
 package com.example.roman.test.services;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -12,8 +14,10 @@ import android.util.Log;
 import com.example.roman.test.LoginActivity;
 import com.example.roman.test.R;
 import com.example.roman.test.TaxiApp;
+import com.example.roman.test.data.AirRecord;
 import com.example.roman.test.data.DelayReason;
 import com.example.roman.test.data.DriverStatus;
+import com.example.roman.test.data.Record;
 import com.example.roman.test.data.Sector;
 import com.example.roman.test.utilities.Constants;
 import com.example.roman.test.utilities.Functions;
@@ -64,6 +68,7 @@ import static com.example.roman.test.utilities.Constants.SECTOR_HASH;
 import static com.example.roman.test.utilities.Constants.STATUS_ARRAY;
 import static com.example.roman.test.utilities.Constants.STATUS_ID;
 import static com.example.roman.test.utilities.Constants.WAITING_TIME;
+import static com.example.roman.test.utilities.Functions.getRecordById;
 import static com.example.roman.test.utilities.Functions.saveToPreferences;
 
 public class SocketService extends Service {
@@ -93,8 +98,10 @@ public class SocketService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
         sService = this;
+        id = "-1";
 
         String server = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(getString(R.string.pref_server_key), getString(R.string.pref_server_default));
@@ -144,11 +151,17 @@ public class SocketService extends Service {
         sendMessage(METHOD_SET_TO_SECTOR, setSector);
     }
 
+    @Override
+    public boolean stopService(Intent name) {
+        return super.stopService(name);
+    }
+
     private void getBalance() throws JSONException {
         sendMessage(METHOD_GET_BALANCE, getId());
     }
 
     private void getSettings() throws JSONException {
+        sendMessage(METHOD_GET_SETTINGS, getId());
         sendMessage(METHOD_GET_SETTINGS, getId());
     }
 
@@ -182,7 +195,7 @@ public class SocketService extends Service {
         if (orderId.length > 0) {
             newOrderId = new HelperClasses.JSONField(ORDER_ID, orderId[0]);
         } else {
-            newOrderId = new HelperClasses.JSONField(ORDER_ID, "null");
+            newOrderId = new HelperClasses.JSONField(ORDER_ID, "");
         }
 
         sendMessage(METHOD_GET_ORDER_BY_ID, newOrderId);
@@ -195,7 +208,7 @@ public class SocketService extends Service {
     private class SocketListener extends WebSocketAdapter {
         @Override
         public void onTextMessage(WebSocket webSocket, String message) throws JSONException {
-            Log.e(LOG_TAG, message);
+            Log.e("SERVER", message);
             new HandleRequestTask(message).execute();
         }
     }
@@ -209,6 +222,7 @@ public class SocketService extends Service {
         final JSONObject json = new JSONObject();
         json.put(Constants.REQUEST, requestObject);
         json.put(Constants.METHOD, method);
+        Log.e("CLIENT", json.toString());
 
         new SendText().execute(json.toString());
     }
@@ -279,7 +293,7 @@ public class SocketService extends Service {
 
                             case METHOD_GET_BALANCE:
                                 String balance = object.getString(Constants.RESPONSE);
-                                saveToPreferences(balance, "balance", prefs);
+                                saveToPreferences(balance, getString(R.string.pref_balance_key), prefs);
                                 broadcastIntent.setAction(Constants.MAIN_INTENT);
                                 break;
 
@@ -308,15 +322,24 @@ public class SocketService extends Service {
 
                             case METHOD_GET_ORDERS:
                                 JSONArray orderArray = object.getJSONArray(RESPONSE);
-                                if (orderArray.length() > 0) {
-                                    String orders = orderArray.toString();
-                                    broadcastIntent.setAction(MAIN_INTENT);
-                                    broadcastIntent.putExtra(RESPONSE, orders);
+                                Record[] records = gson.fromJson(orderArray.toString(), Record[].class);
+
+                                try {
+                                    AirRecord.deleteAll(AirRecord.class);
+                                } catch (SQLiteException e) {
+                                    Log.w("Sugar ORM", "This is just a first time");
                                 }
+
+                                for (Record record : records) {
+                                    new AirRecord(record).save();
+                                }
+
+                                broadcastIntent.setAction(MAIN_INTENT);
                                 break;
 
                             case METHOD_NEW_ORDER:
                                 String order = object.getString(RESPONSE);
+                                new AirRecord(gson.fromJson(order, Record.class)).save();
                                 broadcastIntent.setAction(MAIN_INTENT);
                                 broadcastIntent.putExtra(Constants.RESPONSE, order);
                                 break;
@@ -398,15 +421,17 @@ public class SocketService extends Service {
             e.printStackTrace();
         }
 
-        String oldHash = Functions.getFromPreferences(SECTOR_HASH, prefs);
+        SharedPreferences preferences = getSharedPreferences("UTILITY", Context.MODE_PRIVATE);
+        String oldHash = preferences.getString(SECTOR_HASH, "-1");
 
-        saveToPreferences(hash, SECTOR_HASH, prefs);
         if (!oldHash.equals(hash)) {
             if (!oldHash.equals("-1")) {
                 DriverStatus.deleteAll(DriverStatus.class);
                 Sector.deleteAll(Sector.class);
                 DelayReason.deleteAll(DelayReason.class);
             }
+
+            preferences.edit().putString(SECTOR_HASH, hash).apply();
 
             if (jsonStatuses != null) {
                 DriverStatus[] statuses = gson.fromJson(jsonStatuses.toString(), DriverStatus[].class);
@@ -416,7 +441,7 @@ public class SocketService extends Service {
             }
 
             if (newOrderMask != 0) {
-                saveToPreferences(String.valueOf(newOrderMask), NEW_ORDER_MASK, prefs);
+                preferences.edit().putString(NEW_ORDER_MASK, String.valueOf(newOrderMask)).apply();
             }
 
             if (jsonReasons != null) {
@@ -446,7 +471,7 @@ public class SocketService extends Service {
         if (jsonSectorArray != null) {
             Sector[] sectorsArray = gson.fromJson(jsonSectorArray.toString(), Sector[].class);
             for (Sector s : sectorsArray) {
-                s.update();
+                s.save();
             }
         }
     }

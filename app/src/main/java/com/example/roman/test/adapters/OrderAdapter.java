@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.roman.test.R;
-import com.example.roman.test.data.Order;
+import com.example.roman.test.data.Record;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import static com.example.roman.test.utilities.Functions.showField;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
     private Context context;
-    private List<Order> mOrders;
+    private List<Record> mOrders;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.order_date_created)
@@ -87,10 +87,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     public OrderAdapter(Context context) {
         this.context = context;
         mOrders = new ArrayList<>();
-        Order first = new Order();
-        Order second = new Order();
+        Record first = new Record();
+        Record second = new Record();
 
-        first.setOrderId("25");
+        first.setRecordId("25");
         first.setStatusId(1);
         first.setDateCreated("Today");
         first.setTimeCreated("now");
@@ -99,8 +99,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         first.setDescription("Just right here");
         first.setPrice("22");
         first.setOption("Some options");
-        first.setFrom("Here");
-        first.setTo("There");
+        first.setFromAddress("Here");
+        first.setToAddress("There");
         first.setCanTake(true);
         first.setSectorFrom("this one");
         first.setTariffId("1");
@@ -122,7 +122,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Order order = null;
+        Record order = null;
         if (mOrders != null) {
             order = mOrders.get(position);
         }
@@ -158,14 +158,14 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                 holder.options.setText(context.getString(R.string.format_order_options, order.getOption()));
             }
 
-            if (showField(mask, SHOW_ADDRESS_START) && !order.getFrom().equals("")) {
+            if (showField(mask, SHOW_ADDRESS_START) && !order.getFromAddress().equals("")) {
                 holder.from.setVisibility(View.VISIBLE);
-                holder.from.setText(context.getString(R.string.format_order_from, order.getFrom()));
+                holder.from.setText(context.getString(R.string.format_order_from, order.getFromAddress()));
             }
 
-            if (showField(mask, SHOW_ADDRESS_END) && !order.getTo().equals("")) {
+            if (showField(mask, SHOW_ADDRESS_END) && !order.getToAddress().equals("")) {
                 holder.to.setVisibility(View.VISIBLE);
-                holder.to.setText(context.getString(R.string.format_order_to, order.getTo()));
+                holder.to.setText(context.getString(R.string.format_order_to, order.getToAddress()));
             }
 
             if (showField(mask, SHOW_DATE_START) && !order.getDate().equals("")) {

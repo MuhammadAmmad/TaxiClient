@@ -1,10 +1,11 @@
 package com.example.roman.test.data;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.orm.SugarRecord;
 import com.orm.dsl.Unique;
 
-public class Order extends SugarRecord {
+public class Record extends SugarRecord {
     private static final String ORDER_ID = "OI";
     private static final String STATUS_ID = "SI";
     private static final String DATE_CREATED = "DC";
@@ -26,67 +27,87 @@ public class Order extends SugarRecord {
     private static final String CAN_REFUSE = "IPOA";
 
     @SerializedName(ORDER_ID)
-    @Unique
-    private String orderId;
 
+    @Unique
+    @Expose
+    private String recordId;
+
+    @Expose
     @SerializedName(STATUS_ID)
     private int statusId;
 
+    @Expose
     @SerializedName(DATE_CREATED)
     private String dateCreated;
 
+    @Expose
     @SerializedName(TIME_CREATED)
     private String timeCreated;
 
+    @Expose
     @SerializedName(INFO_STATUS_ID)
     private int infoStatusId;
 
+    @Expose
     @SerializedName(PHONE)
     private String phone;
 
+    @Expose
     @SerializedName(DESCRIPTION)
     private String description;
 
+    @Expose
     @SerializedName(PRICE)
     private String price;
 
+    @Expose
     @SerializedName(OPTION)
     private String option;
 
+    @Expose
     @SerializedName(FROM)
-    private String from;
+    private String fromAddress;
 
+    @Expose
     @SerializedName(TO)
-    private String to;
+    private String toAddress;
 
+    @Expose
     @SerializedName(CAN_TAKE)
     private boolean canTake;
 
+    @Expose
     @SerializedName(SECTOR_FROM)
     private String sectorFrom;
 
+    @Expose
     @SerializedName(TARIFF_ID)
     private String tariffId;
 
+    @Expose
     @SerializedName(DATE)
     private String date;
 
+    @Expose
     @SerializedName(TIME)
     private String time;
 
+    @Expose
     @SerializedName(LENGTH)
     private String length;
 
+    @Expose
     @SerializedName(IS_PREVIOUS)
     private boolean isPrevious;
 
+    @Expose
     @SerializedName(CAN_REFUSE)
     private boolean canRefuse;
 
-    public Order() {}
+    public Record() {}
 
-    public String getOrderId() {
-        return orderId;
+    public String getRecordId() {
+        return recordId;
     }
 
     public int getStatusId() {
@@ -121,12 +142,12 @@ public class Order extends SugarRecord {
         return option;
     }
 
-    public String getFrom() {
-        return from;
+    public String getFromAddress() {
+        return fromAddress;
     }
 
-    public String getTo() {
-        return to;
+    public String getToAddress() {
+        return toAddress;
     }
 
     public boolean getCanTake() {
@@ -161,8 +182,8 @@ public class Order extends SugarRecord {
         return canRefuse;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setRecordId(String recordId) {
+        this.recordId = recordId;
     }
 
     public void setStatusId(int statusId) {
@@ -197,12 +218,12 @@ public class Order extends SugarRecord {
         this.option = option;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setFromAddress(String fromAddress) {
+        this.fromAddress = fromAddress;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public void setToAddress(String toAddress) {
+        this.toAddress = toAddress;
     }
 
     public void setCanTake(boolean canTake) {

@@ -1,5 +1,6 @@
 package com.example.roman.test.data;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.orm.SugarRecord;
 import com.orm.dsl.Unique;
@@ -10,23 +11,27 @@ public class Sector extends SugarRecord {
     private static final String DRIVERS = "P";
 
     @Unique
+    @Expose
     @SerializedName(ID)
     private String sectorId;
 
+    @Expose
     @SerializedName(NAME)
     private String name;
 
+    @Expose
     @SerializedName(DRIVERS)
     private int drivers;
 
-    private transient boolean isChecked;
+    private boolean isChecked;
 
     public Sector() { }
 
-    public Sector(String sectorId, String name, int drivers) {
+    public Sector(String sectorId, String name, int drivers, boolean isChecked) {
         this.sectorId = sectorId;
         this.name = name;
         this.drivers = drivers;
+        this.isChecked = isChecked;
     }
 
     public String getSectorId() {

@@ -91,10 +91,10 @@
     <string name="nav_drawer_close">Close</string>
     <string name="nav_drawer_open">Open</string>
 
-    <string name="nav_drawer_alert">Байкал</string>
+    <string name="nav_drawer_alert">Помощь</string>
 
-    <string name="alert_message">Если на Вас совершено нападение, нажмите Байкал!!!</string>
-    <string name="alert_fire">Байкал!!!</string>
+    <string name="alert_message">Если на Вас совершено нападение, нажмите Помощь!!!</string>
+    <string name="alert_fire">Помощь!!!</string>
     <string name="alert_cancel">Отмена</string>
 
     <string name="nav_drawer_exit">Выход</string>
@@ -146,7 +146,9 @@
     <string name="internet_came_back">Соединение установлено</string>
     <string name="internet_online">В онлайн-режим</string>
 
-    <string name="format_sector">Вы стали в сектор <xliff:g>%1$s</xliff:g></string>
+    <string name="format_set_sector">Вы успешно стали в сектор <xliff:g>%1$s</xliff:g></string>
+    <string name="format_unset_sector">Вы успешно снялись с сектора</string>
+
     <string name="format_status">Ваш статус: <xliff:g>%1$s</xliff:g></string>
     <string name="format_balance">Баланс: <xliff:g messageId="condition">%1$s</xliff:g></string>
 

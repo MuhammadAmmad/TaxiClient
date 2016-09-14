@@ -6,7 +6,7 @@
 
         <PreferenceScreen
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:title="@string/pref_header_general">
+            android:title="@string/pref_cat_orders">
 
             <PreferenceCategory
                 android:enabled="false"
@@ -39,6 +39,13 @@
 
     <PreferenceCategory
         android:title="@string/pref_header_app">
+
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pref_languages_titles"
+            android:entryValues="@array/pref_languages_values"
+            android:key="@string/pref_theme_key"
+            android:title="@string/pref_languages_label" />
 
         <ListPreference
             android:defaultValue="-1"

@@ -11,6 +11,8 @@ import org.json.JSONException;
 
 import javax.inject.Inject;
 
+import static com.example.roman.test.utilities.Constants.SECTOR_HASH;
+
 public class SectorActivity extends AppCompatActivity {
     @Inject
     SharedPreferences prefs;
@@ -23,15 +25,19 @@ public class SectorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sector);
 
-        try {
-            SocketService.getInstance().getSectors("22");
-        } catch (JSONException e) {
-            e.printStackTrace();
+        String sectorId = prefs.getString("sectorId", "-1");
+        if (!sectorId.equals("-1")) {
+            try {
+                SocketService.getInstance().getSectors(sectorId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
+
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.sectors_container, SectorFragment.newInstance())
+                    .add(R.id.sectors_container, SectorFragment.newInstance(sectorId))
                     .commit();
         }
     }

@@ -43,9 +43,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.roman.test.data.AirRecord;
 import com.example.roman.test.data.DriverStatus;
 import com.example.roman.test.data.Message;
-import com.example.roman.test.data.Order;
+import com.example.roman.test.data.Record;
 import com.example.roman.test.data.Sector;
 import com.example.roman.test.services.SocketService;
 import com.example.roman.test.utilities.Constants;
@@ -73,12 +74,15 @@ import static com.example.roman.test.utilities.Constants.ERROR_NOT_CONFIRMED;
 import static com.example.roman.test.utilities.Constants.ERROR_ORDER_NOT_FOUND;
 import static com.example.roman.test.utilities.Constants.ERROR_ORDER_TAKEN;
 import static com.example.roman.test.utilities.Constants.MESSAGE;
+import static com.example.roman.test.utilities.Constants.METHOD_DELETE_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_BALANCE;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_CURRENT_SECTOR;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_NEW_STATUS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDERS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_ORDER_BY_ID;
+import static com.example.roman.test.utilities.Constants.METHOD_GET_SECTORS;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_SETTINGS;
+import static com.example.roman.test.utilities.Constants.METHOD_NEW_MESSAGE;
 import static com.example.roman.test.utilities.Constants.METHOD_NEW_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_SET_ORDER_STATUS;
@@ -88,7 +92,8 @@ import static com.example.roman.test.utilities.Constants.ORDER_STATUS_TAKE;
 import static com.example.roman.test.utilities.Constants.RESPONSE;
 import static com.example.roman.test.utilities.Constants.SECTOR_ID;
 import static com.example.roman.test.utilities.Constants.STATUS_ID;
-import static com.example.roman.test.utilities.Functions.getSectorNameById;
+import static com.example.roman.test.utilities.Functions.getRecordById;
+import static com.example.roman.test.utilities.Functions.getSectorById;
 import static com.example.roman.test.utilities.Functions.getStreetFromLocation;
 import static com.example.roman.test.utilities.Functions.isBetterLocation;
 import static com.example.roman.test.utilities.Functions.saveToPreferences;
@@ -451,6 +456,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)     {
         // The action bar home/up action should open or close the drawer.
         switch (item.getItemId()) {
@@ -601,8 +611,9 @@ public class MainActivity extends AppCompatActivity
                             final String orderStatus = intent.getStringExtra(STATUS_ID);
                             if (orderStatus.equals(ORDER_STATUS_TAKE)) {
                                 showToast("You have successfully taken order #" + orderId);
+
                                 try {
-                                    socketService.getOrderById();
+                                    socketService.getOrderById(orderId);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -610,18 +621,19 @@ public class MainActivity extends AppCompatActivity
                             break;
 
                         case METHOD_GET_ORDERS:
-                            String orderList = intent.getStringExtra(RESPONSE);
-                            final Order[] orders = gson.fromJson(orderList, Order[].class);
+                            final List<AirRecord> orders = AirRecord.listAll(AirRecord.class);
+
                             runOnUiThread(new Runnable() {
                                 @Override
-                                public void run() {mAirFragment.addOrders(orders);
+                                public void run() {
+                                    mAirFragment.addOrders(orders.toArray(new AirRecord[0]));
                                 }
                             });
                             break;
 
                         case METHOD_GET_ORDER_BY_ID:
                             String jsonOrder = intent.getStringExtra(RESPONSE);
-                            final Order newOrder = gson.fromJson(jsonOrder, Order.class);
+                            final Record newOrder = gson.fromJson(jsonOrder, Record.class);
                             break;
 
                         case METHOD_GET_BALANCE:
@@ -637,12 +649,12 @@ public class MainActivity extends AppCompatActivity
 
                         case METHOD_SET_ORDER:
                             String setOrder = intent.getStringExtra(RESPONSE);
-                            final Order newSetOrder = gson.fromJson(setOrder, Order.class);
+                            final Record newSetOrder = gson.fromJson(setOrder, Record.class);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    newMessage(new Message(newSetOrder.getOrderId(),
-                                            newSetOrder.getFrom(), Functions.getDate()));
+                                    newMessage(new Message(newSetOrder.getRecordId(),
+                                            newSetOrder.getFromAddress(), Functions.getDate()));
                                 }
                             });
                             break;
@@ -663,17 +675,15 @@ public class MainActivity extends AppCompatActivity
                                     e.printStackTrace();
                                 }
                             }
+
                             break;
 
                         case METHOD_NEW_ORDER:
-                            final Order order = gson.fromJson(intent.getStringExtra(RESPONSE), Order.class);
-                            mAirFragment.removeOrder(order.getOrderId());
-
+                            final Record order = gson.fromJson(intent.getStringExtra(RESPONSE), Record.class);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mAirFragment.addOrder(order);
-                                    newMessage(new Message(order.getOrderId(), order.getFrom(), Functions.getDate()));
+                                    mAirFragment.addOrder(new AirRecord(order));
                                 }
                             });
                             break;
@@ -697,17 +707,27 @@ public class MainActivity extends AppCompatActivity
                                 }
                             }
                             break;
+                        case METHOD_GET_SECTORS:
 
-                        case METHOD_SET_TO_SECTOR:
-                            String sectorId = intent.getStringExtra(RESPONSE);
-                            Sector sector = getSectorNameById(sectorId);
-                            showToast("You have set to " + sector.getName());
-                            sector.setChecked(true);
-                            sector.save();
                             break;
 
-                        case Constants.METHOD_DELETE_ORDER:
+                        case METHOD_SET_TO_SECTOR:
+                            // TODO add set sector ID to prefs
+                            String sectorId = intent.getStringExtra(RESPONSE);
+                            if (sectorId.equals("0")) {
+                                showToast(getString(R.string.format_unset_sector));
+                            } else {
+                                Sector sector = getSectorById(sectorId);
+                                showToast(getString(R.string.format_set_sector, sector.getName()));
+                                Functions.saveToPreferences(sectorId, "sectorId", prefs);
+                                sector.setChecked(true);
+                                sector.save();
+                            }
+                            break;
+
+                        case METHOD_DELETE_ORDER:
                             final String delOrderId = intent.getStringExtra(RESPONSE);
+                            getRecordById(delOrderId).delete();
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -716,7 +736,7 @@ public class MainActivity extends AppCompatActivity
                             });
                             break;
 
-                        case Constants.METHOD_NEW_MESSAGE:
+                        case METHOD_NEW_MESSAGE:
                             Message msg = gson.fromJson(intent.getStringExtra(RESPONSE), Message.class);
                             showMessage(msg);
                             break;

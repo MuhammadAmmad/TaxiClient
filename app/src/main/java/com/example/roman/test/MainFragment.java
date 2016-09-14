@@ -18,6 +18,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import static com.example.roman.test.utilities.Constants.SECTOR_HASH;
+
 public class MainFragment extends PreferenceFragmentCompat {
     int index;
     String mBalance;
@@ -99,7 +101,7 @@ public class MainFragment extends PreferenceFragmentCompat {
     }
 
     public void setBalance() {
-        mBalance = prefs.getString(getString(R.string.pref_balance_key), "0,00 грн");
+        mBalance = prefs.getString(getString(R.string.pref_balance_key), "0.00 грн");
         Preference preference = findPreference(getString(R.string.pref_balance_key));
         preference.setTitle(getActivity().getString(R.string.format_balance, mBalance));
     }

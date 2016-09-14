@@ -1,15 +1,20 @@
 package com.example.roman.test.data;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.orm.SugarRecord;
+import com.orm.dsl.Unique;
 
 public class DelayReason extends SugarRecord {
     private static final String ID = "ID";
     private static final String NAME = "DN";
 
+    @Expose
+    @Unique
     @SerializedName(ID)
     private String reasonId;
 
+    @Expose
     @SerializedName(NAME)
     private String name;
 

@@ -20,6 +20,7 @@ import com.example.roman.test.LoginActivity;
 import com.example.roman.test.MainActivity;
 import com.example.roman.test.R;
 import com.example.roman.test.SettingsActivity;
+import com.example.roman.test.data.AirRecord;
 import com.example.roman.test.data.Message;
 import com.example.roman.test.data.Sector;
 
@@ -55,8 +56,12 @@ public class Functions {
         return "Unknown";
     }
 
-    public static Sector getSectorNameById(String sectorId) {
+    public static Sector getSectorById(String sectorId) {
         return Sector.find(Sector.class, "sector_id = ?", sectorId).get(0);
+    }
+
+    public static AirRecord getRecordById(String recordId) {
+        return AirRecord.find(AirRecord.class, "record_id = ?", recordId).get(0);
     }
 
     public static boolean isNight(SharedPreferences prefs) {
@@ -184,13 +189,11 @@ public class Functions {
     }
 
     public static void saveToPreferences(String item, String itemName, SharedPreferences prefs) {
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(itemName, item);
-        editor.apply();
+        prefs.edit().putString(itemName, item).apply();
     }
 
-    public static String getFromPreferences(String itemName, SharedPreferences prefs) {
-        return prefs.getString(itemName, String.valueOf(DEFAULT));
+    public static String getFromPreferences(String itemName, SharedPreferences preferences) {
+        return preferences.getString(itemName, String.valueOf(DEFAULT));
     }
 
     public static boolean showField(int mask, int field) {

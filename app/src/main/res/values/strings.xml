@@ -244,7 +244,8 @@
     <string name="internet_came_back">Connection established</string>
     <string name="internet_online">Go online</string>
 
-    <string name="format_sector">You have stood in sector <xliff:g>%1$s</xliff:g></string>
+    <string name="format_set_sector">You have successfully set sector <xliff:g>%1$s</xliff:g></string>
+    <string name="format_unset_sector">You have successfully unset fromAddress sector</string>
     <string name="format_status">Your driverStatus is <xliff:g>%1$s</xliff:g></string>
 
     <string name="exit_message">Do you really want to exit application?</string>

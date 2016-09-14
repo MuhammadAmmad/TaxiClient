@@ -13,6 +13,7 @@ import com.example.roman.test.utilities.Functions;
 import javax.inject.Inject;
 
 import static com.example.roman.test.DetailOrderFragment.DETAIL_ORDER;
+import static com.example.roman.test.utilities.Constants.ORDER_ID;
 
 public class DetailOrderActivity extends AppCompatActivity {
     @Inject
@@ -31,6 +32,7 @@ public class DetailOrderActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
             arguments.putString(DETAIL_ORDER, getIntent().getStringExtra(DETAIL_ORDER));
+            arguments.putString(ORDER_ID, getIntent().getStringExtra(ORDER_ID));
 
             DetailOrderFragment fragment = DetailOrderFragment.newInstance();
             fragment.setArguments(arguments);

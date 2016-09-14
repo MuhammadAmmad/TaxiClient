@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.roman.test.data.Order;
+import com.example.roman.test.data.Record;
 import com.example.roman.test.services.SocketService;
 import com.google.gson.Gson;
 
@@ -33,6 +33,7 @@ import static com.example.roman.test.utilities.Constants.ERROR_NONE;
 import static com.example.roman.test.utilities.Constants.MAIN_INTENT;
 import static com.example.roman.test.utilities.Constants.METHOD;
 import static com.example.roman.test.utilities.Constants.METHOD_DELETE_ORDER;
+import static com.example.roman.test.utilities.Constants.ORDER_ID;
 import static com.example.roman.test.utilities.Constants.RESPONSE;
 
 public class DetailOrderFragment extends Fragment {
@@ -64,10 +65,13 @@ public class DetailOrderFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail_order, container, false);
         ButterKnife.bind(this, view);
+        ((TaxiApp) getActivity().getApplication()).getNetComponent().inject(this);
+
         Bundle args = getArguments();
 
         if (args != null) {
-            final Order order = gson.fromJson(args.getString(DETAIL_ORDER), Order.class);
+            final String fromAddress = args.getString(DETAIL_ORDER);
+            final String recordId = args.getString(ORDER_ID);
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             mWaitingTime = preferences.getString(getString(R.string.pref_waiting_time_key), getString(R.string.pref_waiting_time_default));
@@ -76,8 +80,8 @@ public class DetailOrderFragment extends Fragment {
                 mWaitingTime = getString(R.string.pref_waiting_time_default);
             }
 
-            if (order != null) {
-                orderInfo.setText(order.getFrom());
+            if (fromAddress != null) {
+                orderInfo.setText(fromAddress);
 
                 final String finalWaitingTime = mWaitingTime;
 
@@ -86,7 +90,7 @@ public class DetailOrderFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         try {
-                            SocketService.getInstance().takeOrder(order.getOrderId(), finalWaitingTime);
+                            SocketService.getInstance().takeOrder(recordId, finalWaitingTime);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -97,7 +101,7 @@ public class DetailOrderFragment extends Fragment {
                 timeWait.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        TimeDialog(order).show();
+                        TimeDialog(recordId).show();
                     }
                 });
 
@@ -112,7 +116,7 @@ public class DetailOrderFragment extends Fragment {
         return view;
     }
 
-    private AlertDialog TimeDialog(final Order order) {
+    private AlertDialog TimeDialog(final String recordId) {
         List<String> myOptions = Arrays.asList((getResources()
                 .getStringArray(R.array.pref_waiting_time_values)));
         int index = myOptions.indexOf(mWaitingTime);
@@ -129,13 +133,13 @@ public class DetailOrderFragment extends Fragment {
                                 .getItem(lw.getCheckedItemPosition())).replaceAll("[^0-9]", "");
 
                         try {
-                            SocketService.getInstance().takeOrder(order.getOrderId(), waitingTime);
+                            SocketService.getInstance().takeOrder(recordId, waitingTime);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-
-                        removeOrder(order.getOrderId());
+                        removeOrder(recordId);
+                        dialog.dismiss();
                         getActivity().finish();
                     }
                 }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
