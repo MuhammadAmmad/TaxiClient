@@ -6,14 +6,17 @@
         <EditTextPreference
             android:title="@string/pref_login_label"
             android:key="@string/pref_login_key"
+            android:inputType="text"
+            android:selectAllOnFocus="true"
             android:defaultValue="@string/pref_login_default"/>
 
         <EditTextPreference
             android:key="@string/pref_password_key"
             android:title="@string/pref_password_label"
+            android:password="true"
+            android:selectAllOnFocus="true"
             android:defaultValue="@string/pref_password_default"
-            android:gravity="center"
-            android:ellipsize="start" />
+            android:inputType="textPassword"/>
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -22,12 +25,14 @@
         <EditTextPreference
             android:key="@string/pref_server_key"
             android:title="@string/pref_server_label"
-            android:defaultValue="@string/pref_server_default">
+            android:defaultValue="@string/pref_server_default"
+            android:inputType="text">
         </EditTextPreference>
 
         <EditTextPreference
             android:key="@string/pref_port_key"
             android:title="@string/pref_port_label"
+            android:inputType="number"
             android:defaultValue="@string/pref_port_default">
         </EditTextPreference>
     </PreferenceCategory>

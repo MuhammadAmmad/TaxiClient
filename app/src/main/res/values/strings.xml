@@ -81,6 +81,18 @@
         <item>12</item>
     </string-array>
 
+    <string name="actions_key" translatable="false">waiting_time</string>
+    <string-array name="actions_titles">
+        <item>On the spot</item>
+        <item>No passengers</item>
+        <item>Close the order</item>
+    </string-array>
+    <string-array name="actions_values" translatable="false">
+        <item>5</item>
+        <item>0</item>
+        <item>8</item>
+    </string-array>
+
     <string name="pref_languages_label">Languages</string>
     <string name="pref_languages_key" translatable="false">languages</string>
     <string-array name="pref_languages_titles" translatable="false">
@@ -245,7 +257,7 @@
     <string name="internet_online">Go online</string>
 
     <string name="format_set_sector">You have successfully set sector <xliff:g>%1$s</xliff:g></string>
-    <string name="format_unset_sector">You have successfully unset fromAddress sector</string>
+    <string name="format_unset_sector">You have successfully unset from sector</string>
     <string name="format_status">Your driverStatus is <xliff:g>%1$s</xliff:g></string>
 
     <string name="exit_message">Do you really want to exit application?</string>
@@ -255,4 +267,9 @@
     <string name="preference_desc">Menu icon</string>
     <string name="message_hint">Message</string>
     <string name="previous_order">previous_order</string>
+
+    <string name="no_orders">You have no orders yet</string>
+    <string name="no_messages">You have no messages yet</string>
+    <string name="new_order">New Order</string>
+    <string name="new_order_taken">You have successfully taken order #</string>
 </resources>

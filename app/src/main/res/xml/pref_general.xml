@@ -82,32 +82,8 @@
         </PreferenceScreen>
     </PreferenceCategory>
 
-    <!--<PreferenceScreen-->
-        <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-        <!--android:title="Style settings">-->
-
-        <!--<ListPreference-->
-            <!--android:defaultValue="@string/pref_theme_night"-->
-            <!--android:entries="@array/pref_theme_options"-->
-            <!--android:entryValues="@array/pref_theme_values"-->
-            <!--android:key="@string/pref_theme_key"-->
-            <!--android:title="@string/pref_theme_label" />-->
-
-        <!--<CheckBoxPreference-->
-            <!--android:defaultValue="true"-->
-            <!--android:key="@string/pref_rotation_key"-->
-            <!--android:title="@string/pref_rotation_label"-->
-            <!--android:widgetLayout="@layout/switch_compat" />-->
-    <!--</PreferenceScreen>-->
-
     <PreferenceCategory
         android:title="@string/pref_header_notifications">
-
-        <!--<PreferenceScreen-->
-            <!--android:title="@string/pref_sound_label"-->
-            <!--android:key="@string/pref_sound_key"-->
-            <!--android:enabled="false">-->
-        <!--</PreferenceScreen>-->
 
         <CheckBoxPreference
             android:defaultValue="true"

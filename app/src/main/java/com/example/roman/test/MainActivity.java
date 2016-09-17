@@ -66,7 +66,6 @@ import butterknife.ButterKnife;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.example.roman.test.LoginActivity.attemptLogin;
 import static com.example.roman.test.utilities.Constants.DEFAULT;
 import static com.example.roman.test.utilities.Constants.ERROR;
 import static com.example.roman.test.utilities.Constants.ERROR_NONE;
@@ -92,7 +91,6 @@ import static com.example.roman.test.utilities.Constants.ORDER_STATUS_TAKE;
 import static com.example.roman.test.utilities.Constants.RESPONSE;
 import static com.example.roman.test.utilities.Constants.SECTOR_ID;
 import static com.example.roman.test.utilities.Constants.STATUS_ID;
-import static com.example.roman.test.utilities.Functions.getRecordById;
 import static com.example.roman.test.utilities.Functions.getSectorById;
 import static com.example.roman.test.utilities.Functions.getStreetFromLocation;
 import static com.example.roman.test.utilities.Functions.isBetterLocation;
@@ -150,6 +148,7 @@ public class MainActivity extends AppCompatActivity
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
         Functions.setWholeTheme(this, prefs);
         Functions.setLanguage(this, prefs);
+
         socketService = SocketService.getInstance();
 
         super.onCreate(savedInstanceState);
@@ -171,7 +170,8 @@ public class MainActivity extends AppCompatActivity
         // TODO save checked item
         navigationView.setCheckedItem(R.id.nav_main);
 
-        MyPageAdapter mPageAdapter = new MyPageAdapter(getSupportFragmentManager(), getFragments());
+        MyPageAdapter mPageAdapter = new MyPageAdapter(getSupportFragmentManager(),
+                getFragments(savedInstanceState == null));
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -382,25 +382,29 @@ public class MainActivity extends AppCompatActivity
                 mViewPager.setCurrentItem(mTabPosition);
                 mainFragment = true;
                 break;
+
             case R.id.nav_my_orders:
                 fragmentManager.beginTransaction()
-                        .replace(R.id.flContent, OrderFragment.newInstance())
+                        .replace(R.id.flContent, MyOrdersFragment.newInstance())
                         .commit();
                 break;
+
             case R.id.nav_settings:
                 startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_LANGUAGE);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 break;
+
             case R.id.nav_messages:
                 fragmentManager.beginTransaction()
                         .replace(R.id.flContent, MessageFragment.newInstance())
                         .commit();
                 break;
+
             case R.id.nav_alarm:
                 item.setChecked(false);
                 showAlert();
                 backToMain();
                 return false;
+
             case R.id.nav_exit:
                 try {
                     socketService.logout();
@@ -437,11 +441,11 @@ public class MainActivity extends AppCompatActivity
             snackBar.setAction(getString(R.string.internet_online), new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-                        attemptLogin(MainActivity.this);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+////                        attemptLogin(MainActivity.this);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
                     snackBar.dismiss();
                     recreate();
                 }
@@ -453,11 +457,6 @@ public class MainActivity extends AppCompatActivity
             v.vibrate(pattern, 0);
             Snackbar.make(view, getString(R.string.internet_gone), Snackbar.LENGTH_INDEFINITE).show();
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
     }
 
     @Override
@@ -503,10 +502,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private List<Fragment> getFragments() {
+    private List<Fragment> getFragments(boolean firstTime) {
         List<Fragment> fList = new ArrayList<>();
 
-        mAirFragment = AirFragment.newInstance();
+        mAirFragment = AirFragment.newInstance(firstTime);
         mMainFragment = MainFragment.newInstance();
         mOrderFragment = OrderFragment.newInstance();
 
@@ -567,23 +566,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-//    public void showSectorInfo() {
-////        List<Sector> sectors = Sector.listAll(Sector.class);
-//        StringBuilder textMessage = new StringBuilder("");
-//
-//        for (Sector sector : sectors) {
-//            if (sector.getDrivers() != 0) {
-//                textMessage
-//                        .append(sector.getName())
-//                        .append(": ")
-//                        .append(sector.getDrivers())
-//                        .append("\n");
-//            }
-//        }
-//
-//        newMessage(new Message("1", textMessage.toString(), "19/08/2016"));
-//    }
-
     private class SocketServiceReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -610,7 +592,7 @@ public class MainActivity extends AppCompatActivity
                             final String orderId = intent.getStringExtra(ORDER_ID);
                             final String orderStatus = intent.getStringExtra(STATUS_ID);
                             if (orderStatus.equals(ORDER_STATUS_TAKE)) {
-                                showToast("You have successfully taken order #" + orderId);
+                                showToast(getString(R.string.new_order_taken) + orderId);
 
                                 try {
                                     socketService.getOrderById(orderId);
@@ -622,18 +604,19 @@ public class MainActivity extends AppCompatActivity
 
                         case METHOD_GET_ORDERS:
                             final List<AirRecord> orders = AirRecord.listAll(AirRecord.class);
-
                             runOnUiThread(new Runnable() {
                                 @Override
-                                public void run() {
-                                    mAirFragment.addOrders(orders.toArray(new AirRecord[0]));
-                                }
+                                public void run() {mAirFragment.addOrders(orders);}
                             });
                             break;
 
                         case METHOD_GET_ORDER_BY_ID:
-                            String jsonOrder = intent.getStringExtra(RESPONSE);
-                            final Record newOrder = gson.fromJson(jsonOrder, Record.class);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mOrderFragment.newOrder();
+                                }
+                            });
                             break;
 
                         case METHOD_GET_BALANCE:
@@ -653,8 +636,7 @@ public class MainActivity extends AppCompatActivity
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    newMessage(new Message(newSetOrder.getRecordId(),
-                                            newSetOrder.getFromAddress(), Functions.getDate()));
+                                    showNewOrderDialog(new AirRecord(newSetOrder));
                                 }
                             });
                             break;
@@ -680,11 +662,10 @@ public class MainActivity extends AppCompatActivity
 
                         case METHOD_NEW_ORDER:
                             final Record order = gson.fromJson(intent.getStringExtra(RESPONSE), Record.class);
+                            final AirRecord airRecord = new AirRecord(order);
                             runOnUiThread(new Runnable() {
                                 @Override
-                                public void run() {
-                                    mAirFragment.addOrder(new AirRecord(order));
-                                }
+                                public void run() {mAirFragment.addOrder(airRecord);}
                             });
                             break;
 
@@ -707,13 +688,16 @@ public class MainActivity extends AppCompatActivity
                                 }
                             }
                             break;
+
                         case METHOD_GET_SECTORS:
+                            // TODO implement hide sectors if they were not downloaded yet
 
                             break;
 
                         case METHOD_SET_TO_SECTOR:
                             // TODO add set sector ID to prefs
                             String sectorId = intent.getStringExtra(RESPONSE);
+
                             if (sectorId.equals("0")) {
                                 showToast(getString(R.string.format_unset_sector));
                             } else {
@@ -727,7 +711,6 @@ public class MainActivity extends AppCompatActivity
 
                         case METHOD_DELETE_ORDER:
                             final String delOrderId = intent.getStringExtra(RESPONSE);
-                            getRecordById(delOrderId).delete();
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -773,9 +756,47 @@ public class MainActivity extends AppCompatActivity
 
     private void exit() throws JSONException {
         socketService.logout();
-        moveTaskToBack(true);
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(0);
+//        moveTaskToBack(true);
+        finish();
+//        android.os.Process.killProcess(android.os.Process.myPid());
+//        System.exit(0);
+    }
+
+    private void showNewOrderDialog(final AirRecord record) {
+        AlertDialog.Builder helpBuilder = Functions.getDialog(this, getString(R.string.new_order),
+                record.getFromAddress());
+
+        SharedPreferences preferences = android.preference.PreferenceManager.getDefaultSharedPreferences(this);
+        String waitingTime = preferences.getString(getString(R.string.pref_waiting_time_key), getString(R.string.pref_waiting_time_default));
+
+        if (waitingTime.equals("-1")) {
+            waitingTime = getString(R.string.pref_waiting_time_default);
+        }
+
+        final String finalWaitingTime = waitingTime;
+        helpBuilder
+                .setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // TODO add deny order
+                    }
+                })
+                .setNeutralButton(getString(R.string.detail_waiting_time), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Functions.timeDialog(record.getRecordId(), finalWaitingTime, MainActivity.this).show();
+                    }
+                })
+                .setPositiveButton(getString(R.string.format_take_order, waitingTime), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        try {
+                            socketService.takeOrder(record.getRecordId(), finalWaitingTime);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).show();
     }
 
     private void showExitDialog() {

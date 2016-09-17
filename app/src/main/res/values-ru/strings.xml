@@ -159,4 +159,16 @@
     <string name="preference_desc">Иконка меню</string>
     <string name="message_hint">Сообщение</string>
     <string name="previous_order">previous_order</string>
+
+    <string name="no_orders">У вас пока нет заказов</string>
+    <string name="no_messages">У вас пока нет сообщений</string>
+    <string name="new_order">Новый заказ</string>
+
+    <string-array name="actions_titles">
+        <item>На месте</item>
+        <item>Нет клиентов</item>
+        <item>Закрыть заказ</item>
+    </string-array>
+
+    <string name="new_order_taken">Вы успешно взяли заказ #</string>
 </resources>

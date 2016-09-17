@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -20,14 +19,13 @@ import com.example.roman.test.utilities.Constants;
 import com.example.roman.test.utilities.Functions;
 import com.example.roman.test.utilities.HelperClasses;
 
-import org.json.JSONException;
-
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.roman.test.utilities.Constants.LOGIN_INTENT;
+import static com.example.roman.test.utilities.Constants.NIGHT;
 import static com.example.roman.test.utilities.Constants.THEME;
 import static com.example.roman.test.utilities.Functions.isNetworkConnected;
 import static com.example.roman.test.utilities.Functions.saveToPreferences;
@@ -88,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (isNight) {
                     newState = Constants.DAY;
                 } else {
-                    newState = Constants.NIGHT;
+                    newState = NIGHT;
                 }
 
                 saveToPreferences(newState, THEME, prefs);
@@ -109,15 +107,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
-        String callSign = getString(R.string.format_call_sign,
-                prefs.getString(getString(R.string.pref_login_key),
-                        getString(R.string.pref_login_default)));
-
-        // TODO remove default login and check properly
-        if (!callSign.equals("-1")) {
-            mCallSignTextView.setText(callSign);
-        }
     }
 
     @Override
@@ -129,6 +118,11 @@ public class LoginActivity extends AppCompatActivity {
             IntentFilter intentFilter = new IntentFilter(LOGIN_INTENT);
             registerReceiver(receiver, intentFilter);
         }
+
+        String callSign = getString(R.string.format_call_sign,
+                prefs.getString(getString(R.string.pref_login_key),
+                        getString(R.string.pref_login_default)));
+        mCallSignTextView.setText(callSign);
     }
 
     @Override
@@ -139,13 +133,6 @@ public class LoginActivity extends AppCompatActivity {
             unregisterReceiver(receiver);
             receiver = null;
         }
-    }
-
-    public static void attemptLogin(Context context) throws JSONException {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String login = preferences.getString(context.getString(R.string.pref_login_key), context.getString(R.string.pref_login_default));
-        String password = preferences.getString(context.getString(R.string.pref_password_key), context.getString(R.string.pref_password_default));
-        SocketService.getInstance().login(login, password);
     }
 
     private class SocketServiceReceiver extends BroadcastReceiver {

@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
-import com.example.roman.test.LoginActivity;
 import com.example.roman.test.R;
 import com.example.roman.test.TaxiApp;
 import com.example.roman.test.data.AirRecord;
@@ -42,6 +41,7 @@ import static com.example.roman.test.utilities.Constants.DG;
 import static com.example.roman.test.utilities.Constants.LOGIN;
 import static com.example.roman.test.utilities.Constants.LOGIN_INTENT;
 import static com.example.roman.test.utilities.Constants.MAIN_INTENT;
+import static com.example.roman.test.utilities.Constants.METHOD_CLOSE_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_DELETE_ORDER;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_BALANCE;
 import static com.example.roman.test.utilities.Constants.METHOD_GET_CURRENT_SECTOR;
@@ -97,9 +97,9 @@ public class SocketService extends Service {
 
     @Override
     public void onCreate() {
+        ((TaxiApp) getApplication()).getNetComponent().inject(this);
         super.onCreate();
 
-        ((TaxiApp) getApplication()).getNetComponent().inject(this);
         sService = this;
         id = "-1";
 
@@ -108,7 +108,7 @@ public class SocketService extends Service {
         String port = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(getString(R.string.pref_port_key), getString(R.string.pref_port_default));
 
-        serverAddress = AUTHORITY + server + ":" + port + PATH;
+        serverAddress = AUTHORITY + server + ":" + port;
     }
 
     @Override
@@ -119,6 +119,7 @@ public class SocketService extends Service {
     }
 
     private WebSocket connect() throws IOException, WebSocketException {
+        int i = 0;
         return new WebSocketFactory()
                 .setConnectionTimeout(TIMEOUT)
                 .createSocket(serverAddress)
@@ -151,11 +152,6 @@ public class SocketService extends Service {
         sendMessage(METHOD_SET_TO_SECTOR, setSector);
     }
 
-    @Override
-    public boolean stopService(Intent name) {
-        return super.stopService(name);
-    }
-
     private void getBalance() throws JSONException {
         sendMessage(METHOD_GET_BALANCE, getId());
     }
@@ -181,6 +177,17 @@ public class SocketService extends Service {
     public void getCurrentSector() throws JSONException {
         HelperClasses.JSONField currentSector = new HelperClasses.JSONField(CURRENT_SECTOR, "22");
         sendMessage(METHOD_GET_CURRENT_SECTOR, currentSector, getId());
+    }
+
+    public void setOrderStatus(String orderId, String orderStatus) throws JSONException {
+        HelperClasses.JSONField newStatus = new HelperClasses.JSONField(STATUS_ID, orderStatus);
+        HelperClasses.JSONField order = new HelperClasses.JSONField(ORDER_ID, orderId);
+        sendMessage(METHOD_SET_ORDER_STATUS, newStatus, order, getId());
+    }
+
+    public void closeOrder(String orderId) throws JSONException {
+        HelperClasses.JSONField order = new HelperClasses.JSONField(ORDER_ID, orderId);
+        sendMessage(METHOD_CLOSE_ORDER, order, getId());
     }
 
     public void takeOrder(String orderId, String waitingTime) throws JSONException {
@@ -251,7 +258,11 @@ public class SocketService extends Service {
             super.onPostExecute(aVoid);
 
             try {
-                LoginActivity.attemptLogin(getApplication());
+                String login = PreferenceManager.getDefaultSharedPreferences(SocketService.this)
+                        .getString(getString(R.string.pref_login_key), getString(R.string.pref_login_default));
+                String password = PreferenceManager.getDefaultSharedPreferences(SocketService.this)
+                        .getString(getString(R.string.pref_password_key), getString(R.string.pref_password_default));
+                login(login, password);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -299,6 +310,7 @@ public class SocketService extends Service {
 
                             case METHOD_DELETE_ORDER:
                                 String deleteOrderId = object.getJSONObject(RESPONSE).getString(ORDER_ID);
+                                getRecordById(deleteOrderId).delete();
                                 broadcastIntent.setAction(Constants.MAIN_INTENT);
                                 broadcastIntent.putExtra(Constants.RESPONSE, deleteOrderId);
                                 break;
@@ -311,6 +323,7 @@ public class SocketService extends Service {
 
                             case METHOD_SET_ORDER:
                                 String setOrder = object.getString(RESPONSE);
+
                                 broadcastIntent.setAction(MAIN_INTENT);
                                 broadcastIntent.putExtra(Constants.RESPONSE, setOrder);
                                 break;
@@ -376,7 +389,8 @@ public class SocketService extends Service {
 
                             case METHOD_GET_ORDER_BY_ID:
                                 String newOrder = object.getString(RESPONSE);
-                                broadcastIntent.putExtra(RESPONSE, newOrder);
+                                Record record = gson.fromJson(newOrder, Record.class);
+                                record.save();
                                 broadcastIntent.setAction(MAIN_INTENT);
                                 break;
 

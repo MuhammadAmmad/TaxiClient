@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -22,8 +21,7 @@ public class DetailOrderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
-        Functions.setWholeTheme(this,
-                PreferenceManager.getDefaultSharedPreferences(getApplication()));
+        Functions.setWholeTheme(this, prefs);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);

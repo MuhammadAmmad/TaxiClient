@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
-def dbflow_version = "3.1.1"
 
 android {
     compileSdkVersion 24
@@ -10,8 +9,8 @@ android {
         applicationId "com.example.roman.test"
         minSdkVersion 10
         targetSdkVersion 24
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 5
+        versionName "1.0.4"
     }
 
     buildTypes {
@@ -31,10 +30,10 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.takisoft.fix:preference-v7:24.2.0.0'
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:support-v4:24.2.0'
-    compile 'com.android.support:recyclerview-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.neovisionaries:nv-websocket-client:1.29'
     compile 'com.jakewharton:butterknife:8.2.1'

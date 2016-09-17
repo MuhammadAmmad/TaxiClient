@@ -28,15 +28,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.example.roman.test.data.Message;
+import com.example.roman.test.data.Record;
 import com.example.roman.test.utilities.Functions;
 import com.example.roman.test.utilities.LocaleHelper;
 
 import javax.inject.Inject;
 
 import static com.example.roman.test.utilities.Constants.DAY;
+import static com.example.roman.test.utilities.Constants.DEFAULT;
 import static com.example.roman.test.utilities.Constants.NIGHT;
 import static com.example.roman.test.utilities.Constants.THEME;
-import static com.example.roman.test.utilities.Functions.getFromPreferences;
 import static com.example.roman.test.utilities.Functions.saveToPreferences;
 import static com.example.roman.test.utilities.Functions.setLanguage;
 import static com.example.roman.test.utilities.Functions.setWholeTheme;
@@ -48,8 +49,8 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ((TaxiApp) getApplication()).getNetComponent().inject(this);
-        setLanguage(this, prefs);
         setWholeTheme(this, prefs);
+        setLanguage(this, prefs);
         super.onCreate(savedInstanceState);
     }
 
@@ -115,7 +116,7 @@ public class SettingsActivity extends PreferenceActivity {
         deleteOrders.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-//                Record.deleteAll(Record.class);
+                Record.deleteAll(Record.class);
                 return true;
             }
         });
@@ -134,7 +135,7 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Message.deleteAll(Message.class);
-//                Record.deleteAll(Record.class);
+                Record.deleteAll(Record.class);
                 return true;
             }
         });
@@ -153,7 +154,7 @@ public class SettingsActivity extends PreferenceActivity {
         final ListPreference theme = (ListPreference) findPreference(getString(R.string.pref_theme_key));
         theme.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String oldValue = getFromPreferences(THEME, prefs);
+                    String oldValue = prefs.getString(THEME, String.valueOf(DEFAULT));
                 if (oldValue.equals(newValue)) {
                     return false;
                 }
@@ -176,10 +177,6 @@ public class SettingsActivity extends PreferenceActivity {
         if (waitingTimeList.getValue() == null) {
             waitingTimeList.setValue(getString(R.string.pref_waiting_time_default));
         }
-
-//        bindPreferenceSummaryToValue(findPreference("notifications_ringtone"));
-//        Preference app_version = findPreference("application_version");
-//        setPreferenceSummary(app_version, appVersion);
     }
 
     private static final Preference.OnPreferenceChangeListener

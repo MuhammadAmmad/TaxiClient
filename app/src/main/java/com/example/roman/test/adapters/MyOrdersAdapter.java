@@ -9,36 +9,36 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.roman.test.R;
-import com.example.roman.test.data.Message;
+import com.example.roman.test.data.Record;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MessagesListAdapter extends ArrayAdapter<Message> {
+public class MyOrdersAdapter extends ArrayAdapter<Record> {
     static class ViewHolder {
 
         @BindView(R.id.list_item_time)
-        TextView date;
+        TextView time;
 
-        @BindView(R.id.list_item_message)
-        TextView message;
+        @BindView(R.id.list_item_from)
+        TextView from;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
     }
 
-    public MessagesListAdapter(Context context, List<Message> messages) {
-        super(context, R.layout.list_item_message, messages);
+    public MyOrdersAdapter(Context context, List<Record> orders) {
+        super(context, R.layout.list_item_my_order, orders);
     }
 
     @NonNull
     @Override
     public View getView(int position, View view, @NonNull ViewGroup parent) {
         // Get the data item for this position
-        Message message = getItem(position);
+        Record order = getItem(position);
 
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder holder;
@@ -46,23 +46,22 @@ public class MessagesListAdapter extends ArrayAdapter<Message> {
         if (view == null) {
             // If there's no view to re-use, inflate a brand new view for now
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            view = inflater.inflate(R.layout.list_item_message, parent, false);
+            view = inflater.inflate(R.layout.list_item_my_order, parent, false);
 
             holder = new ViewHolder(view);
             // Cache the viewHolder object inside the fresh view
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
-            holder.message.setText("");
-            holder.date.setText("");
+            holder.from.setText("");
+            holder.time.setText("");
         }
 
-        if (message != null) {
-            holder.message.setText(message.getMessage());
-            holder.date.setText(message.getDate());
+        if (order != null) {
+            holder.from.setText(order.getFromAddress());
+            holder.time.setText(order.getTime());
         }
 
         return view;
     }
 }
-

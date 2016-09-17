@@ -90,25 +90,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         Record first = new Record();
         Record second = new Record();
 
-        first.setRecordId("25");
-        first.setStatusId(1);
-        first.setDateCreated("Today");
-        first.setTimeCreated("now");
-        first.setInfoStatusId(15);
-        first.setPhone("+380508453060");
-        first.setDescription("Just right here");
-        first.setPrice("22");
-        first.setOption("Some options");
-        first.setFromAddress("Here");
-        first.setToAddress("There");
-        first.setCanTake(true);
-        first.setSectorFrom("this one");
-        first.setTariffId("1");
-        first.setDate("Today");
-        first.setTime("Now");
-        first.setLength("22");
-        first.setIsPrevious(true);
-        first.setCanRefuse(true);
 //        new GetOrdersTask().execute();
     }
 

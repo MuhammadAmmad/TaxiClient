@@ -22,7 +22,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
         @BindView(R.id.list_item_message)
         TextView message;
 
-        @BindView(R.id.list_item_date)
+        @BindView(R.id.list_item_time)
         TextView date;
 
         ViewHolder(View view) {

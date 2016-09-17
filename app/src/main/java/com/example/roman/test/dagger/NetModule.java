@@ -19,7 +19,7 @@ public class NetModule {
     @Provides
     @Singleton
     SharedPreferences providesSharedPreferences(Application application) {
-        return PreferenceManager.getDefaultSharedPreferences(application);
+        return PreferenceManager.getDefaultSharedPreferences(application.getApplicationContext());
     }
 
     @Provides

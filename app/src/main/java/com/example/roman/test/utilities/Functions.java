@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Notification;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
@@ -15,7 +16,9 @@ import android.os.Build;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.NotificationCompat;
+import android.widget.ListView;
 
+import com.example.roman.test.DetailOrderActivity;
 import com.example.roman.test.LoginActivity;
 import com.example.roman.test.MainActivity;
 import com.example.roman.test.R;
@@ -23,18 +26,20 @@ import com.example.roman.test.SettingsActivity;
 import com.example.roman.test.data.AirRecord;
 import com.example.roman.test.data.Message;
 import com.example.roman.test.data.Sector;
+import com.example.roman.test.services.SocketService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static com.example.roman.test.utilities.Constants.DEFAULT;
 import static com.example.roman.test.utilities.Constants.METHOD;
+import static com.example.roman.test.utilities.Constants.NIGHT;
 import static com.example.roman.test.utilities.Constants.THEME;
 
 public class Functions {
@@ -67,9 +72,11 @@ public class Functions {
     public static boolean isNight(SharedPreferences prefs) {
         boolean isNight = true;
         String state = prefs.getString(THEME, null);
-
-        if (state != null) {
-            isNight = state.equals(Constants.NIGHT);
+        if (state == null) {
+            saveToPreferences(NIGHT, THEME, prefs);
+            return true;
+        } else {
+            isNight = state.equals(NIGHT);
         }
 
         return isNight;
@@ -192,10 +199,6 @@ public class Functions {
         prefs.edit().putString(itemName, item).apply();
     }
 
-    public static String getFromPreferences(String itemName, SharedPreferences preferences) {
-        return preferences.getString(itemName, String.valueOf(DEFAULT));
-    }
-
     public static boolean showField(int mask, int field) {
         return (mask & field) == field;
     }
@@ -230,5 +233,42 @@ public class Functions {
                 application.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() == null ||
                 !connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
+    public static AlertDialog timeDialog(final String recordId, String waitingTime, final Activity activity) {
+        List<String> myOptions = Arrays.asList((activity.getResources()
+                .getStringArray(R.array.pref_waiting_time_values)));
+        int index = myOptions.indexOf(waitingTime);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle(R.string.detail_waiting_time)
+                .setSingleChoiceItems(R.array.pref_waiting_time_titles, index,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int i) {
+                                ListView lw = ((AlertDialog) dialog).getListView();
+                                final String waitingTime = ((String) lw.getAdapter()
+                                        .getItem(lw.getCheckedItemPosition())).replaceAll("[^0-9]", "");
+
+                                try {
+                                    SocketService.getInstance().takeOrder(recordId, waitingTime);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                dialog.dismiss();
+                                if (activity instanceof DetailOrderActivity) {
+                                    activity.finish();
+                                }
+                            }
+                        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        return builder.create();
     }
 }

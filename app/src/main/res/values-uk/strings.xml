@@ -158,4 +158,16 @@
     <string name="preference_desc">Іконка меню</string>
     <string name="message_hint">Повідомлення</string>
     <string name="previous_order">previous_order</string>
+
+    <string name="no_orders">У вас поки немає замовлень</string>
+    <string name="no_messages">У вас поки немає повідомлень</string>
+    <string name="new_order">Нове замовлення</string>
+
+    <string-array name="actions_titles">
+        <item>На місці</item>
+        <item>Нема клієнтів</item>
+        <item>Закрити замовлення</item>
+    </string-array>
+
+    <string name="new_order_taken">Ви успішно взяли замовлення #</string>
 </resources>

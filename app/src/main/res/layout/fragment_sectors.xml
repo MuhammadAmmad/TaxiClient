@@ -4,15 +4,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.roman.test.SectorFragment">
 
-    <ProgressBar
-        android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
-
     <ListView
         android:id="@+id/list_view_sectors"
         android:layout_width="match_parent"

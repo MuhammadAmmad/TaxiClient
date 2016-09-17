@@ -2,10 +2,10 @@ package com.example.roman.test;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.support.v7.preference.PreferenceManager;
 
 import com.example.roman.test.data.DriverStatus;
 import com.example.roman.test.services.SocketService;
@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import static com.example.roman.test.utilities.Constants.SECTOR_HASH;
 
 public class MainFragment extends PreferenceFragmentCompat {
     int index;
@@ -35,11 +33,13 @@ public class MainFragment extends PreferenceFragmentCompat {
     }
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        if (savedInstanceState == null) {
-            PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().clear().apply();
-        }
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        ((TaxiApp) getActivity().getApplication()).getNetComponent().inject(this);
+        super.onCreate(savedInstanceState);
+    }
 
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.pref_main);
         ((TaxiApp) getActivity().getApplication()).getNetComponent().inject(this);
 

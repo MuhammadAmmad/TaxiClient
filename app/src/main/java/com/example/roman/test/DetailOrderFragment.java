@@ -1,27 +1,20 @@
 package com.example.roman.test;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.roman.test.data.Record;
 import com.example.roman.test.services.SocketService;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
-
-import java.util.Arrays;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -35,6 +28,7 @@ import static com.example.roman.test.utilities.Constants.METHOD;
 import static com.example.roman.test.utilities.Constants.METHOD_DELETE_ORDER;
 import static com.example.roman.test.utilities.Constants.ORDER_ID;
 import static com.example.roman.test.utilities.Constants.RESPONSE;
+import static com.example.roman.test.utilities.Functions.timeDialog;
 
 public class DetailOrderFragment extends Fragment {
     static final String DETAIL_ORDER = "ORDER";
@@ -101,7 +95,7 @@ public class DetailOrderFragment extends Fragment {
                 timeWait.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        TimeDialog(recordId).show();
+                        timeDialog(recordId, mWaitingTime, getActivity()).show();
                     }
                 });
 
@@ -114,42 +108,6 @@ public class DetailOrderFragment extends Fragment {
             }
         }
         return view;
-    }
-
-    private AlertDialog TimeDialog(final String recordId) {
-        List<String> myOptions = Arrays.asList((getResources()
-                .getStringArray(R.array.pref_waiting_time_values)));
-        int index = myOptions.indexOf(mWaitingTime);
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-        builder.setTitle(R.string.detail_waiting_time)
-                .setSingleChoiceItems(R.array.pref_waiting_time_titles, index,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int i) {
-                        ListView lw = ((AlertDialog) dialog).getListView();
-                        final String waitingTime = ((String) lw.getAdapter()
-                                .getItem(lw.getCheckedItemPosition())).replaceAll("[^0-9]", "");
-
-                        try {
-                            SocketService.getInstance().takeOrder(recordId, waitingTime);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        removeOrder(recordId);
-                        dialog.dismiss();
-                        getActivity().finish();
-                    }
-                }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-
-        return builder.create();
     }
 
     private void removeOrder(String orderId) {
